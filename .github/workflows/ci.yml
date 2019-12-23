@@ -1,15 +1,15 @@
-name: Tests & Build
+name: Tests
 on: [pull_request, push]
 
 jobs:
   lint:
-    runs-on: actions/setup-node@v1
+    runs-on: ubuntu-latest
     steps:
-      - name: Install
-        run: npm install
-
-      - name: Lint
-        run: npm run lint
+      - name: Install and lint
+        uses: actions/setup-node@v1
+        run: |
+          npm install
+          npm run lint
 
   unit-test:
     runs-on: actions/setup-node@v1

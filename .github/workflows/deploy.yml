@@ -6,19 +6,17 @@ on:
 
 jobs:
   deploy:
-    runs-on: actions/setup-node@v1
+    runs-on: ubuntu-latest
     env:
       DEPLOY_BRANCH: gh-pages
     steps:
-      - name: Install
-        run: npm install
-
-        # Generates `dist/` directory
-      - name: Build
-        run: npm run build
-
-      - name: Deploy
+      - name: Deploy to Github Pages
+        uses: actions/setup-node@v1
         run: |
+          npm install
+          # Generates `dist/` directory
+          npm run build
+          # Push to the Github Pages branch
           cd dist
           git init
           git remote add deploy "$GITHUB_REPOSITORY"
