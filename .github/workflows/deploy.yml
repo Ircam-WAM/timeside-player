@@ -24,12 +24,15 @@ jobs:
       - name: Build
         run: npm run build
 
-      #- name: Add SSH key
-        #run: |
-          #mkdir /root/.ssh
-          #ssh-keyscan -t rsa github.com > /root/.ssh/known_hosts
-          #echo "${{ secrets.GIT_DEPLOY_KEY }}" > /root/.ssh/id_rsa
-          #chmod 400 /root/.ssh/id_rsa
+      # Use of SSH Key stored as secret instead of auto-created GITHUB_TOKEN secret
+      # Because of this issue on public repo:
+      # https://github.community/t5/GitHub-Actions/Github-action-not-triggering-gh-pages-upon-push/td-p/26869/highlight/true/page/2
+      - name: Add SSH key
+        run: |
+          mkdir "/$HOME/.ssh"
+          ssh-keyscan -t rsa github.com > "/$HOME/.ssh/known_hosts"
+          echo "${{ secrets.GIT_DEPLOY_KEY }}" > "/$HOME/.ssh/id_rsa"
+          chmod 400 "/$HOME/.ssh/id_rsa"
 
       # Push to the Github Pages branch
       - name: Deploy to Github Pages
