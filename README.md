@@ -12,6 +12,7 @@ This project is built with :
 * Cypress: End-to-end testing
 * EditorConfig
 * Github Actions: CI & Deployment
+* Dependabot
 
 ## Project setup
 ```
