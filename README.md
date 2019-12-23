@@ -2,6 +2,8 @@
 
 Timeside Player is an application and library for [Timeside](https://github.com/parisson/timeside) Rest API.
 
+Demo: https://ircam-web.github.io/timeside-player/
+
 This project is built with :
 * Typescript
 * Vue.JS (with Composition API)
