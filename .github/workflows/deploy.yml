@@ -10,13 +10,20 @@ jobs:
     env:
       DEPLOY_BRANCH: gh-pages
     steps:
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+
+      - name: Install
+        run: npm install
+
+      # Generates `dist/` directory
+      - name: Build
+        run: npm run build
+
+      # Push to the Github Pages branch
       - name: Deploy to Github Pages
-        uses: actions/setup-node@v1
         run: |
-          npm install
-          # Generates `dist/` directory
-          npm run build
-          # Push to the Github Pages branch
           cd dist
           git init
           git remote add deploy "$GITHUB_REPOSITORY"
