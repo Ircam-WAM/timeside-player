@@ -24,12 +24,19 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Add SSH key
+        run: |
+          mkdir /root/.ssh
+          ssh-keyscan -t rsa github.com > /root/.ssh/known_hosts
+          echo "${{ secrets.GIT_DEPLOY_KEY }}" > /root/.ssh/id_rsa
+          chmod 400 /root/.ssh/id_rsa
+
       # Push to the Github Pages branch
       - name: Deploy to Github Pages
         run: |
           cd dist
           git init
-          git remote add deploy "$GITHUB_REPOSITORY"
+          git remote add deploy "git@github.com:$GITHUB_REPOSITORY"
           git checkout --orphan "$DEPLOY_BRANCH"
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
