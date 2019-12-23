@@ -54,6 +54,18 @@ jobs:
       - name: Integration test
         run: npm run test:e2e -- --headless
 
+      - uses: actions/upload-artifact@v1
+        # if: failure()
+        with:
+          name: screenshots
+          path: tests/e2e/screenshots/
+
+      - uses: actions/upload-artifact@v1
+        # if: failure()
+        with:
+          name: videos
+          path: tests/e2e/videos/
+
   build:
     runs-on: ubuntu-latest
     steps:
