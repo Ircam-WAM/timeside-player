@@ -1,0 +1,74 @@
+{
+  "name": "timeside-player",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "test:unit": "vue-cli-service test:unit",
+    "test:e2e": "vue-cli-service test:e2e",
+    "test:unit:watch": "vue-cli-service test:unit --watch",
+    "lint-fix": "vue-cli-service lint",
+    "lint": "vue-cli-service lint --no-fix"
+  },
+  "dependencies": {
+    "@vue/composition-api": "^0.3.4",
+    "core-js": "^3.4.3",
+    "vue": "^2.6.10",
+    "vuex": "^3.1.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.19",
+    "@typescript-eslint/eslint-plugin": "^2.13.0",
+    "@typescript-eslint/parser": "^2.13.0",
+    "@vue/cli-plugin-babel": "^4.1.0",
+    "@vue/cli-plugin-e2e-cypress": "^4.1.0",
+    "@vue/cli-plugin-eslint": "^4.1.0",
+    "@vue/cli-plugin-typescript": "^4.1.0",
+    "@vue/cli-plugin-unit-jest": "^4.1.0",
+    "@vue/cli-plugin-vuex": "^4.1.0",
+    "@vue/cli-service": "^4.1.0",
+    "@vue/eslint-config-standard": "^5.0.1",
+    "@vue/eslint-config-typescript": "^5.0.1",
+    "@vue/test-utils": "^1.0.0-beta.30",
+    "eslint": "^6.8.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-vue": "^6.0.1",
+    "less": "^3.0.4",
+    "less-loader": "^5.0.0",
+    "lint-staged": "^9.4.3",
+    "typescript": "^3.7.4",
+    "vue-cli-plugin-postcss-preset": "^1.0.2",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ],
+  "jest": {
+    "preset": "@vue/cli-plugin-unit-jest/presets/typescript-and-babel",
+    "setupFiles": [
+      "<rootDir>/tests/unit/setup-composition-api.ts",
+      "<rootDir>/tests/unit/setup-types-node.ts"
+    ]
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged && vue-cli-service test:unit"
+  },
+  "lint-staged": {
+    "*.{js,vue,ts}": [
+      "vue-cli-service lint",
+      "git add"
+    ]
+  },
+  "postcss": {
+    "plugins": {
+      "postcss-preset-env": {
+        "stage": 2
+      }
+    }
+  }
+}
