@@ -71,5 +71,8 @@
         "stage": 2
       }
     }
+  },
+  "vue": {
+    "publicPath": ""
   }
 }
