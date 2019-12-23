@@ -56,12 +56,13 @@
     ]
   },
   "gitHooks": {
-    "pre-commit": "lint-staged && vue-cli-service test:unit"
+    "pre-commit": "lint-staged"
   },
   "lint-staged": {
     "*.{js,vue,ts}": [
       "vue-cli-service lint",
-      "git add"
+      "git add",
+      "jest --bail --findRelatedTests"
     ]
   },
   "postcss": {
