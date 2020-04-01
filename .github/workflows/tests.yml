@@ -52,7 +52,7 @@ jobs:
         run: npm install
 
       - name: Integration test
-        run: npm run test:e2e -- --headless --browser chrome
+        run: npm run test:e2e:headless
 
       # Cypress only saves screenshots if the test fails
       - uses: actions/upload-artifact@v1

@@ -21,6 +21,15 @@ jobs:
       - name: Install
         run: npm install
 
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit test
+        run: npm run test:unit
+
+      - name: Integration test
+        run: npm run test:e2e:headless
+
       # Generates `dist/` directory
       - name: Build
         run: npm run build
