@@ -11,7 +11,13 @@ if (isNode) {
 }
 */
 
-const basePath = window.localStorage.getItem('api-url') || 'https://sandbox.wasabi.telemeta.org'
+// First item is the default one
+export const baseUrls: readonly string[] = [
+  'https://sandbox.wasabi.telemeta.org',
+  'https://wasabi.telemeta.org'
+]
+
+const basePath = window.localStorage.getItem('api-url') || baseUrls[0]
 
 const config = new Configuration({
   basePath,

@@ -4,7 +4,7 @@
     class="select-api"
   >
     <option
-      v-for="o of options"
+      v-for="o of urls"
       :key="o"
       :value="o"
     >
@@ -15,15 +15,12 @@
 
 <script lang="ts">
 import { defineComponent, ref, watchEffect } from '@vue/composition-api'
+import { baseUrls } from '@/utils/api'
 
 export default defineComponent({
   name: 'SelectAPI',
   setup () {
-    const options = [
-      'https://wasabi.telemeta.org',
-      'https://sandbox.wasabi.telemeta.org'
-    ]
-    const apiUrl = ref(localStorage.getItem('api-url') || options[0])
+    const apiUrl = ref(localStorage.getItem('api-url') || baseUrls[0])
 
     watchEffect(() => {
       if (localStorage.getItem('api-url') === apiUrl.value) {
@@ -45,7 +42,7 @@ export default defineComponent({
 
     return {
       apiUrl,
-      options,
+      urls: baseUrls,
       prettyPrint
     }
   }
