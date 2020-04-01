@@ -137,6 +137,10 @@ export default defineComponent({
         // Store edit playState but audio is not mounted
         return
       }
+
+      // Set currentTimeOutput to to avoid cursor jump
+      store.commit.audio.setCurrentTimeOutput(audio.currentTime * 1000)
+
       switch (playStateInput.value) {
         case PlayState.Play:
           audio.play()
@@ -159,6 +163,7 @@ export default defineComponent({
 
     // Force the browser to unload the audio element
     // Without this, switching item without restarting the page
+    // plays all previously loaded audio elemenets
     onUnmounted(() => {
       const audio = el.value
       if (!audio) {
