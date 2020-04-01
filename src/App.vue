@@ -1,18 +1,29 @@
 <template>
   <div id="app">
-    <h1>Welcome to timeside-player</h1>
-    <Player />
+    <div class="header">
+      <h1>Welcome to timeside-player</h1>
+      <router-link
+        :to="{ name: 'list' }"
+      >
+        Home
+      </router-link>
+      <SelectAPI />
+    </div>
+
+    <router-view />
   </div>
 </template>
 
 <script lang="ts">
-import { createComponent } from '@vue/composition-api'
-import Player from '@/components/Player.vue'
+import { defineComponent } from '@vue/composition-api'
+import SelectAPI from '@/components/SelectAPI.vue'
+import List from '@/components/List.vue'
 
-export default createComponent({
+export default defineComponent({
   name: 'App',
   components: {
-    Player
+    List,
+    SelectAPI
   }
 })
 </script>

@@ -11,7 +11,7 @@ module.exports = {
     'arrow-spacing': 'warn',
 
     // allow console and debugger in development
-    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 0,
+    'no-console': process.env.NODE_ENV === 'production' ? [ 'error', { allow: [ 'warn', 'error' ] } ] : 0,
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 0
   },
   'overrides': [
@@ -37,10 +37,11 @@ module.exports = {
       ],
       'parserOptions': {
         'parser': '@typescript-eslint/parser',
-        'project': './tsconfig.json'
+        'project': 'tsconfig.json',
+        'extraFileExtensions': [ '.vue' ]
       },
       'rules': {
-        "@typescript-eslint/explicit-function-return-type": 'off'
+        "@typescript-eslint/explicit-function-return-type": 'off',
       }
     },
     {
@@ -53,8 +54,13 @@ module.exports = {
         '@vue/typescript/recommended',
       ],
       'rules': {
+        'array-bracket-spacing': [ 'warn', 'always' ],
         'vue/array-bracket-spacing': [ 'warn', 'always' ],
-        'vue/arrow-spacing': 'warn'
+        'vue/arrow-spacing': 'warn',
+
+        // allow console and debugger in development
+        'no-console': process.env.NODE_ENV === 'production' ? [ 'error', { allow: [ 'warn', 'error' ] } ] : 0,
+        'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 0
       }
     }
   ]

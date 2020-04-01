@@ -9,6 +9,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
+    "extendedDiagnostics": true,
     "baseUrl": ".",
     "types": [
       "webpack-env",
@@ -29,12 +30,13 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-
     "src/**/*.js",
     "tests/**/*.js",
+
+    "src/**/*.vue",
+
     "**/babel.config.js",
     "**/.eslintrc.js"
   ],

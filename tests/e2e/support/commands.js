@@ -1,25 +1,47 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This is will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+import { API_BASE, API_USER, API_PASS } from './api'
+
+Cypress.Commands.add('login', () => {
+  const loginUrl = `${API_BASE}/accounts/login/`
+
+  return cy.request({
+    url: loginUrl,
+    followRedirect: false
+  })
+  .then((resp) => {
+    const $html = Cypress.$(resp.body)
+    const csrfmiddlewaretoken = $html.find("input[name=csrfmiddlewaretoken]").val()
+
+    if (!csrfmiddlewaretoken) {
+      throw new Error(`unable to find csrfmiddlewaretoken input element. Already logged in?`)
+    }
+
+    return cy.request({
+      method: 'POST',
+      url: loginUrl,
+      failOnStatusCode: false,
+      followRedirect: false,
+      form: true,
+      body: {
+        username: API_USER,
+        password: API_PASS,
+        csrfmiddlewaretoken
+      },
+      headers: {
+        Referer: loginUrl
+      }
+    })
+    .then(resp => {
+      expect(resp.status).to.eq(302)
+      expect(resp.headers).to.have.any.keys('location')
+      expect(resp.headers.location).to.equal('/')
+    })
+  })
+})
+
+Cypress.Commands.add('logout', () => {
+  const logoutUrl = `${API_BASE}/accounts/logout/`
+
+	cy.request(logoutUrl).then(resp => {
+    expect(resp.status).to.eq(200)
+	})
+})

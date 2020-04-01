@@ -14,6 +14,23 @@ module.exports = (on, config) => {
   //  watchOptions: {}
   // }))
 
+  /*
+   * Disable Chrome's security feature until SameSite='None' is supported by Django
+   * See https://github.com/Parisson/TimeSide/issues/165
+  */
+
+  on('before:browser:launch', (browser = {}, args) => {
+    if (browser.family === 'chrome') {
+      // Replace with the following lines for Cypress 4.x
+      // and rename args to launchOptions
+      // See: https://github.com/cypress-io/cypress-documentation/pull/2458/files?short_path=d0a18cb#diff-d0a18cb23b541dc1c36690ed47012707
+      // launchOptions.args.push()
+      // return launchOptions
+      args.push('--disable-features=SameSiteByDefaultCookies')
+      return args
+    }
+  })
+
   return Object.assign({}, config, {
     fixturesFolder: 'tests/e2e/fixtures',
     integrationFolder: 'tests/e2e/specs',
