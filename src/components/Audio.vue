@@ -50,7 +50,7 @@ import {
   watch
 } from '@vue/composition-api'
 import { useStore } from '@/store/index'
-import { PlayState } from '@/store/audio'
+import { PlayState, Source } from '@/store/audio'
 import { AudioSrc } from '@/store/items'
 import { assertIsDefined } from '@/utils/type-assert'
 
@@ -105,16 +105,18 @@ export default defineComponent({
     /*
     * Set currenTime of audioFile when store's currentTime is updated
     */
-    const currentTimeInput = computed(() => store.state.audio.currentTimeInput)
-    onMounted(() => watch([ currentTimeInput ], () => {
+    const currentTime = computed(() => store.state.audio.currentTime)
+    onMounted(() => watch([ currentTime ], () => {
+      // Do not update audio's currentTime if update comes from audio
+      if (currentTime.value.source === Source.Output) {
+        return
+      }
       const audio = el.value
       if (!audio) {
         return
       }
-      audio.currentTime = currentTimeInput.value / 1000
-      store.commit.audio.setCurrentTimeOutput(audio.currentTime * 1000)
+      audio.currentTime = currentTime.value.value / 1000
     }, {
-      lazy: false, // the callback is called when the watched source has the same value as previous state
       flush: 'sync'
     }))
 
@@ -157,8 +159,7 @@ export default defineComponent({
       }
     }, {
       // do not wait for component's update to run the watcher
-      flush: 'sync',
-      lazy: false
+      flush: 'sync'
     }))
 
     // Force the browser to unload the audio element

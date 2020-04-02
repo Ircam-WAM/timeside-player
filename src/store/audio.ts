@@ -7,19 +7,27 @@ export enum PlayState {
   Pause,
 }
 
+export enum Source {
+  Input,
+  Output
+}
+
+interface CurrentTime {
+  value: number;
+  source: Source;
+}
+
 export interface AudioState {
   playState: PlayState;
   // currentTime of the audio file in ms
-  currentTimeOutput: number;
-  currentTimeInput: number;
+  currentTime: CurrentTime;
   // duration of the audio file in ms
   duration: number;
 }
 
 const getDefaultState = (): AudioState => ({
   playState: PlayState.Stop,
-  currentTimeOutput: 0,
-  currentTimeInput: 0,
+  currentTime: { value: 0, source: Source.Output },
   duration: 0,
 })
 
@@ -41,12 +49,12 @@ const mutations = defineMutations<AudioState>()({
     state.duration = duration
   },
 
-  setCurrentTimeOutput (state, currentTime: number) {
-    state.currentTimeOutput = currentTime
+  setCurrentTimeOutput (state, value: number) {
+    state.currentTime = { value, source: Source.Output }
   },
 
-  setCurrentTimeInput (state, currentTime: number) {
-    state.currentTimeInput = currentTime
+  setCurrentTimeInput (state, value: number) {
+    state.currentTime = { value, source: Source.Input }
   }
 })
 

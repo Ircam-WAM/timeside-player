@@ -20,7 +20,7 @@ export default defineComponent({
     const store = useStore()
 
     const current: ComputedRef<string> = computed(() => {
-      return formatSeconds(store.state.audio.currentTimeOutput / 1000)
+      return formatSeconds(store.state.audio.currentTime.value / 1000)
     })
 
     const total: ComputedRef<string> = computed(() => {

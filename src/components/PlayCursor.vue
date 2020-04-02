@@ -14,7 +14,7 @@ import { defineComponent, onMounted, ref, Ref, watch, watchEffect, computed } fr
 import { assertIsDefined } from '@/utils/type-assert'
 
 import { useStore } from '@/store/index'
-import { PlayState } from '@/store/audio'
+import { PlayState, Source } from '@/store/audio'
 
 const hasWebAnimationAPI = () => {
   // Note: Some browsers may not support
@@ -51,18 +51,22 @@ export default defineComponent({
       const animation = cursor.value.animate(keyFrames, timing)
       animation.pause()
 
-      // Disable this to limit cursor update
-      // It may improves animation performance and avoid flickering
-      // watch(() => { animation.currentTime = store.state.audio.currentTime })
-
-      watchEffect(() => { animation.currentTime = store.state.audio.currentTimeInput })
+      watchEffect(() => {
+        const currentTime = store.state.audio.currentTime
+        // Disable this to limit cursor update
+        // It improves animation performance and avoids flickering
+        if (currentTime.source === Source.Output) {
+          return
+        }
+        animation.currentTime = currentTime.value
+      })
 
       const playState = computed(() => store.state.audio.playState)
       // Update cursor's animation when audio's play state is updated
       // Specifying playState as a first param avoids
       // running watch when store's currentTime is updated
       watch([ playState ], () => {
-        animation.currentTime = store.state.audio.currentTimeOutput
+        animation.currentTime = store.state.audio.currentTime.value
 
         switch (playState.value) {
           case PlayState.Play:
@@ -78,8 +82,7 @@ export default defineComponent({
             console.error('Unknown PlayState', playState.value)
         }
       }, {
-        flush: 'sync',
-        lazy: false
+        flush: 'sync'
       })
     })
 
