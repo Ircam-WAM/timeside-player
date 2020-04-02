@@ -75,7 +75,8 @@ export default defineComponent({
             animation.pause()
             break
           case PlayState.Stop:
-            animation.cancel()
+            animation.currentTime = 0
+            animation.pause()
             break
           default:
             console.error('Unknown PlayState', playState.value)
