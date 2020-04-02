@@ -11,6 +11,7 @@
       @ended="onEnded"
       @error="audioError = $event"
       @durationchange="onDurationChange"
+      @seeked="onSeeked"
     >
       <source
         v-for="src of audioSrcs"
@@ -50,7 +51,7 @@ import {
   watch
 } from '@vue/composition-api'
 import { useStore } from '@/store/index'
-import { PlayState, Source } from '@/store/audio'
+import { PlayState, CurrentTimeSource } from '@/store/audio'
 import { AudioSrc } from '@/store/items'
 import { assertIsDefined } from '@/utils/type-assert'
 
@@ -74,7 +75,11 @@ export default defineComponent({
     */
     const onTimeUpdate = (ev: Event) => {
       assertIsDefined(ev.target)
-      store.commit.audio.setCurrentTimeOutput((ev.target as HTMLAudioElement).currentTime * 1000)
+      const target = ev.target as HTMLAudioElement
+      store.commit.audio.setCurrentTime({
+        value: target.currentTime * 1000,
+        source: CurrentTimeSource.TimeUpdate
+      })
     }
     const onPause = () => {
       assertIsDefined(el.value)
@@ -84,22 +89,38 @@ export default defineComponent({
         return
       }
 
-      store.commit.audio.setCurrentTimeOutput(el.value.currentTime * 1000)
+      store.commit.audio.setCurrentTime({
+        value: el.value.currentTime * 1000,
+        source: CurrentTimeSource.TimeUpdate
+      })
       store.commit.audio.setPlayState(PlayState.Pause)
     }
     const onPlaying = () => {
       assertIsDefined(el.value)
-      store.commit.audio.setCurrentTimeOutput(el.value.currentTime * 1000)
+      store.commit.audio.setCurrentTime({
+        value: el.value.currentTime * 1000,
+        source: CurrentTimeSource.TimeUpdate
+      })
       store.commit.audio.setPlayState(PlayState.Play)
     }
     const onEnded = () => {
       assertIsDefined(el.value)
-      store.commit.audio.setCurrentTimeOutput(el.value.currentTime * 1000)
+      store.commit.audio.setCurrentTime({
+        value: el.value.currentTime * 1000,
+        source: CurrentTimeSource.TimeUpdate
+      })
       store.commit.audio.setPlayState(PlayState.Stop)
     }
     const onDurationChange = () => {
       assertIsDefined(el.value)
       store.commit.audio.setDuration(el.value.duration * 1000)
+    }
+    const onSeeked = () => {
+      assertIsDefined(el.value)
+      store.commit.audio.setCurrentTime({
+        value: el.value.currentTime * 1000,
+        source: CurrentTimeSource.Seek
+      })
     }
 
     /*
@@ -108,7 +129,7 @@ export default defineComponent({
     const currentTime = computed(() => store.state.audio.currentTime)
     onMounted(() => watch([ currentTime ], () => {
       // Do not update audio's currentTime if update comes from audio
-      if (currentTime.value.source === Source.Output) {
+      if (currentTime.value.source !== CurrentTimeSource.Cursor) {
         return
       }
       const audio = el.value
@@ -141,7 +162,10 @@ export default defineComponent({
       }
 
       // Set currentTimeOutput to to avoid cursor jump
-      store.commit.audio.setCurrentTimeOutput(audio.currentTime * 1000)
+      store.commit.audio.setCurrentTime({
+        value: audio.currentTime * 1000,
+        source: CurrentTimeSource.TimeUpdate
+      })
 
       switch (playStateInput.value) {
         case PlayState.Play:
@@ -186,7 +210,8 @@ export default defineComponent({
       onPlaying,
       onEnded,
       audioError,
-      onDurationChange
+      onDurationChange,
+      onSeeked
     }
   }
 })

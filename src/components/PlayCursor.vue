@@ -14,7 +14,7 @@ import { defineComponent, onMounted, ref, Ref, watch, watchEffect, computed } fr
 import { assertIsDefined } from '@/utils/type-assert'
 
 import { useStore } from '@/store/index'
-import { PlayState, Source } from '@/store/audio'
+import { PlayState, CurrentTimeSource } from '@/store/audio'
 
 const hasWebAnimationAPI = () => {
   // Note: Some browsers may not support
@@ -52,13 +52,12 @@ export default defineComponent({
       animation.pause()
 
       watchEffect(() => {
-        const currentTime = store.state.audio.currentTime
-        // Disable this to limit cursor update
-        // It improves animation performance and avoids flickering
-        if (currentTime.source === Source.Output) {
+        // Improves animation performance and avoids flickering
+        const { value, source } = store.state.audio.currentTime
+        if (source !== CurrentTimeSource.Seek) {
           return
         }
-        animation.currentTime = currentTime.value
+        animation.currentTime = value
       })
 
       const playState = computed(() => store.state.audio.playState)

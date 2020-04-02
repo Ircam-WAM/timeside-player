@@ -30,6 +30,7 @@ import * as d3 from 'd3'
 import useBoundingClientRect from '@/utils/use-bounding-client-rect'
 import { useStore } from '@/store/index'
 import { WaveformSegment } from '@/store/waveform'
+import { CurrentTimeSource } from '@/store/audio'
 import { assertIsDefined } from '@/utils/type-assert'
 import { formatSeconds } from '@/utils/format-seconds'
 
@@ -115,7 +116,10 @@ export default defineComponent({
       const xPos = clientX - left
       const duration = store.state.audio.duration
       const currentTime = xPos / svgSize.value.width * duration
-      store.commit.audio.setCurrentTimeInput(currentTime)
+      store.commit.audio.setCurrentTime({
+        value: currentTime,
+        source: CurrentTimeSource.Cursor
+      })
     }
 
     return {
