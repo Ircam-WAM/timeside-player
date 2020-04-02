@@ -107,9 +107,14 @@ export default defineComponent({
       draw(el.value, waveform, svgSize.value.width, svgSize.value.height)
     }))
 
-    const onClick = ({ clientX }: MouseEvent) => {
+    const onClick = ({ clientX, target }: MouseEvent) => {
+      if (!target) {
+        throw new Error(`target not found: ${target}`)
+      }
+      const { left } = (target as HTMLDivElement).getBoundingClientRect()
+      const xPos = clientX - left
       const duration = store.state.audio.duration
-      const currentTime = clientX / svgSize.value.width * duration
+      const currentTime = xPos / svgSize.value.width * duration
       store.commit.audio.setCurrentTimeInput(currentTime)
     }
 
