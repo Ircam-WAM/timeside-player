@@ -39,6 +39,23 @@ export default defineComponent({
       iterations: 1
     }
 
+    function setAnimationPlayState (animation: Animation, playState: PlayState) {
+      switch (playState) {
+        case PlayState.Play:
+          animation.play()
+          break
+        case PlayState.Pause:
+          animation.pause()
+          break
+        case PlayState.Stop:
+          animation.currentTime = 0
+          animation.pause()
+          break
+        default:
+          console.error('Unknown PlayState', playState)
+      }
+    }
+
     onMounted(() => {
       assertIsDefined(cursor.value)
 
@@ -52,8 +69,8 @@ export default defineComponent({
       animation.pause()
 
       watchEffect(() => {
-        // Improves animation performance and avoids flickering
         const { value, source } = store.state.audio.currentTime
+        // Improves animation performance and avoids flickering
         if (source !== CurrentTimeSource.Seek) {
           return
         }
@@ -66,21 +83,7 @@ export default defineComponent({
       // running watch when store's currentTime is updated
       watch([ playState ], () => {
         animation.currentTime = store.state.audio.currentTime.value
-
-        switch (playState.value) {
-          case PlayState.Play:
-            animation.play()
-            break
-          case PlayState.Pause:
-            animation.pause()
-            break
-          case PlayState.Stop:
-            animation.currentTime = 0
-            animation.pause()
-            break
-          default:
-            console.error('Unknown PlayState', playState.value)
-        }
+        setAnimationPlayState(animation, playState.value)
       }, {
         flush: 'sync'
       })
