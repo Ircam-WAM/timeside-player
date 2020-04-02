@@ -100,7 +100,7 @@ export default defineComponent({
   setup ({ waveform }) {
     const store = useStore()
 
-    const el: Ref<Element | undefined> = ref()
+    const el: Ref<HTMLDivElement | undefined> = ref()
     const svgSize: Ref<ClientRect> = useBoundingClientRect(el)
 
     onMounted(() => watchEffect(() => {
@@ -112,7 +112,7 @@ export default defineComponent({
       if (!target) {
         throw new Error(`target not found: ${target}`)
       }
-      const { left } = (target as HTMLDivElement).getBoundingClientRect()
+      const { left } = svgSize.value
       const xPos = clientX - left
       const duration = store.state.audio.duration
       const currentTime = xPos / svgSize.value.width * duration
