@@ -9,8 +9,8 @@
       @pause="onPause"
       @playing="onPlaying"
       @ended="onEnded"
-      @canplay.once="onCanPlay"
       @error="audioError = $event"
+      @durationchange="onDurationChange"
     >
       <source
         v-for="src of audioSrcs"
@@ -97,7 +97,7 @@ export default defineComponent({
       store.commit.audio.setCurrentTimeOutput(el.value.currentTime * 1000)
       store.commit.audio.setPlayState(PlayState.Stop)
     }
-    const onCanPlay = () => {
+    const onDurationChange = () => {
       assertIsDefined(el.value)
       store.commit.audio.setDuration(el.value.duration * 1000)
     }
@@ -184,9 +184,9 @@ export default defineComponent({
       onTimeUpdate,
       onPause,
       onPlaying,
-      onCanPlay,
       onEnded,
-      audioError
+      audioError,
+      onDurationChange
     }
   }
 })
