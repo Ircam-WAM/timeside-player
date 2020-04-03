@@ -50,6 +50,7 @@
     "less": "^3.11.1",
     "less-loader": "^5.0.0",
     "lint-staged": "^10.1.1",
+    "resize-observer-polyfill": "^1.5.1",
     "typescript": "^3.8.3",
     "vti": "0.0.3",
     "vue-cli-plugin-postcss-preset": "^1.0.2",

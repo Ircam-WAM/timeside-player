@@ -1,5 +1,6 @@
 import { Ref, ref, onMounted, onUnmounted } from '@vue/composition-api'
 import { assertIsDefined } from '@/utils/type-assert'
+import ResizeObserverPolyfill from 'resize-observer-polyfill';
 
 export default function useBoundingClientRect(el: Ref<Element | undefined>): Ref<ClientRect> {
   let observer: ResizeObserver
@@ -13,12 +14,7 @@ export default function useBoundingClientRect(el: Ref<Element | undefined>): Ref
 
   // start ResizeObserver
   onMounted(() => {
-    if (!ResizeObserver) {
-      console.warn('ResizeObserver not implemented in your browser. See https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver#Browser_compatibility')
-      return
-    }
-
-    observer = new ResizeObserver(entries => {
+    observer = new ResizeObserverPolyfill(entries => {
       assertIsDefined(el.value)
       const resized = entries.filter(e => e.target === el.value)
       assertIsDefined(resized)
