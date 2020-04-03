@@ -68,6 +68,18 @@ export default defineComponent({
       const animation = cursor.value.animate(keyFrames, timing)
       animation.pause()
 
+      // Update cursor's animation when audio's play state is updated
+      // Specifying playState as a first param avoids
+      // running watch when store's currentTime is updated
+      const playState = computed(() => store.state.audio.playState)
+      watch([ playState ], () => {
+        animation.currentTime = store.state.audio.currentTime.value
+        setAnimationPlayState(animation, playState.value)
+      }, {
+        flush: 'sync'
+      })
+
+      // Update on seek
       watchEffect(() => {
         const { value, source } = store.state.audio.currentTime
         // Improves animation performance and avoids flickering
@@ -75,17 +87,6 @@ export default defineComponent({
           return
         }
         animation.currentTime = value
-      })
-
-      const playState = computed(() => store.state.audio.playState)
-      // Update cursor's animation when audio's play state is updated
-      // Specifying playState as a first param avoids
-      // running watch when store's currentTime is updated
-      watch([ playState ], () => {
-        animation.currentTime = store.state.audio.currentTime.value
-        setAnimationPlayState(animation, playState.value)
-      }, {
-        flush: 'sync'
       })
     })
 
