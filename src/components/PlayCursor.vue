@@ -16,6 +16,9 @@ import { assertIsDefined } from '@/utils/type-assert'
 import { useStore } from '@/store/index'
 import { PlayState, CurrentTimeSource } from '@/store/audio'
 
+// Polyfill Web Animation API
+// import 'web-animations-js'
+
 const hasWebAnimationAPI = () => {
   // Note: Some browsers may not support
   //       all the feature of the Web Animation API
@@ -56,12 +59,14 @@ export default defineComponent({
       }
     }
 
-    onMounted(() => {
+    onMounted(async () => {
       assertIsDefined(cursor.value)
 
       if (!hasWebAnimationAPI) {
-        console.error('Your browser do not support the Web Animation API')
-        return
+        console.error('Your browser do not support the Web Animation API. Downloading polyfill..')
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
+        await import('web-animations-js')
       }
 
       // Define animation and pause it
