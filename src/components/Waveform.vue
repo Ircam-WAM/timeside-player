@@ -46,8 +46,12 @@ interface Rect {
 }
 
 function draw (el: Element, data: readonly WaveformSegment[], width: number, height: number) {
-  if (!el || width === 0 || height === 0) {
+  if (!el) {
     console.warn('attempting to draw waveform on an invalid element', el)
+    return
+  }
+  if (width === 0 || height === 0) {
+    console.warn(`attempting to draw waveform with invalid size (width = ${width}, height = ${height})`)
     return
   }
 
