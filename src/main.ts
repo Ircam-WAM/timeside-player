@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import VueCompositionApi from '@vue/composition-api'
+import './utils/browser-update'
 
 import Toasted from 'vue-toasted'
 

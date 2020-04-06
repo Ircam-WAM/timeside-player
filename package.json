@@ -17,6 +17,7 @@
     "@types/d3": "^5.7.2",
     "@types/web-animations-js": "^2.2.8",
     "@vue/composition-api": "^0.5.0",
+    "browser-update": "^3.3.16",
     "core-js": "^3.6.4",
     "d3": "^5.15.1",
     "direct-vuex": "^0.10.4",
