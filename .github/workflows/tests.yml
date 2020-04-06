@@ -36,6 +36,10 @@ jobs:
       - name: Unit test
         run: npm run test:unit
 
+      - uses: actions/upload-artifact@v1
+        with:
+          name: coverage
+          path: coverage/
 
   integration-test:
     runs-on: ubuntu-latest
