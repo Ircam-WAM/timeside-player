@@ -16,6 +16,7 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
+import { useToasted } from '@/utils/vue-toasted'
 import SelectAPI from '@/components/SelectAPI.vue'
 import List from '@/components/List.vue'
 
@@ -24,6 +25,10 @@ export default defineComponent({
   components: {
     List,
     SelectAPI
+  },
+  setup () {
+    const toasted = useToasted()
+    toasted.success('🎉 Welcome to timeside-player !')
   }
 })
 </script>
