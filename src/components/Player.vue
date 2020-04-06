@@ -30,9 +30,15 @@
         class="player"
       >
         <div class="item-metadata">
-          <b>title</b>: {{ itemDetail.title }}<br>
-          <b>description</b>: {{ itemDetail.description }}<br>
-          <b>uuid</b>: {{ itemDetail.uuid }}
+          <div class="title">
+            <b>title</b>: {{ itemDetail.title }}
+          </div>
+          <div class="description">
+            <b>description</b>: {{ itemDetail.description }}
+          </div>
+          <div class="uuid">
+            <b>uuid</b>: {{ itemDetail.uuid }}
+          </div>
         </div>
         <Timer />
         <WaveformContainer :item-id="itemId" />
@@ -99,7 +105,7 @@ export default defineComponent({
       return store.getters.items.getAudioSrcs(itemId)
     })
 
-    const onKeypress = (e: KeyboardEvent) => {
+    const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === ' ' || e.key === 'Spacebar') {
         e.preventDefault()
         switch (store.state.audio.playState) {
@@ -116,10 +122,11 @@ export default defineComponent({
       }
     }
 
-    onUnmounted(() => store.commit.audio.resetState())
+    onMounted(() => { window.addEventListener('keydown', onKeyDown) })
+    onUnmounted(() => { window.removeEventListener('keydown', onKeyDown) })
 
-    onMounted(() => { window.addEventListener('keypress', onKeypress) })
-    onUnmounted(() => { window.removeEventListener('keypress', onKeypress) })
+    // Reset audio state for player re-use
+    onUnmounted(() => store.commit.audio.resetState())
 
     return {
       error,

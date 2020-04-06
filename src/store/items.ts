@@ -11,11 +11,13 @@ export interface ItemState {
   items: Record<string, Item>;
 }
 
-const state = (): ItemState => ({
+const getDefaultState = (): ItemState => ({
   promises: {},
   items: {},
   errors: {},
 })
+
+const state = getDefaultState
 
 export interface AudioSrc {
   type?: string;
@@ -104,6 +106,10 @@ const getters = defineGetters<ItemState>()({
 })
 
 const mutations = defineMutations<ItemState>()({
+  resetState (state) {
+    Object.assign(state, getDefaultState())
+  },
+
   setPromise (state, { uuid, promise }: { uuid: string; promise: Promise<Item> }) {
     Vue.set(state.promises, uuid, promise)
   },

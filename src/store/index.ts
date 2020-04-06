@@ -31,4 +31,10 @@ export function useStore () {
   return store
 }
 
+// Call the resetState mutation on every module
+// Make sure to implement it in every module
+export function resetStore () {
+  Object.values(store.commit).forEach((mod) => mod.resetState())
+}
+
 export default store

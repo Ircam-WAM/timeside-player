@@ -17,11 +17,13 @@ export interface WaveformState {
   error?: Response;
 }
 
-const state = (): WaveformState => ({
+const getDefaultState = (): WaveformState => ({
   waveformApi: undefined,
   promise: undefined,
   error: undefined,
 })
+
+const state = getDefaultState
 
 const getters = defineGetters<WaveformState>()({
   isLoading (state): boolean {
@@ -87,6 +89,10 @@ const getters = defineGetters<WaveformState>()({
 })
 
 const mutations = defineMutations<WaveformState>()({
+  resetState (state) {
+    Object.assign(state, getDefaultState())
+  },
+
   setPromise (state, promise: Promise<ItemWaveform>) {
     state.promise = promise
   },

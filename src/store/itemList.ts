@@ -10,11 +10,13 @@ export interface ItemListState {
   itemList?: ItemList[];
 }
 
-const state = (): ItemListState => ({
+const getDefaultState = (): ItemListState => ({
   promise: undefined,
   error: undefined,
   itemList: undefined,
 })
+
+const state = getDefaultState
 
 const getters = defineGetters<ItemListState>()({
   isLoading (state): boolean {
@@ -27,6 +29,10 @@ const getters = defineGetters<ItemListState>()({
 })
 
 const mutations = defineMutations<ItemListState>()({
+  resetState (state) {
+    Object.assign(state, getDefaultState())
+  },
+
   setPromise (state, promise: Promise<ItemList[]>) {
     state.promise = promise
   },
@@ -48,6 +54,10 @@ const mutations = defineMutations<ItemListState>()({
 
   setError(state, error: Response) {
     state.error = error
+  },
+
+  unsetError(state) {
+    state.error = undefined
   }
 })
 
@@ -55,6 +65,7 @@ const actions = defineActions({
   async getItems (context): Promise<void> {
     const { commit } = itemListActionContext(context)
     const promise = api.listItems({})
+    commit.unsetError()
     commit.setPromise(promise)
     try {
       const items = await promise
