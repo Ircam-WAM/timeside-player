@@ -10,7 +10,7 @@
     "test:e2e": "vue-cli-service test:e2e",
     "test:e2e:headless": "vue-cli-service test:e2e --headless --browser chrome",
     "lint-fix": "vue-cli-service lint",
-    "lint": "vue-cli-service lint --no-fix"
+    "lint": "vue-cli-service lint --no-fix --max-warnings 0"
   },
   "dependencies": {
     "@ircam/timeside-sdk": "^1.1.2",
