@@ -15,8 +15,8 @@
     >
       <WaveformContainer
         :item-id="item.uuid"
-        :start="selection.start"
-        :stop="selection.stop"
+        :start="selection.start / 1000"
+        :stop="selection.stop / 1000"
       />
     </div>
   </div>

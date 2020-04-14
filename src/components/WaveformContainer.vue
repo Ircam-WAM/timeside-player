@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, Ref } from '@vue/composition-api'
+import { defineComponent, Ref, computed } from '@vue/composition-api'
 
 import useWaveform from '@/utils/use-waveform'
 import Waveform from '@/components/Waveform.vue'
@@ -73,13 +73,14 @@ export default defineComponent({
   components: {
     Waveform
   },
-  setup ({ itemId, start, stop, nbPixels }) {
-    const { isLoading, error, isValid, waveform } = useWaveform({
-      uuid: itemId,
-      start,
-      stop,
-      nbPixels
-    })
+  setup (props) {
+    // Reactive params
+    const { isLoading, error, isValid, waveform } = useWaveform(computed(() => ({
+      uuid: props.itemId,
+      start: props.start,
+      stop: props.stop,
+      nbPixels: props.nbPixels
+    })))
 
     return {
       isLoading,

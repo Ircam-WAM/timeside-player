@@ -1,4 +1,4 @@
-import { Ref, ref, onMounted, computed } from '@vue/composition-api'
+import { Ref, ref, onMounted, computed, watch } from '@vue/composition-api'
 
 import api, { RetrieveItemWaveformRequest } from '@/utils/api'
 import { Waveform as WaveformType } from '@/types/waveform'
@@ -49,7 +49,7 @@ interface UseWaveformReturn {
   waveform: ComputedRef<WaveformType | undefined>;
 }
 
-export default function useWaveform(params: RetrieveItemWaveformRequest): UseWaveformReturn {
+export default function useWaveform(params: ComputedRef<RetrieveItemWaveformRequest>): UseWaveformReturn {
   const isLoading = ref<boolean>(false)
   const error = ref<Response>()
   const waveformApi = ref<WaveformTypeApi>()
@@ -72,11 +72,11 @@ export default function useWaveform(params: RetrieveItemWaveformRequest): UseWav
     return hasValidValues(waveformApi.value)
   })
 
-  onMounted(async () => {
+  const retrieve = async () => {
     isLoading.value = true
 
     try {
-      const resp = await api.retrieveItemWaveform(params)
+      const resp = await api.retrieveItemWaveform(params.value)
       if (!resp.waveform) {
         throw new Error('waveform is empty')
       }
@@ -87,7 +87,12 @@ export default function useWaveform(params: RetrieveItemWaveformRequest): UseWav
     }
 
     isLoading.value = false
-  })
+  }
+
+
+  onMounted(() => watch([ params ], () => {
+    retrieve()
+  }))
 
   return {
     isLoading,

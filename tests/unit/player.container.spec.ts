@@ -1,4 +1,4 @@
-import { shallowMount, mount, createLocalVue } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 import PlayerContainer from '@/components/PlayerContainer.vue'
 import { useStore, resetStore } from '@/store/index'
 

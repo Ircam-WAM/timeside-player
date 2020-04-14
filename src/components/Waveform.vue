@@ -27,7 +27,6 @@ import { defineComponent, PropType, ref, Ref, onMounted, watchEffect } from '@vu
 import * as d3 from 'd3'
 
 import useBoundingClientRect from '@/utils/use-bounding-client-rect'
-import { useStore } from '@/store/index'
 import { WaveformSegment } from '@/types/waveform'
 import { assertIsDefined } from '@/utils/type-assert'
 import { formatSeconds } from '@/utils/format-seconds'

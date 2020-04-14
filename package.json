@@ -13,7 +13,7 @@
     "lint": "vue-cli-service lint --no-fix --max-warnings 0"
   },
   "dependencies": {
-    "@ircam/timeside-sdk": "^1.1.2",
+    "@ircam/timeside-sdk": "^1.2.0",
     "@types/d3": "^5.7.2",
     "@types/web-animations-js": "^2.2.8",
     "@vue/composition-api": "^0.5.0",
