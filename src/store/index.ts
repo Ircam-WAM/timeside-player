@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 import items from './items'
 import itemList from './itemList'
 import audio from './audio'
-import waveform from './waveform'
 import { createDirectStore } from 'direct-vuex'
 
 Vue.use(Vuex)
@@ -12,8 +11,7 @@ const options = {
   modules: {
     items,
     itemList,
-    audio,
-    waveform
+    audio
   }
 }
 

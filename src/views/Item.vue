@@ -1,16 +1,16 @@
 <template>
-  <Player :item-id="$route.params.id" />
+  <PlayerContainer :item-id="$route.params.id" />
 </template>
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
 
-import Player from '@/components/Player.vue'
+import PlayerContainer from '@/components/PlayerContainer.vue'
 
 export default defineComponent({
   name: 'ListView',
   components: {
-    Player
+    PlayerContainer
   }
 })
 </script>

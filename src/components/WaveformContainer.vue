@@ -28,7 +28,10 @@
       v-else-if="waveform"
       :waveform="waveform"
       class="waveform"
-    />
+      @mousedown.native="$emit('mousedown', $event)"
+    >
+      <slot />
+    </Waveform>
     <div
       v-else
       class="error"
@@ -39,11 +42,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, Ref } from '@vue/composition-api'
+import { defineComponent, Ref } from '@vue/composition-api'
 
-import { useStore } from '@/store/index'
-import { Waveform as WaveformType } from '@/store/waveform'
-
+import useWaveform from '@/utils/use-waveform'
 import Waveform from '@/components/Waveform.vue'
 
 // FIXME: This type will be defined by vue@3
@@ -55,19 +56,30 @@ export default defineComponent({
     itemId: {
       type: String,
       required: true
+    },
+    start: {
+      type: Number,
+      required: false
+    },
+    stop: {
+      type: Number,
+      required: false
+    },
+    nbPixels: {
+      type: Number,
+      required: false
     }
   },
   components: {
     Waveform
   },
-  setup ({ itemId }) {
-    const store = useStore()
-    store.dispatch.waveform.retrieveWaveform(itemId)
-
-    const isLoading: ComputedRef<boolean> = computed(() => store.getters.waveform.isLoading)
-    const error: ComputedRef<Response | undefined> = computed(() => store.state.waveform.error)
-    const waveform: ComputedRef<WaveformType | undefined> = computed(() => store.getters.waveform.waveformSegments)
-    const isValid: ComputedRef<boolean> = computed(() => store.getters.waveform.isValid)
+  setup ({ itemId, start, stop, nbPixels }) {
+    const { isLoading, error, isValid, waveform } = useWaveform({
+      uuid: itemId,
+      start,
+      stop,
+      nbPixels
+    })
 
     return {
       isLoading,

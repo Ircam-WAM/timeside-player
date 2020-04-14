@@ -8,7 +8,6 @@
       :width="svgSize.width"
       :height="svgSize.height"
       :viewBox="`0 0 ${svgSize.width} ${svgSize.height}`"
-      @click="onClick"
     >
       <g class="chart-data">
         <!-- d attr will be filled by d3 -->
@@ -18,7 +17,7 @@
         />
       </g>
       <g class="x-axis" />
-      <PlayCursor />
+      <slot />
     </svg>
   </div>
 </template>
@@ -29,21 +28,12 @@ import * as d3 from 'd3'
 
 import useBoundingClientRect from '@/utils/use-bounding-client-rect'
 import { useStore } from '@/store/index'
-import { WaveformSegment } from '@/store/waveform'
-import { CurrentTimeSource } from '@/store/audio'
+import { WaveformSegment } from '@/types/waveform'
 import { assertIsDefined } from '@/utils/type-assert'
 import { formatSeconds } from '@/utils/format-seconds'
 
-import PlayCursor from '@/components/PlayCursor.vue'
-
 // FIXME: This type will be defined by vue@3
 type ComputedRef<T> = Readonly<Ref<Readonly<T>>>
-
-interface Rect {
-  x: number;
-  y: number;
-  height: number;
-}
 
 function draw (el: Element, data: readonly WaveformSegment[], width: number, height: number) {
   if (!el) {
@@ -85,16 +75,14 @@ function draw (el: Element, data: readonly WaveformSegment[], width: number, hei
 
   // Render waveform
   // Cast required. See https://github.com/DefinitelyTyped/DefinitelyTyped/issues/43267
-  d3chart.datum(data).attr('d', d3area as unknown as d3.ValueFn<SVGSVGElement, readonly WaveformSegment[], null>)
+  const castedArea = d3area as unknown as d3.ValueFn<SVGSVGElement, readonly WaveformSegment[], null>
+  d3chart.datum(data).attr('d', castedArea)
   // Render axis
   d3axis.attr('transform', `translate(0, ${barHeight})`).call(xAxis)
 }
 
 export default defineComponent({
   name: 'Waveform',
-  components: {
-    PlayCursor
-  },
   props: {
     waveform: {
       type: Array as PropType<WaveformSegment[]>,
@@ -102,8 +90,6 @@ export default defineComponent({
     }
   },
   setup ({ waveform }) {
-    const store = useStore()
-
     const el: Ref<HTMLDivElement | undefined> = ref()
     const svgSize: Ref<ClientRect> = useBoundingClientRect(el)
 
@@ -112,24 +98,9 @@ export default defineComponent({
       draw(el.value, waveform, svgSize.value.width, svgSize.value.height)
     }))
 
-    const onClick = ({ clientX, target }: MouseEvent) => {
-      if (!target) {
-        throw new Error(`target not found: ${target}`)
-      }
-      const { left } = svgSize.value
-      const xPos = clientX - left
-      const duration = store.state.audio.duration
-      const currentTime = xPos / svgSize.value.width * duration
-      store.commit.audio.setCurrentTime({
-        value: currentTime,
-        source: CurrentTimeSource.Cursor
-      })
-    }
-
     return {
       el,
-      svgSize,
-      onClick
+      svgSize
     }
   }
 })
