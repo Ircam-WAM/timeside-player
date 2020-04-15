@@ -67,9 +67,12 @@ export default defineComponent({
 
     const startResizeLeft = () => {
       const resize = ({ clientX }: MouseEvent) => {
-        const value = clientX - playerSize.value.left
+        let value = clientX - playerSize.value.left
+        if (value < 0) {
+          value = 0
+        }
         if (value > stop.value) {
-          return
+          value = stop.value
         }
         start.value = value
       }
@@ -114,9 +117,12 @@ export default defineComponent({
 
     const startResizeRight = () => {
       const resize = ({ clientX }: MouseEvent) => {
-        const value = clientX - playerSize.value.left
+        let value = clientX - playerSize.value.left
+        if (value > playerSize.value.width) {
+          value = playerSize.value.width
+        }
         if (value < start.value) {
-          return
+          value = start.value
         }
         stop.value = value
       }

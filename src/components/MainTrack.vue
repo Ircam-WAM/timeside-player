@@ -101,6 +101,9 @@ export default defineComponent({
       let timeX = positionToTime(posX)
 
       if (direction.value === Direction.Left) {
+        if (timeX < 0) {
+          timeX = 0
+        }
         if (timeX > selection.value.stop) {
           timeX = selection.value.stop
         }
@@ -110,6 +113,9 @@ export default defineComponent({
           start: timeX
         }
       } else if (direction.value === Direction.Right) {
+        if (timeX > store.state.audio.duration) {
+          timeX = store.state.audio.duration
+        }
         if (timeX < selection.value.start) {
           timeX = selection.value.start
         }
