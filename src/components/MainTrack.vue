@@ -1,6 +1,6 @@
 <template>
   <WaveformContainer
-    class="waveform-container"
+    class="maintrack"
     :item-id="itemId"
     @mousedown="onMouseDown"
   >
@@ -170,3 +170,9 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="less" scoped>
+.maintrack {
+  cursor: text;
+}
+</style>
