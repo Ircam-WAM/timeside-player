@@ -17,6 +17,7 @@
         :item-id="item.uuid"
         :start="selection.start / 1000"
         :stop="selection.stop / 1000"
+        :nb-pixels="2048"
       />
     </div>
   </div>
