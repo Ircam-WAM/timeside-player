@@ -75,12 +75,22 @@ export default function useWaveform(params: ComputedRef<RetrieveItemWaveformRequ
   let abortController: AbortController | undefined = undefined
 
   const retrieve = async () => {
+    // If a request is already ongoing, we abort it
+    if (abortController) {
+      abortController.abort()
+    }
+
     isLoading.value = true
 
     try {
       abortController = new AbortController()
       const api = newAbortableApi(abortController)
       const resp = await api.retrieveItemWaveform(params.value)
+      // Check exception after the fetch call
+      // in the case where the request had time to finish
+      if (abortController.signal.aborted) {
+        throw new DOMException('', 'AbortError')
+      }
       if (!resp.waveform) {
         throw new Error('waveform is empty')
       }
@@ -97,12 +107,7 @@ export default function useWaveform(params: ComputedRef<RetrieveItemWaveformRequ
     isLoading.value = false
   }
 
-
   onMounted(() => watch([ params ], () => {
-    // If a request is already triggered, we abort it
-    if (abortController) {
-      abortController.abort()
-    }
     retrieve()
   }))
 
