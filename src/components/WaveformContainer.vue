@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, Ref, computed } from '@vue/composition-api'
+import { defineComponent, Ref, computed, watch } from '@vue/composition-api'
 
 import useWaveform from '@/utils/use-waveform'
 import Waveform from '@/components/Waveform.vue'
@@ -81,6 +81,13 @@ export default defineComponent({
       stop: props.stop,
       nbPixels: props.nbPixels
     })))
+
+    watch([ error ], () => {
+      if (error.value === undefined) {
+        return
+      }
+      console.error(error.value)
+    })
 
     return {
       isLoading,

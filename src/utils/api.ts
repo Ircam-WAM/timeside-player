@@ -1,5 +1,5 @@
 import portableFetch from 'portable-fetch'
-import { TimesideApi, Configuration } from '@ircam/timeside-sdk'
+import { TimesideApi, Configuration, ConfigurationParameters } from '@ircam/timeside-sdk'
 
 /*
 const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined'
@@ -19,16 +19,31 @@ export const baseUrls: readonly string[] = [
 
 const basePath = window.localStorage.getItem('api-url') || baseUrls[0]
 
-const config = new Configuration({
+const config: ConfigurationParameters = {
   basePath,
   credentials: 'include',
 
   // For tests where fetch and cookies does not exists
   fetchApi: portableFetch,
-  // headers
-})
+}
 
 export const loginUrl = `${basePath}/admin/login/`
 
-export default new TimesideApi(config)
+export function newAbortableApi (abortController: AbortController): TimesideApi {
+  const abortableFetch = (url: string, params: RequestInit | undefined): Promise<Response> => {
+    params = params || {}
+    params.signal = abortController.signal
+    const configFetch = config.fetchApi || window.fetch.bind(window)
+    return configFetch(url, params)
+  }
+
+  const abortConfig = new Configuration({
+    ...config,
+    fetchApi: abortableFetch
+  })
+
+  return new TimesideApi(abortConfig)
+}
+
+export default new TimesideApi(new Configuration(config))
 export * from '@ircam/timeside-sdk'

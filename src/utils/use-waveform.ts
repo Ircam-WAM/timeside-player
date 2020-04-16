@@ -1,6 +1,6 @@
 import { Ref, ref, onMounted, computed, watch } from '@vue/composition-api'
 
-import api, { RetrieveItemWaveformRequest } from '@/utils/api'
+import { newAbortableApi, RetrieveItemWaveformRequest } from '@/utils/api'
 import { Waveform as WaveformType } from '@/types/waveform'
 import { ItemWaveformWaveform as WaveformTypeApi } from '@/utils/api'
 
@@ -72,17 +72,25 @@ export default function useWaveform(params: ComputedRef<RetrieveItemWaveformRequ
     return hasValidValues(waveformApi.value)
   })
 
+  let abortController: AbortController | undefined = undefined
+
   const retrieve = async () => {
     isLoading.value = true
 
     try {
+      abortController = new AbortController()
+      const api = newAbortableApi(abortController)
       const resp = await api.retrieveItemWaveform(params.value)
       if (!resp.waveform) {
         throw new Error('waveform is empty')
       }
       waveformApi.value = resp.waveform
       error.value = undefined
+      abortController = undefined
     } catch (err) {
+      if (err.name === 'AbortError') {
+        return
+      }
       error.value = err
     }
 
@@ -91,6 +99,10 @@ export default function useWaveform(params: ComputedRef<RetrieveItemWaveformRequ
 
 
   onMounted(() => watch([ params ], () => {
+    // If a request is already triggered, we abort it
+    if (abortController) {
+      abortController.abort()
+    }
     retrieve()
   }))
 
