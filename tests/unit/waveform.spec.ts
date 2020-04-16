@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils'
+import { Waveform as WaveformType } from '@/types/waveform'
 import Waveform from '@/components/Waveform.vue'
 
 describe('Waveform.vue', () => {
@@ -24,11 +25,18 @@ describe('Waveform.vue', () => {
   })
 
   it('should render a waveform', async (done) => {
+    const mockData: WaveformType = {
+      data: [
+        { time: 0, max: 0, min: 1 }
+      ],
+      meta: {
+        minVal: 0,
+        maxVal: 1
+      }
+    }
     const wrapper = shallowMount(Waveform, {
       propsData: {
-        waveform: [
-          { time: 0, max: 0, min: 1 }
-        ]
+        waveform: mockData
       }
     })
     await wrapper.vm.$nextTick()

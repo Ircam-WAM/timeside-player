@@ -4,4 +4,10 @@ export interface WaveformSegment {
   min: number;
 }
 
-export type Waveform = WaveformSegment[]
+export interface Waveform {
+  data: readonly WaveformSegment[];
+  meta: {
+    minVal: number;
+    maxVal: number;
+  };
+}

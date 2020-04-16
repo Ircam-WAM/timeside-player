@@ -1,11 +1,12 @@
 import { Ref, ref, onMounted, computed, watch } from '@vue/composition-api'
 
 import { newAbortableApi, RetrieveItemWaveformRequest } from '@/utils/api'
-import { Waveform as WaveformType } from '@/types/waveform'
+import { Waveform as WaveformType, WaveformSegment } from '@/types/waveform'
 import { ItemWaveformWaveform as WaveformTypeApi } from '@/utils/api'
 
+// Convert the api format for easier usage
 function toWaveformSegments (waveformApi: WaveformTypeApi): WaveformType {
-  const data: WaveformType = []
+  const data: WaveformSegment[] = []
   for (const i of waveformApi.time.keys()) {
     data[i] = {
       time: waveformApi.time[i], // from seconds to milliseconds
@@ -13,9 +14,21 @@ function toWaveformSegments (waveformApi: WaveformTypeApi): WaveformType {
       max: waveformApi.max[i]
     }
   }
-  return data
+
+  const allVals = waveformApi.min.concat(waveformApi.max)
+  const maxVal = Math.max(...allVals)
+  const minVal = Math.min(...allVals)
+
+  return {
+    data,
+    meta: {
+      maxVal,
+      minVal
+    }
+  }
 }
 
+// Check waveform's data length
 function hasValidLength (waveformApi: WaveformTypeApi): boolean {
   return (waveformApi.time.length > 0) &&
     (waveformApi.time.length === waveformApi.min.length) &&
@@ -83,6 +96,7 @@ export default function useWaveform(params: ComputedRef<RetrieveItemWaveformRequ
     isLoading.value = true
 
     try {
+      // Use an AbortController to abort fetch requests
       abortController = new AbortController()
       const api = newAbortableApi(abortController)
       const resp = await api.retrieveItemWaveform(params.value)
@@ -107,6 +121,7 @@ export default function useWaveform(params: ComputedRef<RetrieveItemWaveformRequ
     isLoading.value = false
   }
 
+  // on mount and when request parameters are updated => update the waveform's data
   onMounted(() => watch([ params ], () => {
     retrieve()
   }))

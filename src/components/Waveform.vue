@@ -27,14 +27,14 @@ import { defineComponent, PropType, ref, Ref, onMounted, watchEffect } from '@vu
 import * as d3 from 'd3'
 
 import useBoundingClientRect from '@/utils/use-bounding-client-rect'
-import { WaveformSegment } from '@/types/waveform'
+import { Waveform as WaveformType, WaveformSegment } from '@/types/waveform'
 import { assertIsDefined } from '@/utils/type-assert'
 import { formatSeconds } from '@/utils/format-seconds'
 
 // FIXME: This type will be defined by vue@3
 type ComputedRef<T> = Readonly<Ref<Readonly<T>>>
 
-function draw (el: Element, data: readonly WaveformSegment[], width: number, height: number) {
+function draw (el: Element, waveform: WaveformType, width: number, height: number) {
   if (!el) {
     console.warn('attempting to draw waveform on an invalid element', el)
     return
@@ -50,15 +50,18 @@ function draw (el: Element, data: readonly WaveformSegment[], width: number, hei
   const d3axis = d3.select(el).select<SVGSVGElement>('.x-axis')
 
   // Define scales
-  const firstSegment = data[0]
-  const lastSegment = data[data.length - 1]
+  const firstSegment = waveform.data[0]
+  const lastSegment = waveform.data[waveform.data.length - 1]
   // Use scaleLinear because scaleTime() is for dates
   const xScale = d3.scaleLinear<number>()
     .domain([ firstSegment.time, lastSegment.time ])
     .range([ 0, width ])
 
+  // Domain uses minVal and maxVal to scale the Waveform
+  // because API sends values > 1
+  // See https://github.com/Parisson/TimeSide/issues/177
   const yScale = d3.scaleLinear<number>()
-    .domain([ -1, 1 ])
+    .domain([ waveform.meta.minVal, waveform.meta.maxVal ])
     .range([ barHeight, -barHeight ])
 
   // Define axis
@@ -75,7 +78,7 @@ function draw (el: Element, data: readonly WaveformSegment[], width: number, hei
   // Render waveform
   // Cast required. See https://github.com/DefinitelyTyped/DefinitelyTyped/issues/43267
   const castedArea = d3area as unknown as d3.ValueFn<SVGSVGElement, readonly WaveformSegment[], null>
-  d3chart.datum(data).attr('d', castedArea)
+  d3chart.datum(waveform.data).attr('d', castedArea)
   // Render axis
   d3axis.attr('transform', `translate(0, ${barHeight})`).call(xAxis)
 }
@@ -84,7 +87,7 @@ export default defineComponent({
   name: 'Waveform',
   props: {
     waveform: {
-      type: Array as PropType<WaveformSegment[]>,
+      type: Object as PropType<WaveformType>,
       required: true
     }
   },
@@ -106,4 +109,7 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+.area {
+  overflow: hidden;
+}
 </style>
