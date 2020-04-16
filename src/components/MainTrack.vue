@@ -8,6 +8,7 @@
     <Region
       v-if="selection"
       v-model="selection"
+      @close="selection = undefined"
     />
   </WaveformContainer>
 </template>

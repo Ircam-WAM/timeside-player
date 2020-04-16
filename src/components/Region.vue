@@ -1,7 +1,7 @@
 <template>
-  <g v-if="value">
+  <g>
     <rect
-      v-if="value.start"
+      v-if="start"
       class="delimiter left"
       :x="start - 4"
       y="0"
@@ -20,7 +20,7 @@
       @click.stop
     />
     <rect
-      v-if="value.stop"
+      v-if="stop"
       class="delimiter right"
       :x="stop"
       y="0"
@@ -28,6 +28,16 @@
       @mousedown.stop="startResizeRight"
       @click.stop
     />
+    <text
+      v-if="width > 25"
+      class="close"
+      :x="stop - 25"
+      y="25"
+      font-size="40"
+      @click="close"
+    >
+      &times;
+    </text>
   </g>
 </template>
 
@@ -47,22 +57,22 @@ export default defineComponent({
     }
   },
   setup (props, { emit }) {
-    const { value: input } = toRefs(props)
+    const { value: inputTime } = toRefs(props)
     const {
       positionToTime,
       timeToPosition
     } = useTrackHelpers()
     const el = ref<HTMLDivElement>()
-    const start = ref(timeToPosition(input.value.start))
-    const stop = ref(timeToPosition(input.value.stop))
+    const start = ref(timeToPosition(inputTime.value.start))
+    const stop = ref(timeToPosition(inputTime.value.stop))
     const width = computed(() => {
       return stop.value - start.value
     })
     const playerSize = usePlayerRect()
 
-    watch([ input ], () => {
-      start.value = timeToPosition(input.value.start)
-      stop.value = timeToPosition(input.value.stop)
+    watch([ inputTime ], () => {
+      start.value = timeToPosition(inputTime.value.start)
+      stop.value = timeToPosition(inputTime.value.stop)
     })
 
     const startResizeLeft = () => {
@@ -136,6 +146,10 @@ export default defineComponent({
       window.addEventListener('mousemove', resize)
     }
 
+    const close = () => {
+      emit('close')
+    }
+
     watch([ start, stop ], () => {
       emit('input', {
         start: positionToTime(start.value),
@@ -150,7 +164,8 @@ export default defineComponent({
       stop,
       startMove,
       startResizeLeft,
-      startResizeRight
+      startResizeRight,
+      close
     }
   }
 })
@@ -173,5 +188,9 @@ export default defineComponent({
 .content {
   cursor: grab;
   fill: rgba(255, 0, 0, 0.5);
+}
+
+.close {
+  cursor: pointer;
 }
 </style>
