@@ -30,11 +30,12 @@
     />
     <text
       v-if="width > 25"
-      class="close"
       :x="stop - 25"
-      y="25"
+      :y="0"
+      dominant-baseline="hanging"
       font-size="40"
-      @click="close"
+      class="close"
+      @click="closeHandler"
     >
       &times;
     </text>
@@ -146,7 +147,7 @@ export default defineComponent({
       window.addEventListener('mousemove', resize)
     }
 
-    const close = () => {
+    const closeHandler = () => {
       emit('close')
     }
 
@@ -165,7 +166,7 @@ export default defineComponent({
       startMove,
       startResizeLeft,
       startResizeRight,
-      close
+      closeHandler
     }
   }
 })

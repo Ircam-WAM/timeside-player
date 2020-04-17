@@ -5,7 +5,7 @@ export interface WaveformSegment {
 }
 
 export interface Waveform {
-  data: readonly WaveformSegment[];
+  data: WaveformSegment[];
   meta: {
     minVal: number;
     maxVal: number;
