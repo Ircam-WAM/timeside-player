@@ -3,6 +3,7 @@
     We have to use a div wrapper for ResizeObserver
     ResizeObserver is not working yet on SVG elements (as of 04/2020)
     See https://github.com/w3c/csswg-drafts/issues/4032#issuecomment-510137495
+    For firefox: https://bugzilla.mozilla.org/show_bug.cgi?id=1565557
   -->
   <div ref="el">
     <svg
