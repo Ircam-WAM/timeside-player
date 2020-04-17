@@ -1,10 +1,12 @@
 <template>
-  <div
-    ref="el"
-    class="waveform"
-  >
+  <!--
+    We have to use a div wrapper for ResizeObserver
+    ResizeObserver is not working yet on SVG elements (as of 04/2020)
+    See https://github.com/w3c/csswg-drafts/issues/4032#issuecomment-510137495
+  -->
+  <div ref="el">
     <svg
-      class="chart"
+      class="waveform-svg"
       :width="svgSize.width"
       :height="svgSize.height"
       :viewBox="`0 0 ${svgSize.width} ${svgSize.height}`"
@@ -15,6 +17,7 @@
           :d="path"
         />
       </g>
+      <!-- Use of nested SVG to restrict children's height -->
       <svg
         class="slots"
         width="100%"
@@ -22,6 +25,7 @@
       >
         <slot />
       </svg>
+      <!-- Use of nested SVG for fixed height -->
       <svg
         class="x-axis-container"
         :height="axisHeight"
@@ -126,6 +130,16 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+.waveform-svg {
+  /*
+    Avoid infinite re-render loop when no size is set
+    SVG is set as inline element by default
+    See https://stackoverflow.com/a/27834092
+  */
+  display: block;
+  min-height: 100px;
+}
+
 .area {
   overflow: hidden;
 }

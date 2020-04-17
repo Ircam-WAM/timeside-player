@@ -4,7 +4,7 @@ import ResizeObserverPolyfill from 'resize-observer-polyfill';
 
 export default function useBoundingClientRect(el: Ref<Element | undefined>): Ref<ClientRect> {
   let observer: ResizeObserver
-  const clientRect: Ref<ClientRect> = ref({ x: 0, y: 0, width: 0, height: 0 })
+  const clientRect = ref<DOMRectReadOnly>({ x: 0, y: 0, width: 0, height: 0 })
 
   // Set initial value
   onMounted(() => {
@@ -16,9 +16,9 @@ export default function useBoundingClientRect(el: Ref<Element | undefined>): Ref
   onMounted(() => {
     observer = new ResizeObserverPolyfill(entries => {
       assertIsDefined(el.value)
-      const resized = entries.filter(e => e.target === el.value)
+      const resized = entries.find(e => e.target === el.value)
       assertIsDefined(resized)
-      clientRect.value = el.value.getBoundingClientRect()
+      clientRect.value = resized.contentRect as DOMRectReadOnly
     })
 
     assertIsDefined(el.value)

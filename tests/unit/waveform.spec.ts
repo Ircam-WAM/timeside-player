@@ -41,7 +41,7 @@ describe('Waveform.vue', () => {
     })
     await wrapper.vm.$nextTick()
 
-    const area = wrapper.find('.waveform > .chart > .chart-data > .area')
+    const area = wrapper.find('.waveform-svg > .chart-data > .area')
     expect(area.attributes('d')).toBeDefined()
     const path = area.attributes('d')
     if (path === undefined) {

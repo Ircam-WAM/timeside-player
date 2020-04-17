@@ -1,5 +1,5 @@
 <template>
-  <div class="waveform">
+  <div class="waveform-container">
     <div
       v-if="isLoading"
       class="loading"
@@ -100,7 +100,7 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-.waveform {
+.waveform-container {
   width: 100%;
   height: 300px;
 
@@ -111,6 +111,10 @@ export default defineComponent({
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  & .waveform {
+    height: 100%;
   }
 
   & .error {

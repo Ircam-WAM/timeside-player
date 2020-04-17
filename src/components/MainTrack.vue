@@ -64,10 +64,7 @@ export default defineComponent({
       if (!target) {
         throw new Error(`target not found: ${target}`)
       }
-      const { left, width } = playerSize.value
-      const xPos = clientX - left
-      const duration = store.state.audio.duration
-      const currentTime = xPos / width * duration
+      const currentTime = positionToTime(clientX - playerSize.value.left)
 
       store.commit.audio.setCurrentTime({
         value: currentTime,
