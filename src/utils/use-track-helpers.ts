@@ -14,7 +14,9 @@ export default function useTrackHelpers () {
       return 0
     }
 
-    return pos / width * duration
+    // Use int instead of float to avoid updating-loop
+    // because oldValue is not always equal newValue for float numbers
+    return Math.round(pos / width * duration)
   }
 
   const timeToPosition = (time: number) => {
@@ -26,7 +28,9 @@ export default function useTrackHelpers () {
       return 0
     }
 
-    return time * width / duration
+    // Use int instead of float to avoid updating-loop
+    // because oldValue is not always equal newValue for float numbers
+    return Math.round(time * width / duration)
   }
 
   return {
