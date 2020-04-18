@@ -122,8 +122,18 @@ export default function useWaveform(params: ComputedRef<RetrieveItemWaveformRequ
   }
 
   // on mount and when request parameters are updated => update the waveform's data
-  onMounted(() => watch([ params ], () => {
-    retrieve()
+  onMounted(() => watch([ params ], (value, oldValue, onInvalidate) => {
+    isLoading.value = true
+
+    // Delay the API call to optimize performance
+    const delayed = setTimeout(() => {
+      retrieve()
+    }, 100)
+
+    // If value is updated before
+    onInvalidate(() => {
+      clearTimeout(delayed)
+    })
   }))
 
   return {
