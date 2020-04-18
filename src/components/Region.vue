@@ -7,7 +7,6 @@
       y="0"
       height="100%"
       @mousedown.stop="startResizeLeft"
-      @click.stop
     />
     <rect
       ref="el"
@@ -17,7 +16,6 @@
       height="100%"
       :width="width"
       @mousedown.stop="startMove"
-      @click.stop
     />
     <rect
       v-if="stop"
@@ -26,7 +24,6 @@
       y="0"
       height="100%"
       @mousedown.stop="startResizeRight"
-      @click.stop
     />
     <text
       v-if="width > 25"
@@ -35,7 +32,7 @@
       dominant-baseline="hanging"
       font-size="40"
       class="close"
-      @click="closeHandler"
+      @mousedown.stop="closeHandler"
     >
       &times;
     </text>
@@ -71,9 +68,16 @@ export default defineComponent({
     })
     const playerSize = usePlayerRect()
 
+    // two-way data binding
     watch([ inputTime ], () => {
       start.value = timeToPosition(inputTime.value.start)
       stop.value = timeToPosition(inputTime.value.stop)
+    })
+    watch([ start, stop ], () => {
+      emit('input', {
+        start: positionToTime(start.value),
+        stop: positionToTime(stop.value)
+      })
     })
 
     const startResizeLeft = () => {
@@ -150,13 +154,6 @@ export default defineComponent({
     const closeHandler = () => {
       emit('close')
     }
-
-    watch([ start, stop ], () => {
-      emit('input', {
-        start: positionToTime(start.value),
-        stop: positionToTime(stop.value)
-      })
-    })
 
     return {
       el,

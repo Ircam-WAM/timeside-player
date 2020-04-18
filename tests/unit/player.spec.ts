@@ -1,4 +1,5 @@
-import { mount } from '@vue/test-utils'
+import { mount, createLocalVue } from '@vue/test-utils'
+import VueRouter from 'vue-router'
 import Player from '@/components/Player.vue'
 import { PlayState } from '@/store/audio'
 
@@ -15,17 +16,28 @@ const fooItem = {
 }
 
 const getMount = () => {
+  const localVue = createLocalVue()
+  localVue.use(VueRouter)
   resetStore()
   const store = useStore()
 
   // Set store value
   store.commit.items.setItem(fooItem)
+  store.commit.audio.setDuration(3000)
+
+  const $route = {
+    name: 'Player',
+    query: {}
+  }
 
   const wrapper = mount(Player, {
     propsData: {
       item: fooItem
     },
-    stubs: [ 'Audio' ]
+    stubs: [ 'Audio' ],
+    mocks: {
+      $route
+    }
   })
 
   return { store, wrapper }

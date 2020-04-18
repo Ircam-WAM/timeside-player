@@ -35,6 +35,9 @@ const getDefaultState = (): AudioState => ({
 const state = getDefaultState
 
 const getters = defineGetters<AudioState>()({
+  isReady (state): boolean {
+    return state.duration !== 0
+  }
 })
 
 const mutations = defineMutations<AudioState>()({

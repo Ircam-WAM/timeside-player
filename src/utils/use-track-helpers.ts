@@ -9,12 +9,22 @@ export default function useTrackHelpers () {
     const duration = store.state.audio.duration
     const width = playerSize.value.width
 
+    if (!width) {
+      console.warn('positionToTime: unexpected width', width)
+      return 0
+    }
+
     return pos / width * duration
   }
 
   const timeToPosition = (time: number) => {
     const duration = store.state.audio.duration
     const width = playerSize.value.width
+
+    if (!duration) {
+      console.warn('timeToPosition: unexpected duration', duration)
+      return 0
+    }
 
     return time * width / duration
   }

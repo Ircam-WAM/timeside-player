@@ -6,9 +6,9 @@
   >
     <PlayCursor />
     <Region
-      v-if="selection"
-      v-model="selection"
-      @close="selection = undefined"
+      v-if="innerSelection"
+      v-model="innerSelection"
+      @close="innerSelection = undefined"
     />
   </WaveformContainer>
 </template>
@@ -19,7 +19,8 @@ import {
   onMounted,
   onUnmounted,
   ref,
-  watch
+  watch,
+  PropType
 } from '@vue/composition-api'
 
 import { useStore } from '@/store/index'
@@ -43,6 +44,10 @@ export default defineComponent({
     itemId: {
       type: String,
       required: true
+    },
+    selection: {
+      type: Object as PropType<RegionType>,
+      required: false
     }
   },
   components: {
@@ -50,7 +55,7 @@ export default defineComponent({
     PlayCursor,
     Region
   },
-  setup (_, { emit }) {
+  setup (props, { emit }) {
     const store = useStore()
     const playerSize = usePlayerRect()
     // Have to be declared after providePlayerRect()
@@ -59,6 +64,14 @@ export default defineComponent({
     const selection = ref<RegionType>()
     const lastClickPos = ref<number | undefined>(undefined)
     const direction = ref<Direction | undefined>(undefined)
+
+    // two-way data binding
+    watch([ () => props.selection ], () => {
+      selection.value = props.selection
+    })
+    watch([ selection ], () => {
+      emit('selection', selection.value)
+    })
 
     const onClick = ({ clientX, target }: MouseEvent) => {
       if (!target) {
@@ -161,15 +174,13 @@ export default defineComponent({
       }
     }
 
-    // Notify parent component that selection has changed
-    watch([ selection ], () => emit('selection', selection.value))
-
     onMounted(() => { window.addEventListener('keydown', onKeyDown) })
     onUnmounted(() => { window.removeEventListener('keydown', onKeyDown) })
 
     return {
       onMouseDown,
-      selection
+      // Use a different name to avoid namespace conflicts with `selection` props
+      innerSelection: selection
     }
   }
 })
