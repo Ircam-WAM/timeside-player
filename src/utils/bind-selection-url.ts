@@ -15,6 +15,11 @@ export default function bindSelectionUrl(selection: Ref<RegionType | undefined>)
   const { route, router } = useRouter()
   const store = useStore()
 
+  // We need audio.isReady to be true before handling query parameters
+  // Because we need to check if the query parameters are valid
+  // according to the audio's length
+  const ready = computed(() => store.getters.audio.isReady === true)
+
   const selectionAsQueryParams = computed(() => {
     const queryFmt = (val: number) => val.toString()
     if (!selection.value) {
@@ -30,13 +35,7 @@ export default function bindSelectionUrl(selection: Ref<RegionType | undefined>)
     }
   })
 
-  const audioReady = computed(() => store.getters.audio.isReady)
-
   const queryParamsAsSelection = computed(() => {
-    // Leave if duration is 0
-    if (!audioReady.value) {
-      return undefined
-    }
     const { start: startRaw, stop: stopRaw } = route.value.query
     if (Array.isArray(startRaw) || Array.isArray(stopRaw)) {
       return undefined
@@ -84,9 +83,11 @@ export default function bindSelectionUrl(selection: Ref<RegionType | undefined>)
   }
 
   const setSelection = () => {
+    // Do not set selection if query params are invalid
     if (!queryParamsAsSelection.value) {
       return
     }
+
     const { start, stop } = queryParamsAsSelection.value
     // Do not update when value has not changed
     if (selection.value !== undefined &&
@@ -104,12 +105,19 @@ export default function bindSelectionUrl(selection: Ref<RegionType | undefined>)
   }
 
   // Update selection when query params changes
-  onMounted(() => watch([ queryParamsAsSelection ], () => {
+  onMounted(() => watch([ ready, queryParamsAsSelection ], () => {
+    if (!ready.value) {
+      return
+    }
     setSelection()
   }))
 
   // Update query params when selection changes
-  onMounted(() => watch([ selectionAsQueryParams ], (value, oldValue, onInvalidate) => {
+  onMounted(() => watch([ ready, selectionAsQueryParams ], (value, oldValue, onInvalidate) => {
+    if (!ready.value) {
+      return
+    }
+
     // Add delay to optimize performance
     const delayed = setTimeout(() => {
       setQueryParams()
