@@ -70,6 +70,10 @@ export default defineComponent({
     const svgSize: Ref<ClientRect> = useBoundingClientRect(el)
 
     const barHeight = computed(() => {
+      // before onMounted
+      if (!svgSize.value.height) {
+        return 0
+      }
       return svgSize.value.height - axisHeight
     })
 
@@ -95,6 +99,10 @@ export default defineComponent({
     }) as Readonly<Ref<ScaleLinear<number, number>>>
 
     const path = computed(() => {
+      // Optimization: no need to compute
+      if (barHeight.value === 0) {
+        return ''
+      }
       const myYScale = yScale.value
       const scale = (y: number) => barHeight.value - (myYScale(y) / 2) - (barHeight.value / 2) + 2
       const d3area = area<WaveformSegment>()
