@@ -18,7 +18,10 @@ export default function useBoundingClientRect(el: Ref<Element | undefined>): Ref
       assertIsDefined(el.value)
       const resized = entries.find(e => e.target === el.value)
       assertIsDefined(resized)
-      clientRect.value = resized.contentRect as DOMRectReadOnly
+      // resize.contentRect gives the coordinates inside the element parent
+      // el.value.getBoundingClientRect gives the coordinates inside the viewport
+      // clientRect.value = resized.contentRect as DOMRectReadOnly
+      clientRect.value = el.value.getBoundingClientRect()
     })
 
     assertIsDefined(el.value)
