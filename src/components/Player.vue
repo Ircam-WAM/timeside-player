@@ -39,8 +39,6 @@ import {
   ref,
   Ref,
   PropType,
-  watch,
-  onMounted,
   computed
 } from '@vue/composition-api'
 
@@ -50,6 +48,8 @@ import { assertIsDefined } from '@/utils/type-assert'
 import { providePlayerRect } from '@/utils/use-player-rect'
 import useBoundingClientRect from '@/utils/use-bounding-client-rect'
 import { Region as RegionType } from '@/types/region'
+
+import bindSelectionUrl from '@/utils/bind-selection-url'
 
 import WaveformContainer from '@/components/WaveformContainer.vue'
 import Timer from '@/components/Timer.vue'
@@ -73,13 +73,9 @@ export default defineComponent({
     Timer,
     MainTrack
   },
-  setup ({ item }, context) {
+  setup ({ item }) {
     // item.uuid should always be defined
     assertIsDefined(item.uuid)
-
-    // Reactive router
-    const route = computed(() => context.root.$route)
-    const router = computed(() => context.root.$router)
 
     const store = useStore()
     const selection = ref<RegionType>()
@@ -99,109 +95,7 @@ export default defineComponent({
       selection.value = val
     }
 
-    const selectionAsQueryParams = computed(() => {
-      const queryFmt = (val: number) => val.toString()
-      if (!selection.value) {
-        return {
-          start: undefined,
-          stop: undefined
-        }
-      } else {
-        return {
-          start: queryFmt(selection.value.start),
-          stop: queryFmt(selection.value.stop)
-        }
-      }
-    })
-
-    const queryParamsAsSelection = computed(() => {
-      // Leave if duration is 0
-      if (!audioReady.value) {
-        return undefined
-      }
-      const { start: startRaw, stop: stopRaw } = route.value.query
-      if (Array.isArray(startRaw) || Array.isArray(stopRaw)) {
-        return undefined
-      }
-      if (!startRaw || !stopRaw) {
-        return undefined
-      }
-      let start = parseInt(startRaw)
-      let stop = parseInt(stopRaw)
-      if (isNaN(start) || isNaN(start)) {
-        return undefined
-      }
-      if (start > store.state.audio.duration) {
-        start = store.state.audio.duration
-      }
-      if (stop > store.state.audio.duration) {
-        stop = store.state.audio.duration
-      }
-      return {
-        start,
-        stop
-      }
-    })
-
-    const setQueryParams = () => {
-      const { start, stop } = selectionAsQueryParams.value
-
-      // Avoid 'NavigationDuplicated' error from vue-route
-      const { start: oldStart, stop: oldStop } = route.value.query
-      if (start === oldStart && stop === oldStop) {
-        return
-      }
-
-      assertIsDefined(route.value.name)
-      // Set query params
-      router.value.replace({
-        ...route.value,
-        name: route.value.name, // for typescript
-        query: {
-          ...route.value.query,
-          start,
-          stop
-        }
-      })
-    }
-
-    const setSelection = () => {
-      if (!queryParamsAsSelection.value) {
-        return
-      }
-      const { start, stop } = queryParamsAsSelection.value
-      // Do not update when value has not changed
-      if (selection.value !== undefined &&
-          start === selection.value.start && stop === selection.value.stop) {
-        return
-      }
-
-      selection.value = {
-        start,
-        stop
-      }
-
-      // set back query parameters for when start > store.state.audio.duration
-      setQueryParams()
-    }
-
-    // Update selection when query params changes
-    onMounted(() => watch([ queryParamsAsSelection ], () => {
-      setSelection()
-    }))
-
-    // Update query params when selection changes
-    onMounted(() => watch([ selectionAsQueryParams ], (value, oldValue, onInvalidate) => {
-      // Add delay to optimize performance
-      const delayed = setTimeout(() => {
-        setQueryParams()
-      }, 100)
-
-      // If value is updated before
-      onInvalidate(() => {
-        clearTimeout(delayed)
-      })
-    }))
+    bindSelectionUrl(selection)
 
     return {
       el,
