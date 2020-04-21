@@ -113,20 +113,11 @@ export default function bindSelectionUrl(selection: Ref<RegionType | undefined>)
   }))
 
   // Update query params when selection changes
-  onMounted(() => watch([ ready, selectionAsQueryParams ], (value, oldValue, onInvalidate) => {
+  onMounted(() => watch([ ready, selectionAsQueryParams ], () => {
     if (!ready.value) {
       return
     }
-
-    // Add delay to optimize performance
-    const delayed = setTimeout(() => {
-      setQueryParams()
-    }, 100)
-
-    // If value is updated before
-    onInvalidate(() => {
-      clearTimeout(delayed)
-    })
+    setQueryParams()
   }))
 
 }
