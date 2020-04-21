@@ -20,10 +20,22 @@
       </g>
       <!-- Use of nested SVG to restrict children's height -->
       <svg
+        ref="slotContainer"
         class="slots"
         width="100%"
         :height="barHeight"
+        pointer-events="all"
       >
+        <!-- Use of an empty rect to get events -->
+        <rect
+          x="0"
+          y="0"
+          width="100%"
+          height="100%"
+          stroke="black"
+          stroke-width="0"
+          fill="none"
+        />
         <slot />
       </svg>
       <!-- Use of nested SVG for fixed height -->
@@ -40,7 +52,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, Ref, onMounted, watchEffect, computed } from '@vue/composition-api'
+import {
+  defineComponent,
+  PropType,
+  ref,
+  Ref,
+  onMounted,
+  watchEffect,
+  computed,
+  InjectionKey,
+  provide
+} from '@vue/composition-api'
 
 // d3 imports by module to reduce bundle size
 import { scaleLinear, ScaleLinear } from 'd3-scale'
@@ -56,6 +78,8 @@ import { formatSeconds } from '@/utils/format-seconds'
 // FIXME: This type will be defined by vue@3
 type ComputedRef<T> = Readonly<Ref<Readonly<T>>>
 
+export const slotContainerKey: InjectionKey<Ref<SVGSVGElement | undefined>> = Symbol('waveform-svg')
+
 export default defineComponent({
   name: 'Waveform',
   props: {
@@ -68,6 +92,10 @@ export default defineComponent({
     const axisHeight = 25
     const el: Ref<HTMLDivElement | undefined> = ref()
     const svgSize: Ref<ClientRect> = useBoundingClientRect(el)
+
+    // Provide slotContainer for children
+    const slotContainer = ref<SVGSVGElement>()
+    provide(slotContainerKey, slotContainer)
 
     const barHeight = computed(() => {
       // before onMounted
@@ -132,7 +160,8 @@ export default defineComponent({
       axisHeight,
       barHeight,
       svgSize,
-      path
+      path,
+      slotContainer
     }
   }
 })

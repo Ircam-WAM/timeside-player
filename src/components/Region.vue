@@ -9,6 +9,7 @@
       @mousedown.stop="startResizeLeft"
     />
     <rect
+      v-if="width"
       ref="el"
       class="content"
       :x="start"
@@ -26,7 +27,7 @@
       @mousedown.stop="startResizeRight"
     />
     <svg
-      v-if="width > 40"
+      v-if="stop && width && width > 40"
       :x="stop - 40"
       :y="0"
       width="40"
@@ -54,48 +55,168 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, watch, PropType, toRefs } from '@vue/composition-api'
+import {
+  defineComponent,
+  ref,
+  computed,
+  watch,
+  PropType,
+  inject,
+  onMounted,
+  onUnmounted,
+  watchEffect
+} from '@vue/composition-api'
 import { assertIsDefined } from '@/utils/type-assert'
 import { Region as RegionType } from '@/types/region'
 import { usePlayerRect } from '@/utils/use-player-rect'
 import useTrackHelpers from '@/utils/use-track-helpers'
+
+import { slotContainerKey } from '@/components/Waveform.vue'
+
+enum Direction {
+  Left,
+  Right,
+}
 
 export default defineComponent({
   name: 'Region',
   props: {
     value: {
       type: Object as PropType<RegionType>,
-      required: true
+      required: false
     }
   },
   setup (props, { emit }) {
-    const { value: inputTime } = toRefs(props)
+    const parentContainer = inject(slotContainerKey)
+    if (!parentContainer) {
+      throw new Error('Region.vue expects to be a child of Waveform.vue')
+    }
+
     const {
       positionToTime,
       timeToPosition
     } = useTrackHelpers()
     const el = ref<HTMLDivElement>()
-    const start = ref(timeToPosition(inputTime.value.start))
-    const stop = ref(timeToPosition(inputTime.value.stop))
+    const start = ref<number>()
+    const stop = ref<number>()
     const width = computed(() => {
+      if (!start.value || !stop.value) {
+        return undefined
+      }
       return stop.value - start.value
     })
     const playerSize = usePlayerRect()
 
-    // two-way data binding
-    watch([ inputTime ], () => {
-      start.value = timeToPosition(inputTime.value.start)
-      stop.value = timeToPosition(inputTime.value.stop)
+    // one-way data binding
+    watch(() => props.value, (input) => {
+      if (!input) {
+        return
+      }
+      start.value = timeToPosition(input.start)
+      stop.value = timeToPosition(input.stop)
     })
-    watch([ start, stop ], () => {
-      emit('input', {
+
+    // manually notify parent of the changes
+    // instead of watch start/stop
+    // in order to optimize performances
+    const notifyParent = () => {
+      if (start.value === undefined || stop.value === undefined) {
+        emit('input', undefined)
+        return
+      }
+      const newVal = {
         start: positionToTime(start.value),
         stop: positionToTime(stop.value)
-      })
+      }
+      if (props.value === undefined) {
+        emit('input', newVal)
+        return
+      }
+      if (props.value.start === newVal.start &&
+          props.value.stop === newVal.stop) {
+        // Do nothing
+        return
+      }
+      emit('input', newVal)
+    }
+
+    const closeHandler = () => {
+      start.value = undefined
+      stop.value = undefined
+      notifyParent()
+    }
+
+    const startCreate = ({ clientX: startClientX }: MouseEvent) => {
+      const moveCreate = ({ clientX }: MouseEvent) => {
+        let direction: Direction | undefined
+
+        if (clientX === startClientX) {
+          return
+        } else if (clientX > startClientX) {
+          direction = Direction.Right
+        } else if (clientX < startClientX) {
+          direction = Direction.Left
+        }
+
+        start.value = startClientX - playerSize.value.left
+        stop.value = startClientX - playerSize.value.left
+
+        let posX = clientX - playerSize.value.left
+
+        if (direction === Direction.Left) {
+          if (posX < 0) {
+            posX = 0
+          }
+          if (posX > stop.value) {
+            posX = stop.value
+          }
+
+          start.value = posX
+        } else if (direction === Direction.Right) {
+          if (posX > playerSize.value.width) {
+            posX = playerSize.value.width
+          }
+          if (posX < start.value) {
+            posX = start.value
+          }
+
+          stop.value = posX
+        } else {
+          throw new Error(`Direction is not set (${direction}). Unexpected.`)
+        }
+      }
+
+      const stopCreate = () => {
+        notifyParent()
+        window.removeEventListener('mousemove', moveCreate)
+        window.removeEventListener('mouseup', stopCreate)
+      }
+
+      window.addEventListener('mousemove', moveCreate)
+      window.addEventListener('mouseup', stopCreate)
+    }
+
+    // Set listeners for startCreate
+    onMounted(() => watchEffect(() => {
+      if (!parentContainer.value) {
+        console.warn('Unexpected value (Region.vue): ', parentContainer.value)
+        return
+      }
+      // Remove previous in case value changed
+      parentContainer.value.removeEventListener('mousedown', startCreate)
+      parentContainer.value.addEventListener('mousedown', startCreate)
+    }))
+
+    onUnmounted(() => {
+      if (!parentContainer.value) {
+        return
+      }
+      parentContainer.value.removeEventListener('mousedown', startCreate)
     })
 
     const startResizeLeft = () => {
       const resize = ({ clientX }: MouseEvent) => {
+        assertIsDefined(stop.value)
         let value = clientX - playerSize.value.left
         if (value < 0) {
           value = 0
@@ -109,6 +230,7 @@ export default defineComponent({
       const stopResize = () => {
         window.removeEventListener('mouseup', stopResize)
         window.removeEventListener('mousemove', resize)
+        notifyParent()
       }
 
       window.addEventListener('mouseup', stopResize)
@@ -121,6 +243,7 @@ export default defineComponent({
       const cursorOffsetLeft = (originalClientX - el.value.getBoundingClientRect().left)
 
       const move = ({ clientX }: MouseEvent) => {
+        assertIsDefined(width.value)
         let newStart = clientX - cursorOffsetLeft - playerSize.value.left
         let newEnd = newStart + width.value
         if (newStart <= 0) {
@@ -138,6 +261,7 @@ export default defineComponent({
       const stopMove = () => {
         window.removeEventListener('mouseup', stopMove)
         window.removeEventListener('mousemove', move)
+        notifyParent()
       }
 
       window.addEventListener('mouseup', stopMove)
@@ -146,6 +270,7 @@ export default defineComponent({
 
     const startResizeRight = () => {
       const resize = ({ clientX }: MouseEvent) => {
+        assertIsDefined(start.value)
         let value = clientX - playerSize.value.left
         if (value > playerSize.value.width) {
           value = playerSize.value.width
@@ -159,14 +284,11 @@ export default defineComponent({
       const stopResize = () => {
         window.removeEventListener('mouseup', stopResize)
         window.removeEventListener('mousemove', resize)
+        notifyParent()
       }
 
       window.addEventListener('mouseup', stopResize)
       window.addEventListener('mousemove', resize)
-    }
-
-    const closeHandler = () => {
-      emit('close')
     }
 
     return {
@@ -174,6 +296,7 @@ export default defineComponent({
       width,
       start,
       stop,
+      startCreate,
       startMove,
       startResizeLeft,
       startResizeRight,
