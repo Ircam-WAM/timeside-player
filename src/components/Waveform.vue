@@ -132,7 +132,7 @@ export default defineComponent({
         return ''
       }
       const myYScale = yScale.value
-      const scale = (y: number) => barHeight.value - (myYScale(y) / 2) - (barHeight.value / 2) + 2
+      const scale = (y: number) => barHeight.value - (myYScale(y) / 2) - (barHeight.value / 2)
       const d3area = area<WaveformSegment>()
         .x((d) => xScale.value(d.time))
         .y0((d) => scale(d.min))
@@ -180,5 +180,12 @@ export default defineComponent({
 
 .area {
   overflow: hidden;
+}
+
+// Fix offset. Default value is 1px
+// Without this, rect element with `height: 100%`
+// would have a height of `100% + 1px`
+svg::v-deep * {
+  stroke-width: 0;
 }
 </style>
