@@ -1,4 +1,8 @@
 <template>
+  <!--
+    Use stop event modifiers to skip event handlers of PlayCursor
+    We may remove them and make PlayCursor check event.target
+  -->
   <g>
     <rect
       v-if="start"
@@ -100,7 +104,7 @@ export default defineComponent({
     const start = ref<number>()
     const stop = ref<number>()
     const width = computed(() => {
-      if (!start.value || !stop.value) {
+      if (start.value === undefined || stop.value === undefined) {
         return undefined
       }
       return stop.value - start.value
