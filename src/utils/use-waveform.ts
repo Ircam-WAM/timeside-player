@@ -49,6 +49,11 @@ function hasValidValues (waveformApi: WaveformTypeApi): boolean {
     console.error('Unexpected waveform: waveform.max has constant values', waveformApi.max)
     return false
   }
+  const duplicatedValues = waveformApi.min.filter((min, idx) => min === waveformApi.max[idx])
+  if (duplicatedValues.length > waveformApi.min.length / 4) {
+    console.error('Unexpected waveform: waveform has too many duplicated values', duplicatedValues)
+    // Not returning false for testing purposes
+  }
   return true
 }
 

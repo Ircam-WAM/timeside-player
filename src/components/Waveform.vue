@@ -20,6 +20,7 @@
       </g>
       <!-- Use of nested SVG to restrict children's height -->
       <svg
+        v-if="$slots.default"
         ref="slotContainer"
         class="slots"
         width="100%"
