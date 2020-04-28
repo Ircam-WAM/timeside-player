@@ -52,7 +52,7 @@ import { Region as RegionType } from '@/types/region'
 
 import bindSelectionUrl from '@/utils/bind-selection-url'
 
-import Controls from '@/components/Controls'
+import Controls from '@/components/Controls.vue'
 import WaveformContainer from '@/components/WaveformContainer.vue'
 import Timer from '@/components/Timer.vue'
 import Audio from '@/components/Audio.vue'
