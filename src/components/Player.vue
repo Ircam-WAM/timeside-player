@@ -9,6 +9,7 @@
         These components need audio to be loaded because
         they need audio's duration to compute position
       -->
+      <Controls />
       <Timer />
       <MainTrack
         :item-id="item.uuid"
@@ -51,6 +52,7 @@ import { Region as RegionType } from '@/types/region'
 
 import bindSelectionUrl from '@/utils/bind-selection-url'
 
+import Controls from '@/components/Controls'
 import WaveformContainer from '@/components/WaveformContainer.vue'
 import Timer from '@/components/Timer.vue'
 import Audio from '@/components/Audio.vue'
@@ -71,7 +73,8 @@ export default defineComponent({
     WaveformContainer,
     Audio,
     Timer,
-    MainTrack
+    MainTrack,
+    Controls
   },
   setup ({ item }) {
     // item.uuid should always be defined

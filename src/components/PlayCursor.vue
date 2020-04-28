@@ -169,6 +169,10 @@ export default defineComponent({
         }
         animation.currentTime = value
       })
+
+      watchEffect(() => {
+        animation.playbackRate = store.state.audio.playbackRate
+      })
     })
 
     return {

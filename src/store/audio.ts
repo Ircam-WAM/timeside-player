@@ -24,12 +24,14 @@ export interface AudioState {
   currentTime: CurrentTime;
   // duration of the audio file in ms
   duration: number;
+  playbackRate: number;
 }
 
 const getDefaultState = (): AudioState => ({
   playState: PlayState.Stop,
   currentTime: { value: 0, source: CurrentTimeSource.TimeUpdate },
   duration: 0,
+  playbackRate: 1.0
 })
 
 const state = getDefaultState
@@ -56,6 +58,10 @@ const mutations = defineMutations<AudioState>()({
   setCurrentTime (state, value: CurrentTime) {
     state.currentTime = value
   },
+
+  setPlayBackRate (state, value: number) {
+    state.playbackRate = value
+  }
 })
 
 const actions = defineActions({

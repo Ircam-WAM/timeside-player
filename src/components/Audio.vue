@@ -186,6 +186,15 @@ export default defineComponent({
       flush: 'sync'
     }))
 
+    const playbackRate = computed(() => store.state.audio.playbackRate)
+    watch([ playbackRate ], () => {
+      // Silently returns for before ready
+      if (!el.value) {
+        return
+      }
+      el.value.playbackRate = playbackRate.value
+    })
+
     // Force the browser to unload the audio element
     // Without this, switching item without restarting the page
     // plays all previously loaded audio elemenets
