@@ -125,7 +125,9 @@ export default function bindSelectionUrl(selection: Ref<RegionType | undefined>)
         return
       }
       onReady()
-      stopReadyWatcher()
+      if (stopReadyWatcher) {
+        stopReadyWatcher()
+      }
     })
   })
 }

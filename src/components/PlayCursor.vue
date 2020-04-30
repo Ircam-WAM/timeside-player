@@ -4,7 +4,7 @@
     class="cursor"
     x="0"
     y="0"
-    width="2"
+    :width="cursorWidth"
     height="100%"
   />
 </template>
@@ -13,23 +13,20 @@
 import {
   defineComponent,
   onMounted,
-  onUnmounted,
   ref,
   Ref,
   watch,
   watchEffect,
   computed,
-  inject
+  PropType
 } from '@vue/composition-api'
 
 import { assertIsDefined } from '@/utils/type-assert'
-import { usePlayerRect } from '@/utils/use-player-rect'
-import useTrackHelpers from '@/utils/use-track-helpers'
 
 import { useStore } from '@/store/index'
 import { PlayState, CurrentTimeSource } from '@/store/audio'
 
-import { slotContainerKey } from '@/components/Waveform.vue'
+import { Region as RegionType } from '@/types/region'
 
 // Polyfill Web Animation API
 // import 'web-animations-js'
@@ -44,79 +41,39 @@ const hasWebAnimationAPI = () => {
 
 export default defineComponent({
   name: 'PlayCursor',
-  setup () {
+  props: {
+    selection: {
+      type: Object as PropType<RegionType>
+    }
+  },
+  setup (props) {
     const store = useStore()
+    const cursorWidth = 2
     const cursor: Ref<Element | undefined> = ref()
-    const playerSize = usePlayerRect()
-    const { positionToTime } = useTrackHelpers()
-
-    const parentContainer = inject(slotContainerKey)
-    if (!parentContainer) {
-      throw new Error('Region.vue expects to be a child of Waveform.vue')
-    }
-
-    const onClick = (e: MouseEvent) => {
-      const { clientX, target } = e
-      if (!target) {
-        throw new Error(`target not found: ${target}`)
-      }
-      const currentTime = positionToTime(clientX - playerSize.value.left)
-
-      store.commit.audio.setCurrentTime({
-        value: currentTime,
-        source: CurrentTimeSource.Cursor
-      })
-    }
-
-    // Use mouseup/mousedown to detect if mouse has moved during the click
-    // If yes, the event will be handled by Region.vue
-    // See https://stackoverflow.com/a/16972807
-    let tmpClientX: number | undefined
-    const onMousedown = (e: MouseEvent) => {
-      tmpClientX = e.clientX
-    }
-    const onMouseup = (e: MouseEvent) => {
-      if (tmpClientX === undefined) {
-        return
-      }
-      // The mouse has moved, don't handle it
-      if (tmpClientX !== undefined && tmpClientX !== e.clientX) {
-        return
-      }
-      tmpClientX = undefined
-      onClick(e)
-    }
-
-    // Set listeners for onClick
-    onMounted(() => watchEffect(() => {
-      if (!parentContainer.value) {
-        console.warn('Unexpected value (PlayCursor.vue): ', parentContainer.value)
-        return
-      }
-      // Remove previous in case value changed
-      parentContainer.value.removeEventListener('mousedown', onMousedown)
-      parentContainer.value.removeEventListener('mouseup', onMouseup)
-
-      parentContainer.value.addEventListener('mousedown', onMousedown)
-      parentContainer.value.addEventListener('mouseup', onMouseup)
-    }))
-
-    onUnmounted(() => {
-      if (!parentContainer.value) {
-        return
-      }
-      parentContainer.value.removeEventListener('mousedown', onMousedown)
-      parentContainer.value.removeEventListener('mouseup', onMouseup)
-    })
 
     const keyFrames = [
       { transform: 'translateX(0)' },
-      { transform: 'translateX(100%)' }
+      { transform: `translateX(calc(100% - ${cursorWidth}px))` }
     ]
-    const timing = {
-      duration: store.state.audio.duration,
-      iterations: 1
-    }
+
+    const timing = computed<AnimationEffectTiming>(() => {
+      if (props.selection) {
+        const { start, stop } = props.selection
+        return {
+          duration: stop - start,
+          delay: start,
+          endDelay: store.state.audio.duration - stop,
+          iterations: 1
+        }
+      } else {
+        return {
+          duration: store.state.audio.duration,
+          iterations: 1,
+          // Keep cursor at the end when the animation is finished
+          fill: 'forwards'
+        }
+      }
+    })
 
     function setAnimationPlayState (animation: Animation, playState: PlayState) {
       switch (playState) {
@@ -137,7 +94,6 @@ export default defineComponent({
 
     onMounted(async () => {
       assertIsDefined(cursor.value)
-
       if (!hasWebAnimationAPI) {
         console.error('Your browser do not support the Web Animation API. Downloading polyfill..')
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -146,7 +102,7 @@ export default defineComponent({
       }
 
       // Define animation and pause it
-      const animation = cursor.value.animate(keyFrames, timing)
+      const animation = cursor.value.animate(keyFrames, timing.value)
       animation.pause()
 
       // Update cursor's animation when audio's play state is updated
@@ -170,15 +126,22 @@ export default defineComponent({
         animation.currentTime = value
       })
 
+      // Update timing when updated
+      watchEffect(() => {
+        assertIsDefined(animation.effect)
+        animation.effect.updateTiming(timing.value)
+      })
+
+      // Update playbackRate of animation when audio is updated
       watchEffect(() => {
         animation.playbackRate = store.state.audio.playbackRate
       })
     })
 
     return {
+      cursorWidth,
       cursor,
-      duration: store.state.audio.duration,
-      onClick
+      duration: store.state.audio.duration
     }
   }
 })
@@ -187,5 +150,12 @@ export default defineComponent({
 <style lang="less" scoped>
 .cursor {
   fill: red;
+  /* Hides the element when the animation is in a delayed state */
+  transform: translateX(-100%);
+
+  // Fix offset. Default value is 1px
+  // Without this, rect element with `height: 100%`
+  // would have a height of `100% + 1px`
+  stroke-width: 0;
 }
 </style>

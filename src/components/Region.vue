@@ -311,6 +311,13 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+rect {
+  // Fix offset. Default value is 1px
+  // Without this, rect element with `height: 100%`
+  // would have a height of `100% + 1px`
+  stroke-width: 0;
+}
+
 .delimiter {
   width: 4px;
 

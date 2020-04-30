@@ -16,17 +16,11 @@
         :selection="selection"
         @selection="onSelection"
       />
-      <div
+      <SelectionTracks
         v-if="selection"
-        class="tracks"
-      >
-        <WaveformContainer
-          :item-id="item.uuid"
-          :start="selection.start / 1000"
-          :stop="selection.stop / 1000"
-          :nb-pixels="2048"
-        />
-      </div>
+        :item-id="item.uuid"
+        :selection="selection"
+      />
     </div>
     <div v-else>
       Loading audio file...
@@ -53,10 +47,10 @@ import { Region as RegionType } from '@/types/region'
 import bindSelectionUrl from '@/utils/bind-selection-url'
 
 import Controls from '@/components/Controls.vue'
-import WaveformContainer from '@/components/WaveformContainer.vue'
 import Timer from '@/components/Timer.vue'
 import Audio from '@/components/Audio.vue'
 import MainTrack from '@/components/MainTrack.vue'
+import SelectionTracks from '@/components/SelectionTracks.vue'
 
 // FIXME: This type will be defined by vue@3
 type ComputedRef<T> = Readonly<Ref<Readonly<T>>>
@@ -70,10 +64,10 @@ export default defineComponent({
     }
   },
   components: {
-    WaveformContainer,
     Audio,
     Timer,
     MainTrack,
+    SelectionTracks,
     Controls
   },
   setup ({ item }) {

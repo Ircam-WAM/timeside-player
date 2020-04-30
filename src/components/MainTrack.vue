@@ -1,11 +1,17 @@
 <template>
-  <WaveformContainer
-    class="maintrack"
-    :item-id="itemId"
-  >
-    <Region v-model="innerSelection" />
-    <PlayCursor />
-  </WaveformContainer>
+  <div>
+    <WaveformContainer
+      class="maintrack"
+      :item-id="itemId"
+    >
+      <Region v-model="innerSelection" />
+      <InteractivePlayCursor />
+    </WaveformContainer>
+    <Axis
+      :first-time="0"
+      :last-time="lastTime"
+    />
+  </div>
 </template>
 
 <script lang="ts">
@@ -15,16 +21,18 @@ import {
   onUnmounted,
   ref,
   watch,
-  PropType
+  PropType,
+  computed
 } from '@vue/composition-api'
 
 import { useStore } from '@/store/index'
 import { PlayState } from '@/store/audio'
 import { Region as RegionType } from '@/types/region'
 
-import PlayCursor from '@/components/PlayCursor.vue'
+import InteractivePlayCursor from '@/components/InteractivePlayCursor.vue'
 import Region from '@/components/Region.vue'
 import WaveformContainer from '@/components/WaveformContainer.vue'
+import Axis from '@/components/Axis.vue'
 
 export default defineComponent({
   props: {
@@ -39,8 +47,9 @@ export default defineComponent({
   },
   components: {
     WaveformContainer,
-    PlayCursor,
-    Region
+    InteractivePlayCursor,
+    Region,
+    Axis
   },
   setup (props, { emit }) {
     const store = useStore()
@@ -78,7 +87,8 @@ export default defineComponent({
 
     return {
       // Use a different name to avoid namespace conflicts with `selection` props
-      innerSelection: selection
+      innerSelection: selection,
+      lastTime: computed(() => store.state.audio.duration)
     }
   }
 })

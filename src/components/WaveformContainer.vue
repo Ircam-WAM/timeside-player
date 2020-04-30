@@ -57,10 +57,12 @@ export default defineComponent({
       type: String,
       required: true
     },
+    // start of the waveform's region in ms
     start: {
       type: Number,
       required: false
     },
+    // stop of the waveform's region in ms
     stop: {
       type: Number,
       required: false
@@ -77,8 +79,8 @@ export default defineComponent({
     // Reactive params
     const { isLoading, error, isValid, waveform } = useWaveform(computed(() => ({
       uuid: props.itemId,
-      start: props.start,
-      stop: props.stop,
+      start: props.start ? props.start / 1000 : undefined,
+      stop: props.stop ? props.stop / 1000 : undefined,
       nbPixels: props.nbPixels
     })))
 
