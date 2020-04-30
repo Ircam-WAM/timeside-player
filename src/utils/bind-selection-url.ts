@@ -120,12 +120,13 @@ export default function bindSelectionUrl(selection: Ref<RegionType | undefined>)
   const ready = computed(() => store.getters.audio.isReady === true)
 
   onMounted(() => {
-    const stopReadyWatcher = watch([ ready ], () => {
+    let stopReadyWatcher: ReturnType<typeof watch> | null = null
+    stopReadyWatcher = watch([ ready ], () => {
       if (ready.value !== true) {
         return
       }
       onReady()
-      if (stopReadyWatcher) {
+      if (stopReadyWatcher !== null) {
         stopReadyWatcher()
       }
     })

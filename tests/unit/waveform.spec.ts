@@ -1,4 +1,4 @@
-import { shallowMount } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import { Waveform as WaveformType } from '@/types/waveform'
 import Waveform from '@/components/Waveform.vue'
 
@@ -34,14 +34,14 @@ describe('Waveform.vue', () => {
         maxVal: 1
       }
     }
-    const wrapper = shallowMount(Waveform, {
+    const wrapper = mount(Waveform, {
       propsData: {
         waveform: mockData
       }
     })
     await wrapper.vm.$nextTick()
 
-    const area = wrapper.find('.waveform-svg > .chart-data > .area')
+    const area = wrapper.find('.chart-data > .area')
     expect(area.attributes('d')).toBeDefined()
     const path = area.attributes('d')
     if (path === undefined) {
