@@ -1,5 +1,5 @@
 <template>
-  <div class="tracks-container">
+  <div class="selection-tracks">
     <div class="tracks">
       <WaveformContainer
         :item-id="itemId"
@@ -8,22 +8,16 @@
         :nb-pixels="2048"
       />
       <!-- Let's add more tracks here later -->
-    </div>
-    <div class="tracks-plugins">
-      <svg
-        width="100%"
-        height="100%"
-        style="display: block;"
-      >
-        <PlayCursor
+      <TrackPluginsContainer>
+        <InteractivePlayCursor
           :selection="selection"
         />
-      </svg>
-      <Axis
-        :first-time="selection.start"
-        :last-time="selection.stop"
-      />
+      </TrackPluginsContainer>
     </div>
+    <Axis
+      :first-time="selection.start"
+      :last-time="selection.stop"
+    />
   </div>
 </template>
 
@@ -33,7 +27,8 @@ import {
   PropType
 } from '@vue/composition-api'
 
-import PlayCursor from '@/components/PlayCursor.vue'
+import TrackPluginsContainer from '@/components/TrackPluginsContainer.vue'
+import InteractivePlayCursor from '@/components/InteractivePlayCursor.vue'
 import Axis from '@/components/Axis.vue'
 import WaveformContainer from '@/components/WaveformContainer.vue'
 
@@ -52,21 +47,20 @@ export default defineComponent({
     }
   },
   components: {
+    TrackPluginsContainer,
     WaveformContainer,
     Axis,
-    PlayCursor
+    InteractivePlayCursor
+  },
+  setup () {
+    return {
+    }
   }
 })
 </script>
 
 <style lang="less" scoped>
-.tracks-container {
+.tracks {
   position: relative;
-
-  & > .tracks-plugins {
-    height: 100%;
-    position: absolute;
-    top: 0;
-  }
 }
 </style>

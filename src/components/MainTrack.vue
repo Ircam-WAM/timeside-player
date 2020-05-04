@@ -1,12 +1,15 @@
 <template>
   <div>
-    <WaveformContainer
-      class="maintrack"
-      :item-id="itemId"
-    >
-      <Region v-model="innerSelection" />
-      <InteractivePlayCursor />
-    </WaveformContainer>
+    <div class="maintrack-container">
+      <WaveformContainer
+        class="maintrack"
+        :item-id="itemId"
+      />
+      <TrackPluginsContainer class="track-plugins-container">
+        <Region v-model="innerSelection" />
+        <InteractivePlayCursor />
+      </TrackPluginsContainer>
+    </div>
     <Axis
       :first-time="0"
       :last-time="lastTime"
@@ -29,6 +32,7 @@ import { useStore } from '@/store/index'
 import { PlayState } from '@/store/audio'
 import { Region as RegionType } from '@/types/region'
 
+import TrackPluginsContainer from '@/components/TrackPluginsContainer.vue'
 import InteractivePlayCursor from '@/components/InteractivePlayCursor.vue'
 import Region from '@/components/Region.vue'
 import WaveformContainer from '@/components/WaveformContainer.vue'
@@ -47,14 +51,13 @@ export default defineComponent({
   },
   components: {
     WaveformContainer,
+    TrackPluginsContainer,
     InteractivePlayCursor,
     Region,
     Axis
   },
   setup (props, { emit }) {
     const store = useStore()
-    // Have to be declared after providePlayerRect()
-
     const selection = ref<RegionType>()
 
     // two-way data binding
@@ -95,7 +98,7 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-.maintrack {
-  cursor: text;
+.maintrack-container {
+  position: relative;
 }
 </style>

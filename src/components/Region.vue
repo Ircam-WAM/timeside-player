@@ -1,7 +1,7 @@
 <template>
   <!--
-    Use stop event modifiers to skip event handlers of PlayCursor
-    We may remove them and make PlayCursor check event.target
+    Use stop event modifiers to skip event handlers of InteractivePlayCursor
+    We may remove them and make InteractivePlayCursor check event.target
   -->
   <g>
     <rect
@@ -75,7 +75,7 @@ import { Region as RegionType } from '@/types/region'
 import { usePlayerRect } from '@/utils/use-player-rect'
 import useTrackHelpers from '@/utils/use-track-helpers'
 
-import { slotContainerKey } from '@/components/Waveform.vue'
+import { slotContainerKey } from '@/components/TrackPluginsContainer.vue'
 
 enum Direction {
   Left,
@@ -93,7 +93,7 @@ export default defineComponent({
   setup (props, { emit }) {
     const parentContainer = inject(slotContainerKey)
     if (!parentContainer) {
-      throw new Error('Region.vue expects to be a child of Waveform.vue')
+      throw new Error('Region.vue expects to be a child of TrackPluginsContainer.vue')
     }
 
     const {
@@ -111,14 +111,20 @@ export default defineComponent({
     })
     const playerSize = usePlayerRect()
 
-    // one-way data binding
-    watch(() => props.value, (input) => {
+    const setPosition = (input?: RegionType) => {
       if (!input) {
         return
       }
       start.value = timeToPosition(input.start)
       stop.value = timeToPosition(input.stop)
-    })
+    }
+
+    // one-way data binding
+    watch(() => props.value, (input) => setPosition(input))
+
+    // Recompute absolute coordinates from time values
+    // when a resize occurs
+    watch(playerSize, () => setPosition(props.value))
 
     // manually notify parent of the changes
     // instead of watch start/stop

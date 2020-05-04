@@ -1,5 +1,7 @@
 <template>
-  <PlayCursor />
+  <PlayCursor
+    :selection="selection"
+  />
 </template>
 
 <script lang="ts">
@@ -8,7 +10,8 @@ import {
   inject,
   onMounted,
   onUnmounted,
-  watchEffect
+  watchEffect,
+  PropType
 } from '@vue/composition-api'
 
 import PlayCursor from '@/components/PlayCursor.vue'
@@ -18,20 +21,28 @@ import { CurrentTimeSource } from '@/store/audio'
 import { usePlayerRect } from '@/utils/use-player-rect'
 import useTrackHelpers from '@/utils/use-track-helpers'
 
-import { slotContainerKey } from '@/components/Waveform.vue'
+import { slotContainerKey } from '@/components/TrackPluginsContainer.vue'
+
+import { Region as RegionType } from '@/types/region'
 
 export default defineComponent({
+  name: 'InteractivePlayCursor',
   components: {
     PlayCursor
   },
-  setup () {
+  props: {
+    selection: {
+      type: Object as PropType<RegionType>
+    }
+  },
+  setup (props) {
     const store = useStore()
     const playerSize = usePlayerRect()
     const { positionToTime } = useTrackHelpers()
 
     const parentContainer = inject(slotContainerKey)
     if (!parentContainer) {
-      throw new Error('Region.vue expects to be a child of Waveform.vue')
+      throw new Error('InteractivePlayCursor.vue expects to be a child of TrackPluginsContainer.vue')
     }
 
     const onClick = (e: MouseEvent) => {
@@ -39,7 +50,7 @@ export default defineComponent({
       if (!target) {
         throw new Error(`target not found: ${target}`)
       }
-      const currentTime = positionToTime(clientX - playerSize.value.left)
+      const currentTime = positionToTime(clientX - playerSize.value.left, props.selection)
 
       store.commit.audio.setCurrentTime({
         value: currentTime,

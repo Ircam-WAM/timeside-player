@@ -9,27 +9,6 @@
         :d="path"
       />
     </g>
-    <!-- Use of nested SVG to restrict children's height -->
-    <svg
-      v-if="$slots.default"
-      ref="slotContainer"
-      class="slots"
-      width="100%"
-      height="100%"
-      pointer-events="all"
-    >
-      <!-- Use of an empty rect to get events -->
-      <rect
-        x="0"
-        y="0"
-        width="100%"
-        height="100%"
-        stroke="black"
-        stroke-width="0"
-        fill="none"
-      />
-      <slot />
-    </svg>
   </FluidSVG>
 </template>
 
@@ -39,9 +18,7 @@ import {
   PropType,
   ref,
   Ref,
-  computed,
-  InjectionKey,
-  provide
+  computed
 } from '@vue/composition-api'
 
 // d3 imports by module to reduce bundle size
@@ -54,8 +31,6 @@ import { Waveform as WaveformType, WaveformSegment } from '@/types/waveform'
 
 // FIXME: This type will be defined by vue@3
 type ComputedRef<T> = Readonly<Ref<Readonly<T>>>
-
-export const slotContainerKey: InjectionKey<Ref<SVGSVGElement | undefined>> = Symbol('waveform-svg')
 
 export default defineComponent({
   name: 'Waveform',
@@ -70,10 +45,6 @@ export default defineComponent({
   },
   setup ({ waveform }) {
     const svgSize: Ref<ClientRect | undefined> = ref()
-
-    // Provide slotContainer for children
-    const slotContainer = ref<SVGSVGElement>()
-    provide(slotContainerKey, slotContainer)
 
     const xScale = computed(() => {
       const width = svgSize.value ? svgSize.value.width : 0
@@ -115,8 +86,7 @@ export default defineComponent({
 
     return {
       svgSize,
-      path,
-      slotContainer
+      path
     }
   }
 })

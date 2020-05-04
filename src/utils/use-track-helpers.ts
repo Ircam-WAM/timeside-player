@@ -1,12 +1,20 @@
 import { usePlayerRect } from '../utils/use-player-rect'
 import { useStore } from '@/store/index'
 
+import { Region as RegionType } from '@/types/region'
+
 export default function useTrackHelpers () {
   const store = useStore()
   const playerSize = usePlayerRect()
 
-  const positionToTime = (pos: number) => {
-    const duration = store.state.audio.duration
+  const positionToTime = (pos: number, selection?: RegionType) => {
+    const duration = (() => {
+      if (selection) {
+        return selection.stop - selection.start
+      }
+      return store.state.audio.duration
+    })()
+    const offset = selection ? selection.start : 0
     const width = playerSize.value.width
 
     if (!width) {
@@ -16,7 +24,7 @@ export default function useTrackHelpers () {
 
     // Use int instead of float to avoid updating-loop
     // because oldValue is not always equal newValue for float numbers
-    return Math.round(pos / width * duration)
+    return Math.round(offset + pos / width * duration)
   }
 
   const timeToPosition = (time: number) => {
