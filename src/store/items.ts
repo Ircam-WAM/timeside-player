@@ -151,13 +151,13 @@ const actions = defineActions({
   },
 
   // In case of error, the action will throw a Response object
-  async createItem (context, body: Item): Promise<void> {
+  async createItem (context, item: Item): Promise<void> {
     const { commit } = itemActionContext(context)
-    const item = await api.createItem({ body })
-    commit.setItem(item)
+    const apiItem = await api.createItem({ item })
+    commit.setItem(apiItem)
 
     // Converts an Item to ItemList thanks to JSON serialization helpers
-    const itemList = ItemListFromJSONTyped(ItemToJSON(item), false)
+    const itemList = ItemListFromJSONTyped(ItemToJSON(apiItem), false)
     const { commit: commitItemList } = itemListActionContext(context)
     commitItemList.addItem(itemList)
   },
