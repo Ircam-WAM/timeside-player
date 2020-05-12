@@ -25,7 +25,7 @@ import {
 import { scaleLinear, ScaleLinear } from 'd3-scale'
 import { area } from 'd3-shape'
 
-import FluidSVG from '@/components/FluidSVG.vue'
+import FluidSVG from '@/components/utils/FluidSVG.vue'
 
 import { Waveform as WaveformType, WaveformSegment } from '@/types/waveform'
 

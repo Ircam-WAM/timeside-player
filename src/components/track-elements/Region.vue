@@ -75,7 +75,7 @@ import { Region as RegionType } from '@/types/region'
 import { usePlayerRect } from '@/utils/use-player-rect'
 import useTrackHelpers from '@/utils/use-track-helpers'
 
-import { slotContainerKey } from '@/components/TrackPluginsContainer.vue'
+import { slotContainerKey } from '@/components/track-elements/TrackPluginsContainer.vue'
 
 enum Direction {
   Left,

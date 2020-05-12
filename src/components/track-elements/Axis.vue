@@ -22,7 +22,7 @@ import { scaleLinear, ScaleLinear } from 'd3-scale'
 import { select } from 'd3-selection'
 import { axisBottom } from 'd3-axis'
 
-import FluidSVG from '@/components/FluidSVG.vue'
+import FluidSVG from '@/components/utils/FluidSVG.vue'
 
 import { assertIsDefined } from '@/utils/type-assert'
 import { formatSeconds } from '@/utils/format-seconds'

@@ -49,8 +49,8 @@ import bindSelectionUrl from '@/utils/bind-selection-url'
 import Controls from '@/components/Controls.vue'
 import Timer from '@/components/Timer.vue'
 import Audio from '@/components/Audio.vue'
-import MainTrack from '@/components/MainTrack.vue'
-import SelectionTracks from '@/components/SelectionTracks.vue'
+import MainTrack from '@/components/tracks/MainTrack.vue'
+import SelectionTracks from '@/components/tracks/SelectionTracks.vue'
 
 // FIXME: This type will be defined by vue@3
 type ComputedRef<T> = Readonly<Ref<Readonly<T>>>

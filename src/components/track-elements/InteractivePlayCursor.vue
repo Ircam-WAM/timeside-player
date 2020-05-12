@@ -14,14 +14,14 @@ import {
   PropType
 } from '@vue/composition-api'
 
-import PlayCursor from '@/components/PlayCursor.vue'
+import PlayCursor from '@/components/track-elements/PlayCursor.vue'
 
 import { useStore } from '@/store/index'
 import { CurrentTimeSource } from '@/store/audio'
 import { usePlayerRect } from '@/utils/use-player-rect'
 import useTrackHelpers from '@/utils/use-track-helpers'
 
-import { slotContainerKey } from '@/components/TrackPluginsContainer.vue'
+import { slotContainerKey } from '@/components/track-elements/TrackPluginsContainer.vue'
 
 import { Region as RegionType } from '@/types/region'
 

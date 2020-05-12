@@ -27,10 +27,10 @@ import {
   PropType
 } from '@vue/composition-api'
 
-import TrackPluginsContainer from '@/components/TrackPluginsContainer.vue'
-import InteractivePlayCursor from '@/components/InteractivePlayCursor.vue'
-import Axis from '@/components/Axis.vue'
-import WaveformContainer from '@/components/WaveformContainer.vue'
+import TrackPluginsContainer from '@/components/track-elements/TrackPluginsContainer.vue'
+import InteractivePlayCursor from '@/components/track-elements/InteractivePlayCursor.vue'
+import Axis from '@/components/track-elements/Axis.vue'
+import WaveformContainer from '@/components/track-elements/WaveformContainer.vue'
 
 import { Region as RegionType } from '@/types/region'
 

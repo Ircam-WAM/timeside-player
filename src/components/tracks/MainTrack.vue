@@ -32,11 +32,11 @@ import { useStore } from '@/store/index'
 import { PlayState } from '@/store/audio'
 import { Region as RegionType } from '@/types/region'
 
-import TrackPluginsContainer from '@/components/TrackPluginsContainer.vue'
-import InteractivePlayCursor from '@/components/InteractivePlayCursor.vue'
-import Region from '@/components/Region.vue'
-import WaveformContainer from '@/components/WaveformContainer.vue'
-import Axis from '@/components/Axis.vue'
+import TrackPluginsContainer from '@/components/track-elements/TrackPluginsContainer.vue'
+import InteractivePlayCursor from '@/components/track-elements/InteractivePlayCursor.vue'
+import Region from '@/components/track-elements/Region.vue'
+import WaveformContainer from '@/components/track-elements/WaveformContainer.vue'
+import Axis from '@/components/track-elements/Axis.vue'
 
 export default defineComponent({
   props: {

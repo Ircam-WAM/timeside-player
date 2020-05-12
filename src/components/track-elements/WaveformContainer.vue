@@ -45,7 +45,7 @@
 import { defineComponent, Ref, computed, watch } from '@vue/composition-api'
 
 import useWaveform from '@/utils/use-waveform'
-import Waveform from '@/components/Waveform.vue'
+import Waveform from '@/components/track-elements/Waveform.vue'
 
 // FIXME: This type will be defined by vue@3
 type ComputedRef<T> = Readonly<Ref<Readonly<T>>>

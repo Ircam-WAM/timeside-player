@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { Waveform as WaveformType } from '@/types/waveform'
-import Waveform from '@/components/Waveform.vue'
+import Waveform from '@/components/track-elements/Waveform.vue'
 
 describe('Waveform.vue', () => {
 
