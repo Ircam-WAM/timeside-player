@@ -2,8 +2,10 @@ import { shallowMount, mount, createLocalVue } from '@vue/test-utils'
 import VueRouter from 'vue-router'
 import router from '@/router'
 
+
 import { useStore, resetStore } from '@/store/index'
 import List from '@/components/List.vue'
+import Login from '@/components/Login.vue'
 
 describe('List.vue', () => {
   it('should be loading', async (done) => {
@@ -60,7 +62,7 @@ describe('List.vue', () => {
     resetStore()
     const store = useStore()
     const wrapper = shallowMount(List, {
-      stubs: [ 'router-link' ]
+      stubs: [ 'router-link', 'Login' ]
     })
 
     try {
@@ -69,7 +71,7 @@ describe('List.vue', () => {
       expect(e === undefined)
     }
     await wrapper.vm.$nextTick()
-    expect(wrapper.find('div').text()).toContain("You do not seems to be logged in")
+    expect(wrapper.findComponent(Login))
     done()
   })
 

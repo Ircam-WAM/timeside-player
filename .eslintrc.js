@@ -57,6 +57,13 @@ module.exports = {
         'array-bracket-spacing': [ 'warn', 'always' ],
         'vue/array-bracket-spacing': [ 'warn', 'always' ],
         'vue/arrow-spacing': 'warn',
+        'vue/max-attributes-per-line': [ 'error', {
+          'singleline': 3,
+          'multiline': {
+            'max': 1,
+            'allowFirstLine': false
+          }
+        } ],
 
         // allow console and debugger in development
         'no-console': process.env.NODE_ENV === 'production' ? [ 'error', { allow: [ 'warn', 'error' ] } ] : 0,

@@ -8,13 +8,7 @@
     </div>
     <template v-else>
       <div v-if="isUnauthorized">
-        You do not seems to be logged in. You can log in on
-        <a
-          :href="loginUrl"
-          target="_blank"
-          rel="noopener"
-        >Wasabi</a>
-        and reload this page
+        <Login class="login" @success="onLogin" />
       </div>
       <div
         v-else-if="error"
@@ -45,7 +39,9 @@
 import { loginUrl } from '@/utils/api'
 import { defineComponent, computed, onMounted } from '@vue/composition-api'
 import { useStore } from '@/store/index'
+
 import Player from '@/components/Player.vue'
+import Login from '@/components/Login.vue'
 
 import { formatResponseError } from '@/utils/response-error'
 
@@ -54,7 +50,8 @@ export default defineComponent({
   props: {
   },
   components: {
-    Player
+    Player,
+    Login
   },
   setup () {
     const store = useStore()
@@ -69,14 +66,18 @@ export default defineComponent({
       return formatResponseError(err)
     })
 
-    onMounted(async () => { await store.dispatch.itemList.getItems() })
+    const getItems = async () => { await store.dispatch.itemList.getItems() }
+
+    onMounted(() => { getItems() })
+    const onLogin = () => { getItems() }
 
     return {
       isLoading,
       isUnauthorized,
       itemList,
       error,
-      loginUrl
+      loginUrl,
+      onLogin
     }
   }
 })

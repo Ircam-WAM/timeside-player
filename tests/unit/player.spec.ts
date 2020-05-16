@@ -34,7 +34,7 @@ const getMount = () => {
     propsData: {
       item: fooItem
     },
-    stubs: [ 'Audio' ],
+    stubs: [ 'Audio', 'WaveformContainer' ],
     mocks: {
       $route
     }
@@ -44,6 +44,21 @@ const getMount = () => {
 }
 
 describe ('Player.vue', () => {
+  // Mock Element.animate
+  beforeEach(() => {
+    /* eslint-disable @typescript-eslint/no-empty-function */
+    /* eslint-disable @typescript-eslint/ban-ts-ignore */
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    // @ts-ignore-start
+    Element.prototype.animate = jest.fn(() => ({
+      pause () {},
+      play () {},
+      effect: {
+        updateTiming () {}
+      }
+    }))
+    // @ts-ignore-end
+  })
   it('should set playState according to keyboard events', () => {
     const { store } = getMount()
 

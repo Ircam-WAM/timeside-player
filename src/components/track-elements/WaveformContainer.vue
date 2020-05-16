@@ -88,7 +88,7 @@ export default defineComponent({
       if (error.value === undefined) {
         return
       }
-      console.error(error.value)
+      console.error('Unable to get waveform: ', error.value)
     })
 
     return {

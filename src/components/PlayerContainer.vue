@@ -8,13 +8,7 @@
     </div>
     <template v-else>
       <div v-if="isUnauthorized">
-        You do not seems to be logged in. You can log in on
-        <a
-          :href="loginUrl"
-          target="_blank"
-          rel="noopener"
-        >Wasabi</a>
-        and reload this page
+        <Login @success="onLogin" />
       </div>
       <div
         v-else-if="error"
@@ -44,12 +38,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, Ref, computed, onUnmounted } from '@vue/composition-api'
+import {
+  defineComponent,
+  Ref,
+  computed,
+  onMounted,
+  onUnmounted
+} from '@vue/composition-api'
+
 import { Item, loginUrl } from '@/utils/api'
 import { useStore } from '@/store/index'
 
 import { formatResponseError } from '@/utils/response-error'
 
+import Login from '@/components/Login.vue'
 import Player from '@/components/Player.vue'
 
 // FIXME: This type will be defined by vue@3
@@ -64,7 +66,8 @@ export default defineComponent({
     }
   },
   components: {
-    Player
+    Player,
+    Login
   },
   setup ({ itemId }) {
     const store = useStore()
@@ -73,7 +76,8 @@ export default defineComponent({
     }
 
     // We need to retrieve the item as Item do not provide enough data
-    store.dispatch.items.retrieveItem(itemId)
+    const retrieveItem = () => { store.dispatch.items.retrieveItem(itemId) }
+
     const error: ComputedRef<string | undefined> = computed(() => {
       const err = store.getters.items.getErrorById(itemId)
       if (!err) {
@@ -91,6 +95,10 @@ export default defineComponent({
       return store.getters.items.getItemById(itemId)
     })
 
+    onMounted(() => retrieveItem())
+
+    const onLogin = () => { retrieveItem() }
+
     // Reset audio state for player re-use
     onUnmounted(() => store.commit.audio.resetState())
 
@@ -99,7 +107,8 @@ export default defineComponent({
       loginUrl,
       isLoading,
       isUnauthorized,
-      itemDetail
+      itemDetail,
+      onLogin
     }
   }
 })

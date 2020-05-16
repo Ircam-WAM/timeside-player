@@ -8,6 +8,9 @@
         Home
       </router-link>
       <SelectAPI />
+      <button class="logout" @click="logout">
+        Logout
+      </button>
     </div>
 
     <router-view />
@@ -20,6 +23,8 @@ import { useToasted } from '@/utils/vue-toasted'
 import SelectAPI from '@/components/SelectAPI.vue'
 import List from '@/components/List.vue'
 
+import { removeToken } from '@/utils/api-token'
+
 export default defineComponent({
   name: 'App',
   components: {
@@ -29,6 +34,15 @@ export default defineComponent({
   setup () {
     const toasted = useToasted()
     toasted.success('🎉 Welcome to timeside-player !')
+
+    function logout () {
+      removeToken()
+      window.location.reload(false)
+    }
+
+    return {
+      logout
+    }
   }
 })
 </script>
