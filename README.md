@@ -36,11 +36,9 @@ npm run test:unit
 
 ### Run your end-to-end tests
 
-In order to run unit tests, you'll to set two [cypress environments variables](https://docs.cypress.io/guides/guides/environment-variables.html):
+In order to run unit tests, you'll to set the following [cypress environments variables](https://docs.cypress.io/guides/guides/environment-variables.html):
 - `TIMESIDE_USER`: Username for the Timeside API
 - `TIMESIDE_PASS`: Password for the Timeside API
-
-You can also set the following optional cypress environment variables:
 - `TIMESIDE_BASE_URL`: Base URL for the Timeside API (e.g 'https://sandbox.wasabi.telemeta.org')
 
 For local environment, you may want to make use of the `cypress.env.json` file which has a template:
