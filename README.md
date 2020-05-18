@@ -41,16 +41,17 @@ In order to run unit tests, you'll to set the following [cypress environments va
 - `TIMESIDE_PASS`: Password for the Timeside API
 - `TIMESIDE_BASE_URL`: Base URL for the Timeside API (e.g 'https://sandbox.wasabi.telemeta.org')
 
-For local environment, you may want to make use of the `cypress.env.json` file which has a template:
+For local environment, you may want to make use of the `cypress.env.json` file which has a template.
 ```
 cp cypress.env.json.example cypress.env.json
 ```
-You can edit the file to set the appropriate values.
 
+You can edit the file to set the appropriate values.
 ```
 $EDITOR cypress.env.json
 ```
 
+And run the end-to-end test suite.
 ```
 npm run test:e2e
 ```
