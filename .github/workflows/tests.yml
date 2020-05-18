@@ -57,6 +57,11 @@ jobs:
 
       - name: Integration test
         run: npm run test:e2e:headless
+        env:
+          # See https://docs.cypress.io/guides/guides/environment-variables.html
+          CYPRESS_TIMESIDE_BASE_URL: ${{ secrets.TIMESIDE_BASE_URL_E2E_TEST }}
+          CYPRESS_TIMESIDE_USER: ${{ secrets.TIMESIDE_USER_E2E_TEST }}
+          CYPRESS_TIMESIDE_PASS: ${{ secrets.TIMESIDE_PASS_E2E_TEST }}
 
       # Cypress only saves screenshots if the test fails
       - uses: actions/upload-artifact@v1

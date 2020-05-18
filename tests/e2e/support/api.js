@@ -1,9 +1,6 @@
-export const API_BASE = 'https://sandbox.wasabi.telemeta.org'
-export const API_USER = 'admin'
-export const API_PASS = '9DranEycsag?'
-// const API_BASE = 'https://wasabi.telemeta.org'
-// const API_USER = 'admin'
-// const API_PASS = 'admin'
+export const API_BASE = Cypress.env('TIMESIDE_BASE_URL')
+export const API_USER = Cypress.env('TIMESIDE_USER')
+export const API_PASS = Cypress.env('TIMESIDE_PASS')
 
 // set api-url in local storage to let app know which API URL it should use
 beforeEach(() => {
