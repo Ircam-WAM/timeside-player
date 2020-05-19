@@ -58,7 +58,7 @@
     "eslint-plugin-vue": "^6.2.2",
     "less": "^3.11.1",
     "less-loader": "^6.0.0",
-    "lint-staged": "^10.2.2",
+    "lint-staged": "^10.2.4",
     "resize-observer-polyfill": "^1.5.1",
     "typescript": "^3.9.2",
     "vti": "0.0.3",
