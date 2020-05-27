@@ -59,9 +59,6 @@ export default defineComponent({
     let abortController: AbortController | undefined
 
     const setImageSrc = async () => {
-      // We hide loading if an image is already set
-      // loading.value = false
-
       // If a request is already ongoing, we abort it
       if (abortController) {
         abortController.abort()
@@ -93,11 +90,20 @@ export default defineComponent({
     }
 
     // Small trick to watch all props + containerSize
-    const deps = computed(() => ([
-      ...Object.values(toRefs(props)),
-      containerSize.value
-    ]))
-    onMounted(() => { watch(deps, () => { setImageSrc() }) })
+    const reactiveProps = computed(() => ([ ...Object.values(toRefs(props)) ]))
+    // When props change, we set loading = true
+    onMounted(() => {
+      watch(reactiveProps, () => {
+        loading.value = true
+        setImageSrc()
+      })
+    })
+    // When size changed, we don't set loading = true to expand the current image
+    onMounted(() => {
+      watch(containerSize, () => {
+        setImageSrc()
+      })
+    })
 
     return {
       container,
