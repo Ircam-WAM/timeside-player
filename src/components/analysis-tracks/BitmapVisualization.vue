@@ -4,14 +4,13 @@
       Loading...
     </p>
     <p v-else-if="error" class="error">
-      {{ error }}
+      Error while retrieving Visual: {{ formatResponseError(error) }}
     </p>
     <img
-      :class="[ 'png-visualization', { loading }, { error } ]"
+      v-else
+      class="png-visualization"
       :src="imageSrc"
       alt=""
-      @error="imageError"
-      @load="loading = false"
     >
   </div>
 </template>
@@ -20,12 +19,16 @@
 import {
   defineComponent,
   ref,
-  computed
+  computed,
+  onMounted,
+  watch,
+  toRefs
 } from '@vue/composition-api'
 
 import useBoundingClientRect from '@/utils/use-bounding-client-rect'
-import { basePath } from '@/utils/api'
+import { newAbortableApi } from '@/utils/api'
 import { useStore } from '@/store/index'
+import { formatResponseError } from '@/utils/response-error'
 
 export default defineComponent({
   props: {
@@ -46,36 +49,62 @@ export default defineComponent({
     const container = ref()
     const containerSize = useBoundingClientRect(container)
     const loading = ref(true)
-    const error = ref<string | undefined>()
+    const error = ref<Response | undefined>()
     const store = useStore()
+    const imageSrc = ref('')
 
     const start = computed(() => props.start || 0)
     const stop = computed(() => props.stop || store.state.audio.duration)
 
-    const imageSrc = computed(() => {
-      const query = new URLSearchParams()
-      query.set('start', Math.round(start.value / 1000).toString())
-      query.set('stop', Math.round(stop.value / 1000).toString())
-      query.set('width', containerSize.value.width.toString())
-      query.set('height', containerSize.value.height.toString())
-      return `${basePath}/timeside/api/results/${props.resultUuid}/visual/?${query.toString()}`
-    })
+    let abortController: AbortController | undefined
 
-    const imageError = (event: ErrorEvent) => {
-      if (!event.target) {
-        throw new Error('event has no target')
+    const setImageSrc = async () => {
+      // We hide loading if an image is already set
+      // loading.value = false
+
+      // If a request is already ongoing, we abort it
+      if (abortController) {
+        abortController.abort()
       }
-      const img = event.target as HTMLImageElement
-      error.value = `Error loading image ${img.src}`
-      loading.value = false
+
+      try {
+        abortController = new AbortController()
+        const abortApi = newAbortableApi(abortController)
+
+        const resp = await abortApi.retrieveResultVisualizationRaw({
+          uuid: props.resultUuid,
+          // FIXME: API expectes int instead of float
+          start: Math.round(start.value / 1000),
+          stop: Math.round(stop.value / 1000),
+          // Default values for width/height to avoid API errors
+          width: containerSize.value.width || 500,
+          height: containerSize.value.height || 300
+        })
+        const blob = await resp.raw.blob()
+        imageSrc.value = URL.createObjectURL(blob)
+        loading.value = false
+      } catch (e) {
+        if (e.name === 'AbortError') {
+          return
+        }
+        console.error('retrieveResultVisualization failed', e)
+        error.value = e
+      }
     }
+
+    // Small trick to watch all props + containerSize
+    const deps = computed(() => ([
+      ...Object.values(toRefs(props)),
+      containerSize.value
+    ]))
+    onMounted(() => { watch(deps, () => { setImageSrc() }) })
 
     return {
       container,
       error,
       loading,
       imageSrc,
-      imageError
+      formatResponseError
     }
   }
 })
@@ -98,13 +127,6 @@ export default defineComponent({
 .png-visualization {
   width: 100%;
   height: 100%;
-
-  /* Hide it but keep it in the DOM so the image can load */
-  &.loading,
-  &.error {
-    opacity: 0;
-    position: absolute;
-  }
 }
 
 </style>
