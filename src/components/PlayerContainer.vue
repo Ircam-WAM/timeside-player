@@ -27,6 +27,12 @@
           <div class="description">
             <b>description</b>: {{ itemDetail.description }}
           </div>
+          <div class="samplerate">
+            <b>sample rate</b>: {{ itemDetail.samplerate }}
+          </div>
+          <div class="duration">
+            <b>audio duration</b>: {{ itemDetail.audioDuration }}
+          </div>
           <div class="uuid">
             <b>uuid</b>: {{ itemDetail.uuid }}
           </div>

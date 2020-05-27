@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent, onMounted } from '@vue/composition-api'
 import { useToasted } from '@/utils/vue-toasted'
 import SelectAPI from '@/components/SelectAPI.vue'
 import List from '@/components/List.vue'
@@ -33,7 +33,9 @@ export default defineComponent({
   },
   setup () {
     const toasted = useToasted()
-    toasted.success('🎉 Welcome to timeside-player !')
+    onMounted(() => {
+      toasted.success('🎉 Welcome to timeside-player !')
+    })
 
     function logout () {
       removeToken()
@@ -47,7 +49,7 @@ export default defineComponent({
 })
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -55,5 +57,11 @@ export default defineComponent({
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+#app ::v-deep {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
 }
 </style>

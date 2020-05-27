@@ -16,6 +16,7 @@
         :selection="selection"
         @selection="onSelection"
       />
+      <AnnotationTracks :item-id="item.uuid" />
       <SelectionTracks
         v-if="selection"
         :item-id="item.uuid"
@@ -51,6 +52,7 @@ import Timer from '@/components/Timer.vue'
 import Audio from '@/components/Audio.vue'
 import MainTrack from '@/components/tracks/MainTrack.vue'
 import SelectionTracks from '@/components/tracks/SelectionTracks.vue'
+import AnnotationTracks from '@/components/annotation/AnnotationTracks.vue'
 
 // FIXME: This type will be defined by vue@3
 type ComputedRef<T> = Readonly<Ref<Readonly<T>>>
@@ -68,7 +70,8 @@ export default defineComponent({
     Timer,
     MainTrack,
     SelectionTracks,
-    Controls
+    Controls,
+    AnnotationTracks
   },
   setup ({ item }) {
     // item.uuid should always be defined

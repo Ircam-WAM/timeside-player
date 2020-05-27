@@ -21,7 +21,7 @@ export const baseUrls: readonly string[] = [
   'https://wasabi.telemeta.org'
 ]
 
-const basePath = window.localStorage.getItem('api-url') || baseUrls[0]
+export const basePath = window.localStorage.getItem('api-url') || baseUrls[0]
 
 export const loginUrl = `${basePath}/admin/login/`
 

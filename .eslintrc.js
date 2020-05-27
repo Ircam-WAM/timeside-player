@@ -41,6 +41,11 @@ module.exports = {
         'extraFileExtensions': [ '.vue' ]
       },
       'rules': {
+        // Support for optional chaining
+        // See https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/no-unused-expressions.md
+        'no-unused-expressions': 'off',
+        '@typescript-eslint/no-unused-expressions': [ 'error' ],
+
         "@typescript-eslint/explicit-function-return-type": 'off',
       }
     },
@@ -64,6 +69,11 @@ module.exports = {
             'allowFirstLine': false
           }
         } ],
+
+        // Support for optional chaining
+        // See https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/no-unused-expressions.md
+        'no-unused-expressions': 'off',
+        '@typescript-eslint/no-unused-expressions': [ 'error' ],
 
         // allow console and debugger in development
         'no-console': process.env.NODE_ENV === 'production' ? [ 'error', { allow: [ 'warn', 'error' ] } ] : 0,

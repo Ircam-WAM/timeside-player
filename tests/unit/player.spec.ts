@@ -3,6 +3,9 @@ import VueRouter from 'vue-router'
 import Player from '@/components/Player.vue'
 import { PlayState } from '@/store/audio'
 
+import Toasted from 'vue-toasted'
+import { key as vueToastedKey } from '@/utils/vue-toasted'
+
 import { useStore, resetStore } from '@/store/index'
 
 const fooItem = {
@@ -17,7 +20,14 @@ const fooItem = {
 
 const getMount = () => {
   const localVue = createLocalVue()
+
+  // Router
   localVue.use(VueRouter)
+
+  // Toasted
+  localVue.use(Toasted)
+
+  // Store
   resetStore()
   const store = useStore()
 
@@ -37,6 +47,9 @@ const getMount = () => {
     stubs: [ 'Audio', 'WaveformContainer' ],
     mocks: {
       $route
+    },
+    provide: {
+      [vueToastedKey as symbol]: localVue.toasted
     }
   })
 
