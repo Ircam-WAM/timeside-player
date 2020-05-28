@@ -69,13 +69,11 @@ import {
 
 import api, {
   Analysis,
-  AnalysisTrack
-} from '@/utils/api'
-
-import {
+  AnalysisTrack,
+  basePath,
   getItemUrl,
   getAnalysisUrl
-} from '@/utils/api-url-builder'
+} from '@/utils/api'
 
 export default defineComponent({
   props: {
@@ -121,8 +119,8 @@ export default defineComponent({
       // Building URL
       // https://github.com/Parisson/TimeSide/issues/188
       const analysisTrack: AnalysisTrack = {
-        item: getItemUrl(props.itemId),
-        analysis: getAnalysisUrl(selectedAnalysisId.value)
+        item: getItemUrl(basePath, props.itemId),
+        analysis: getAnalysisUrl(basePath, selectedAnalysisId.value)
       }
       try {
         const at = await api.createAnalysisTrack({ analysisTrack })

@@ -36,7 +36,6 @@
 </template>
 
 <script lang="ts">
-import { loginUrl } from '@/utils/api'
 import { defineComponent, computed, onMounted } from '@vue/composition-api'
 import { useStore } from '@/store/index'
 
@@ -76,7 +75,6 @@ export default defineComponent({
       isUnauthorized,
       itemList,
       error,
-      loginUrl,
       onLogin
     }
   }

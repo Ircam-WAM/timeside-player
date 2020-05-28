@@ -64,8 +64,12 @@ import {
 import HDF5Visualization from '@/components/analysis-tracks/HDF5Visualization.vue'
 import BitmapVisualization from '@/components/analysis-tracks/BitmapVisualization.vue'
 
-import api, { Analysis, AnalysisTrack, AnalysisRenderTypeEnum } from '@/utils/api'
-import { getUuidFromAnalysisUrl } from '@/utils/api-url-builder'
+import api, {
+  Analysis,
+  AnalysisTrack,
+  AnalysisRenderTypeEnum,
+  getUuidFromAnalysisUrl
+} from '@/utils/api'
 import useResult from '@/utils/use-result'
 
 export default defineComponent({

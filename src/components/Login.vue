@@ -51,8 +51,7 @@ import {
 
 import { formatResponseError } from '@/utils/response-error'
 
-import { rawApi } from '@/utils/api'
-import { setToken } from '@/utils/api-token'
+import { rawApi, persistentToken, JWTToken } from '@/utils/api'
 
 export default defineComponent({
   setup (_, { emit }) {
@@ -79,10 +78,7 @@ export default defineComponent({
         if (!resp.access || !resp.refresh) {
           throw new Error('Unexpected empty token response: ' + JSON.stringify(resp))
         }
-        setToken({
-          access: resp.access,
-          refresh: resp.refresh
-        })
+        persistentToken.token = JWTToken.fromBase64(resp.access, resp.refresh)
         emit('success')
       } catch (e) {
         apiError.value = e

@@ -52,7 +52,7 @@ import {
   onUnmounted
 } from '@vue/composition-api'
 
-import { Item, loginUrl } from '@/utils/api'
+import { Item } from '@/utils/api'
 import { useStore } from '@/store/index'
 
 import { formatResponseError } from '@/utils/response-error'
@@ -110,7 +110,6 @@ export default defineComponent({
 
     return {
       error,
-      loginUrl,
       isLoading,
       isUnauthorized,
       itemDetail,

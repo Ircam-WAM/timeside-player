@@ -30,7 +30,7 @@ import {
   ref
 } from '@vue/composition-api'
 
-import * as HDF5 from '@/types/hdf5'
+import { HDF5 } from '@/utils/api'
 import FramewiseVisualization from '@/components/analysis-tracks/FramewiseVisualization.vue'
 
 import { formatResponseError } from '@/utils/response-error'
@@ -56,7 +56,7 @@ export default defineComponent({
   setup (props) {
     const loading = ref(true)
     const error = ref<string | undefined>()
-    const hdf5 = ref<HDF5.HDF5>(undefined)
+    const hdf5 = ref<HDF5>(undefined)
 
     onMounted(() => watch(() => props.resultUuid, () => {
       (async () => {

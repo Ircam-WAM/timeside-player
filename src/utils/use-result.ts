@@ -5,8 +5,7 @@ import {
   ref
 } from '@vue/composition-api'
 
-import { getUuidFromResultUrl } from '@/utils/api-url-builder'
-import { newAbortableApi, AnalysisTrack, Result, TimesideApi } from '@/utils/api'
+import { newAbortableApi, AnalysisTrack, Result, TimesideApi, getUuidFromResultUrl } from '@/utils/api'
 
 function timeout (ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))

@@ -23,7 +23,7 @@ import { useToasted } from '@/utils/vue-toasted'
 import SelectAPI from '@/components/SelectAPI.vue'
 import List from '@/components/List.vue'
 
-import { removeToken } from '@/utils/api-token'
+import { persistentToken } from '@/utils/api'
 
 export default defineComponent({
   name: 'App',
@@ -38,7 +38,7 @@ export default defineComponent({
     })
 
     function logout () {
-      removeToken()
+      persistentToken.removeToken()
       window.location.reload(false)
     }
 

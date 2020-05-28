@@ -19,18 +19,17 @@ import {
   computed,
   PropType
 } from '@vue/composition-api'
+import { HDF5 } from '@/utils/api'
 
 import { scaleLinear } from 'd3-scale'
 import { line, curveNatural } from 'd3-shape'
 
 import FluidSVG from '@/components/utils/FluidSVG.vue'
 
-import * as HDF5 from '@/types/hdf5'
-
 export default defineComponent({
   props: {
     hdf5: {
-      type: Object as PropType<HDF5.HDF5>,
+      type: Object as PropType<HDF5>,
       required: true
     },
     start: {

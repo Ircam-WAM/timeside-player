@@ -54,8 +54,7 @@ import {
 } from '@vue/composition-api'
 
 import { useToasted } from '@/utils/vue-toasted'
-import api from '@/utils/api'
-import { getAnnotationTrackUrl } from '@/utils/api-url-builder'
+import api, { basePath, getAnnotationTrackUrl } from '@/utils/api'
 
 export default defineComponent({
   props: {
@@ -79,7 +78,7 @@ export default defineComponent({
     const error = ref()
 
     async function submit () {
-      const track = getAnnotationTrackUrl(props.trackId)
+      const track = getAnnotationTrackUrl(basePath, props.trackId)
       const annotation = { track, ...form.value }
       try {
         const newAnnotation = await api.createAnnotation({ annotation })
