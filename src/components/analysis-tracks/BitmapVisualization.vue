@@ -71,8 +71,8 @@ export default defineComponent({
         const resp = await abortApi.retrieveResultVisualizationRaw({
           uuid: props.resultUuid,
           // FIXME: API expectes int instead of float
-          start: Math.round(start.value / 1000),
-          stop: Math.round(stop.value / 1000),
+          start: start.value / 1000,
+          stop: stop.value / 1000,
           // Default values for width/height to avoid API errors
           width: containerSize.value.width || 500,
           height: containerSize.value.height || 300
