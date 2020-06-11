@@ -75,11 +75,11 @@ export default defineComponent({
     AnalysisTrack,
     CreateAnalysisTrack
   },
-  setup () {
+  setup (props) {
     const analysisTracks = ref<AnalysisTrackType[]>(undefined)
 
     onMounted(async () => {
-      analysisTracks.value = await api.listAnalysisTracks()
+      analysisTracks.value = await api.listAnalysisTracks({ itemUuid: props.itemId })
     })
 
     return {
