@@ -1,0 +1,21 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Test UMD</title>
+	</head>
+	<body>
+		<div id="timeside-player"></div>
+		<script src="https://unpkg.com/@ircam/timeside-player@latest/lib/timeside-player.umd.min.js"></script>
+		<script>
+			const timesideUuid = '733f655a-1c9d-4ab8-93af-53eeddb030db'
+			const player = window.timesidePlayer('#timeside-player', timesideUuid)
+
+			// You can also provide an Element
+			// const el = document.querySelector('#timeside-player')
+			// const player = window.timesidePlayer(el, timesideUuid)
+
+			// Destroy the player
+			// player.destroy()
+		</script>
+	</body>
+</html>

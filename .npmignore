@@ -1,0 +1,9 @@
+/coverage
+/cypress.env.json
+/cypress.env.json.example
+/cypress.json
+/public
+/tests
+/lib-examples
+/dist
+/src

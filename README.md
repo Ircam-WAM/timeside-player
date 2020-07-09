@@ -14,6 +14,46 @@ This project is built with :
 * Github Actions: CI & Deployment
 * Dependabot
 
+## Library usage
+
+### Usage (UMD)
+
+```html
+<!-- Player location -->
+<div id="timeside-player"></div>
+
+<!-- Load latest version -->
+<script src="https://unpkg.com/@ircam/timeside-player@latest/dist/timeside-player.umd.min.js"></script>
+
+<!-- Init the player -->
+<script>
+	const timesideUuid = '733f655a-1c9d-4ab8-93af-53eeddb030db'
+	const player = window.timesidePlayer('#timeside-player', timesideUuid)
+</script>
+```
+
+For a usage example, see [lib-examples/umd/index.html](lib-examples/umd/index.html)
+
+### Usage (CommonJS): Webpack, Rollup etc...
+
+```
+npm install --save @ircam/timeside-player@latest
+```
+
+```js
+import TimesidePlayer from '@ircam/timeside-player'
+
+const playerDiv = document.querySelector('#timeside-player')
+const timesideItem = '733f655a-1c9d-4ab8-93af-53eeddb030db'
+const timesidePlayer = TimesidePlayer(playerDiv, timesideItem)
+
+// You can unload it
+// timesidePlayer.destroy()
+```
+
+For an integration example with React, see [lib-examples/react/src/TimesidePlayer.jsx](lib-examples/react/src/TimesidePlayer.jsx).    
+If you want to load the package from a CDN for an up-to-date version, see [lib-examples/react/src/TimesidePlayerCDN.jsx](lib-examples/react/src/TimesidePlayerCDN.jsx).
+
 ## Project setup
 ```
 npm install
@@ -63,7 +103,6 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
-
 
 #### Authors
 
