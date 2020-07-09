@@ -9,8 +9,8 @@ export const formatSeconds = (val: number): string => {
   const fixedDigits = (val: number) => val < 10 ? '0' : ''
 
   return [
-    fixedDigits(hours) + hours,
-    fixedDigits(minutes) + minutes,
+    fixedDigits(hours) + hours.toString(),
+    fixedDigits(minutes) + minutes.toString(),
     fixedDigits(seconds) + seconds.toFixed(2)
   ].join(':')
 }

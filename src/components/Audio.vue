@@ -55,9 +55,6 @@ import { PlayState, CurrentTimeSource } from '@/store/audio'
 import { AudioSrc } from '@/store/items'
 import { assertIsDefined } from '@/utils/type-assert'
 
-// FIXME: This type will be defined by vue@3
-type ComputedRef<T> = Readonly<Ref<Readonly<T>>>
-
 export default defineComponent({
   props: {
     audioSrcs: {
@@ -68,7 +65,7 @@ export default defineComponent({
   setup () {
     const store = useStore()
     const el: Ref<HTMLAudioElement | undefined> = ref()
-    const audioError: ComputedRef<Error | undefined> = ref()
+    const audioError = ref<Error | undefined>()
 
     /*
     * Audio/Media element events
@@ -124,7 +121,7 @@ export default defineComponent({
     }
 
     /*
-    * Set currenTime of audioFile when store's currentTime is updated
+    * Set currentTime of audioFile when store's currentTime is updated
     */
     const currentTime = computed(() => store.state.audio.currentTime)
     onMounted(() => watch([ currentTime ], () => {
@@ -138,7 +135,8 @@ export default defineComponent({
       }
       audio.currentTime = currentTime.value.value / 1000
     }, {
-      flush: 'sync'
+      flush: 'sync',
+      immediate: true
     }))
 
     /*
@@ -148,7 +146,7 @@ export default defineComponent({
       if (audioError.value !== undefined) {
         store.commit.audio.setPlayState(PlayState.Stop)
       }
-    }))
+    }, { immediate: true }))
 
     /*
     * Update playState according to store's value
@@ -183,7 +181,8 @@ export default defineComponent({
       }
     }, {
       // do not wait for component's update to run the watcher
-      flush: 'sync'
+      flush: 'sync',
+      immediate: true
     }))
 
     const playbackRate = computed(() => store.state.audio.playbackRate)
@@ -193,7 +192,7 @@ export default defineComponent({
         return
       }
       el.value.playbackRate = playbackRate.value
-    })
+    }, { immediate: true })
 
     // Force the browser to unload the audio element
     // Without this, switching item without restarting the page

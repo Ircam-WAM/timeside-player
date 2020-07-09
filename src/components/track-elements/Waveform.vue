@@ -17,7 +17,6 @@ import {
   defineComponent,
   PropType,
   ref,
-  Ref,
   computed
 } from '@vue/composition-api'
 
@@ -28,9 +27,6 @@ import { area } from 'd3-shape'
 import FluidSVG from '@/components/utils/FluidSVG.vue'
 
 import { Waveform as WaveformType, WaveformSegment } from '@/types/waveform'
-
-// FIXME: This type will be defined by vue@3
-type ComputedRef<T> = Readonly<Ref<Readonly<T>>>
 
 export default defineComponent({
   name: 'Waveform',
@@ -44,7 +40,7 @@ export default defineComponent({
     FluidSVG
   },
   setup ({ waveform }) {
-    const svgSize: Ref<ClientRect | undefined> = ref()
+    const svgSize = ref<ClientRect>()
 
     const path = computed(() => {
       const height = svgSize.value ? svgSize.value.height : 0

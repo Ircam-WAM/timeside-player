@@ -36,16 +36,26 @@ async function getResult(input: AnalysisTrack, api: TimesideApi, abortController
   try {
     resultUuid = getUuidFromResultUrl(at.resultUrl)
   } catch (e) {
-    throw new Error(
-      `Unable to get UUID for analysisTrack.result_url (${e.message}) ` +
-      JSON.stringify(input)
-    )
+    if (e instanceof Error) {
+      throw new Error(
+        `Unable to get UUID for analysisTrack.result_url (${e.message}) ` +
+        JSON.stringify(input)
+      )
+    } else {
+      throw e
+    }
   }
 
   return await api.retrieveResult({ uuid: resultUuid })
 }
 
-export default function useResult (analysisTrack: Ref<AnalysisTrack>) {
+interface ResultReturn {
+  result: Ref<Result | undefined>;
+  error: Ref<Response | undefined>;
+  loading: Ref<boolean>;
+}
+
+export default function useResult (analysisTrack: Ref<AnalysisTrack>): ResultReturn {
   const result = ref<Result | undefined>(undefined)
   const error = ref<Response | undefined>(undefined)
   const loading = ref(true)
@@ -67,7 +77,7 @@ export default function useResult (analysisTrack: Ref<AnalysisTrack>) {
       const newResult = await getResult(analysisTrack.value, abortApi, abortController)
       result.value = newResult
     } catch (err) {
-      if (err.name === 'AbortError') {
+      if (err instanceof DOMException && err.name === 'AbortError') {
         return
       }
       error.value = err
@@ -76,7 +86,7 @@ export default function useResult (analysisTrack: Ref<AnalysisTrack>) {
   }
 
   // Fetch analysisTrack when updated
-  onMounted(() => { watch(analysisTrack, () => { setResult() }) })
+  onMounted(() => { watch(analysisTrack, () => { setResult() }, { immediate: true }) })
 
   return {
     result,

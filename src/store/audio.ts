@@ -75,6 +75,6 @@ const m = defineModule({
   namespaced: true
 })
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const audioActionContext = (context: any) => moduleActionContext(context, m)
 export default m

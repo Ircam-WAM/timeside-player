@@ -125,7 +125,7 @@ export default defineComponent({
         }
         loadingAnalysis.value = false
       })()
-    }))
+    }, { immediate: true }))
 
     return {
       // result

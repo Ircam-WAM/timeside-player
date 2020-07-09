@@ -81,7 +81,7 @@ export default defineComponent({
         imageSrc.value = URL.createObjectURL(blob)
         loading.value = false
       } catch (e) {
-        if (e.name === 'AbortError') {
+        if (e instanceof DOMException && e.name === 'AbortError') {
           return
         }
         console.error('retrieveResultVisualization failed', e)
@@ -96,13 +96,13 @@ export default defineComponent({
       watch(reactiveProps, () => {
         loading.value = true
         setImageSrc()
-      })
+      }, { immediate: true })
     })
     // When size changed, we don't set loading = true to expand the current image
     onMounted(() => {
       watch(containerSize, () => {
         setImageSrc()
-      })
+      }, { immediate: true })
     })
 
     return {

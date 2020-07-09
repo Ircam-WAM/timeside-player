@@ -3,7 +3,12 @@ import { useStore } from '@/store/index'
 
 import { Region as RegionType } from '@/types/region'
 
-export default function useTrackHelpers () {
+interface TrackHelpers {
+  positionToTime: (time: number, selection?: RegionType) => number;
+  timeToPosition: (pos: number) => number;
+}
+
+export default function useTrackHelpers (): TrackHelpers {
   const store = useStore()
   const playerSize = usePlayerRect()
 

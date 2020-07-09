@@ -1,6 +1,17 @@
-import { computed, getCurrentInstance } from '@vue/composition-api'
+import {
+  computed,
+  ComputedRef,
+  getCurrentInstance
+} from '@vue/composition-api'
 
-export default function useRouter () {
+import Router, { Route } from 'vue-router'
+
+interface UseRouter {
+  route: ComputedRef<Route>;
+  router: ComputedRef<Router>;
+}
+
+export default function useRouter (): UseRouter {
   const vm = getCurrentInstance()
 
   if (!vm) {

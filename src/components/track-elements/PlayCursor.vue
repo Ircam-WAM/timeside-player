@@ -35,8 +35,7 @@ const hasWebAnimationAPI = () => {
   // Note: Some browsers may not support
   //       all the feature of the Web Animation API
   //       while validating this test
-  const { animate } = window.document.body
-  return !!animate
+  return !!window.document.body.animate
 }
 
 export default defineComponent({
@@ -96,7 +95,7 @@ export default defineComponent({
       assertIsDefined(cursor.value)
       if (!hasWebAnimationAPI) {
         console.error('Your browser do not support the Web Animation API. Downloading polyfill..')
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         await import('web-animations-js')
       }
@@ -113,7 +112,8 @@ export default defineComponent({
         animation.currentTime = store.state.audio.currentTime.value
         setAnimationPlayState(animation, playState.value)
       }, {
-        flush: 'sync'
+        flush: 'sync',
+        immediate: true
       })
 
       // Update on seek

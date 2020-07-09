@@ -56,7 +56,7 @@ export default defineComponent({
         }
         loading.value = false
       })()
-    }))
+    }, { immediate: true }))
 
     const onNew = (at: Annotation) => {
       if (!annotations.value) {

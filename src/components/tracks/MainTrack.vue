@@ -63,10 +63,10 @@ export default defineComponent({
     // two-way data binding
     watch([ () => props.selection ], () => {
       selection.value = props.selection
-    })
+    }, { immediate: true })
     watch([ selection ], () => {
       emit('selection', selection.value)
-    })
+    }, { immediate: true })
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === ' ' || e.key === 'Spacebar') {

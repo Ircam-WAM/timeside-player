@@ -33,7 +33,6 @@
 import {
   defineComponent,
   ref,
-  Ref,
   PropType,
   computed
 } from '@vue/composition-api'
@@ -53,9 +52,6 @@ import Audio from '@/components/Audio.vue'
 import MainTrack from '@/components/tracks/MainTrack.vue'
 import SelectionTracks from '@/components/tracks/SelectionTracks.vue'
 import AnnotationTracks from '@/components/annotation/AnnotationTracks.vue'
-
-// FIXME: This type will be defined by vue@3
-type ComputedRef<T> = Readonly<Ref<Readonly<T>>>
 
 export default defineComponent({
   name: 'Player',

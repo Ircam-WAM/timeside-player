@@ -99,7 +99,11 @@ export default defineComponent({
         analysisError.value = undefined
         toasted.success('AnalysisTrack added !')
       } catch (e) {
-        analysisError.value = e
+        if (e instanceof Response) {
+          analysisError.value = e
+        } else {
+          console.error('Unknown error occured', e)
+        }
       }
     })
 

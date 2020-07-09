@@ -60,7 +60,7 @@ describe ('Player.vue', () => {
   // Mock Element.animate
   beforeEach(() => {
     /* eslint-disable @typescript-eslint/no-empty-function */
-    /* eslint-disable @typescript-eslint/ban-ts-ignore */
+    /* eslint-disable @typescript-eslint/ban-ts-comment */
     // eslint-disable-next-line @typescript-eslint/unbound-method
     // @ts-ignore-start
     Element.prototype.animate = jest.fn(() => ({

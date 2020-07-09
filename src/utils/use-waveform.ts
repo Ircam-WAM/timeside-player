@@ -1,4 +1,4 @@
-import { Ref, ref, onMounted, computed, watch } from '@vue/composition-api'
+import { ComputedRef, ref, onMounted, computed, watch } from '@vue/composition-api'
 
 import { newAbortableApi, RetrieveItemWaveformRequest } from '@/utils/api'
 import { Waveform as WaveformType, WaveformSegment } from '@/types/waveform'
@@ -57,9 +57,6 @@ function hasValidValues (waveformApi: WaveformTypeApi): boolean {
   return true
 }
 
-// FIXME: This type will be defined by vue@3
-type ComputedRef<T> = Readonly<Ref<Readonly<T>>>
-
 interface UseWaveformReturn {
   isLoading: ComputedRef<boolean>;
   isValid: ComputedRef<boolean>;
@@ -117,7 +114,7 @@ export default function useWaveform(params: ComputedRef<RetrieveItemWaveformRequ
       error.value = undefined
       abortController = undefined
     } catch (err) {
-      if (err.name === 'AbortError') {
+      if (err instanceof DOMException && err.name === 'AbortError') {
         return
       }
       error.value = err
@@ -130,7 +127,7 @@ export default function useWaveform(params: ComputedRef<RetrieveItemWaveformRequ
   onMounted(() => watch([ params ], () => {
     isLoading.value = true
     retrieve()
-  }))
+  }, { immediate: true }))
 
   return {
     isLoading,

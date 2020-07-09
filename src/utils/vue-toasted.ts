@@ -4,7 +4,7 @@ import { Toasted } from 'vue-toasted'
 
 export const key: InjectionKey<Toasted> = Symbol('vue-toasted key')
 
-export function provideToasted () {
+export function provideToasted (): void {
   const toasted = Vue.toasted
   provide(key, toasted)
 }

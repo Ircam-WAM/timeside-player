@@ -15,23 +15,25 @@ const options = {
   }
 }
 
+/* eslint-disable @typescript-eslint/unbound-method */
 const {
   store,
   rootActionContext,
   moduleActionContext
 } = createDirectStore(options)
+/* eslint-enable @typescript-eslint/unbound-method */
 
 // The following exports will be used to enable types in the
 // implementation of actions.
 export { rootActionContext, moduleActionContext }
 
-export function useStore () {
+export function useStore (): typeof store {
   return store
 }
 
 // Call the resetState mutation on every module
 // Make sure to implement it in every module
-export function resetStore () {
+export function resetStore (): void {
   Object.values(store.commit).forEach((mod) => mod.resetState())
 }
 

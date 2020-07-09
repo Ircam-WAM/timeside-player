@@ -93,8 +93,9 @@ const getters = defineGetters<ItemState>()({
     return (id: string) => state.errors[id]
   },
 
-  getAudioSrcs (_, getters): (id: string) => AudioSrc[] | undefined {
+  getAudioSrcs (_, getters: any): (id: string) => AudioSrc[] | undefined {
     return (id: string) => {
+      // eslint-disable-next-line
       const item = getters.getItemById(id)
       if (!item) {
         return undefined
@@ -171,6 +172,6 @@ const m = defineModule({
   namespaced: true
 })
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const itemActionContext = (context: any) => moduleActionContext(context, m)
 export default m

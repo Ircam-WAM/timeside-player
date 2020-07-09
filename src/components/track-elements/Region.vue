@@ -68,7 +68,8 @@ import {
   inject,
   onMounted,
   onUnmounted,
-  watchEffect
+  watchEffect,
+  Ref
 } from '@vue/composition-api'
 import { assertIsDefined } from '@/utils/type-assert'
 import { Region as RegionType } from '@/types/region'
@@ -91,7 +92,8 @@ export default defineComponent({
     }
   },
   setup (props, { emit }) {
-    const parentContainer = inject(slotContainerKey)
+    // FIXME: Type inference from symbol not working here. Redeclaring type
+    const parentContainer = inject<Ref<SVGSVGElement | undefined>>(slotContainerKey)
     if (!parentContainer) {
       throw new Error('Region.vue expects to be a child of TrackPluginsContainer.vue')
     }
@@ -120,11 +122,11 @@ export default defineComponent({
     }
 
     // one-way data binding
-    watch(() => props.value, (input) => setPosition(input))
+    watch(() => props.value, (input) => setPosition(input), { immediate: true })
 
     // Recompute absolute coordinates from time values
     // when a resize occurs
-    watch(playerSize, () => setPosition(props.value))
+    watch(playerSize, () => setPosition(props.value), { immediate: true })
 
     // manually notify parent of the changes
     // instead of watch start/stop
@@ -209,7 +211,6 @@ export default defineComponent({
     // Set listeners for startCreate
     onMounted(() => watchEffect(() => {
       if (!parentContainer.value) {
-        console.warn('Unexpected value (Region.vue): ', parentContainer.value)
         return
       }
       // Remove previous in case value changed

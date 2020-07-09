@@ -81,7 +81,9 @@ export default defineComponent({
         persistentToken.token = JWTToken.fromBase64(resp.access, resp.refresh)
         emit('success')
       } catch (e) {
-        apiError.value = e
+        if (e instanceof Response) {
+          apiError.value = e
+        }
         console.error(e)
       }
       loading.value = false

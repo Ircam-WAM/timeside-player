@@ -11,7 +11,7 @@ import { useStore } from '@/store/index'
 
 import { Region as RegionType } from '@/types/region'
 
-export default function bindSelectionUrl(selection: Ref<RegionType | undefined>) {
+export default function bindSelectionUrl(selection: Ref<RegionType | undefined>): void {
   const { route, router } = useRouter()
   const store = useStore()
 
@@ -106,12 +106,12 @@ export default function bindSelectionUrl(selection: Ref<RegionType | undefined>)
     // Update selection when query params changes
     watch([ queryParamsAsSelection ], () => {
       setSelection()
-    })
+    }, { immediate: true })
 
     // Update query params when selection changes
     watch([ selectionAsQueryParams ], () => {
       setQueryParams()
-    })
+    }, { immediate: true })
   }
 
   // We need audio.isReady to be true before handling query parameters
@@ -129,6 +129,6 @@ export default function bindSelectionUrl(selection: Ref<RegionType | undefined>)
       if (stopReadyWatcher !== null) {
         stopReadyWatcher()
       }
-    })
+    }, { immediate: true })
   })
 }

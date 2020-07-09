@@ -46,7 +46,6 @@
 <script lang="ts">
 import {
   defineComponent,
-  Ref,
   computed,
   onMounted,
   onUnmounted
@@ -59,9 +58,6 @@ import { formatResponseError } from '@/utils/response-error'
 
 import Login from '@/components/Login.vue'
 import Player from '@/components/Player.vue'
-
-// FIXME: This type will be defined by vue@3
-type ComputedRef<T> = Readonly<Ref<Readonly<T>>>
 
 export default defineComponent({
   name: 'PlayerContainer',
@@ -84,20 +80,20 @@ export default defineComponent({
     // We need to retrieve the item as Item do not provide enough data
     const retrieveItem = () => { store.dispatch.items.retrieveItem(itemId) }
 
-    const error: ComputedRef<string | undefined> = computed(() => {
+    const error = computed<string | undefined>(() => {
       const err = store.getters.items.getErrorById(itemId)
       if (!err) {
         return undefined
       }
       return formatResponseError(err)
     })
-    const isLoading: ComputedRef<boolean> = computed(() => {
+    const isLoading = computed<boolean>(() => {
       return store.getters.items.isLoading(itemId)
     })
-    const isUnauthorized: ComputedRef<boolean> = computed(() => {
+    const isUnauthorized = computed<boolean>(() => {
       return store.getters.items.isUnauthorized(itemId)
     })
-    const itemDetail: ComputedRef<Item | undefined> = computed(() => {
+    const itemDetail = computed<Item | undefined>(() => {
       return store.getters.items.getItemById(itemId)
     })
 

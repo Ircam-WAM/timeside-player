@@ -20,7 +20,6 @@
 <script lang="ts">
 import {
   defineComponent,
-  Ref,
   ref,
   watchEffect
 } from '@vue/composition-api'
@@ -30,7 +29,7 @@ import useBoundingClientRect from '@/utils/use-bounding-client-rect'
 export default defineComponent({
   setup (_, { emit }) {
     const el = ref()
-    const svgSize: Ref<ClientRect> = useBoundingClientRect(el)
+    const svgSize = useBoundingClientRect(el)
 
     watchEffect(() => {
       emit('resized', svgSize.value)

@@ -11,7 +11,8 @@ import {
   onMounted,
   onUnmounted,
   watchEffect,
-  PropType
+  PropType,
+  Ref
 } from '@vue/composition-api'
 
 import PlayCursor from '@/components/track-elements/PlayCursor.vue'
@@ -40,7 +41,8 @@ export default defineComponent({
     const playerSize = usePlayerRect()
     const { positionToTime } = useTrackHelpers()
 
-    const parentContainer = inject(slotContainerKey)
+    // FIXME: Type inference from symbol not working here. Redeclaring type
+    const parentContainer = inject<Ref<SVGSVGElement | undefined>>(slotContainerKey)
     if (!parentContainer) {
       throw new Error('InteractivePlayCursor.vue expects to be a child of TrackPluginsContainer.vue')
     }
@@ -80,7 +82,6 @@ export default defineComponent({
     // Set listeners for onClick
     onMounted(() => watchEffect(() => {
       if (!parentContainer.value) {
-        console.warn('Unexpected value (PlayCursor.vue): ', parentContainer.value)
         return
       }
       // Remove previous in case value changed

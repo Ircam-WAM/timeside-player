@@ -42,13 +42,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, Ref, computed, watch } from '@vue/composition-api'
+import { defineComponent, computed, watch } from '@vue/composition-api'
 
 import useWaveform from '@/utils/use-waveform'
 import Waveform from '@/components/track-elements/Waveform.vue'
-
-// FIXME: This type will be defined by vue@3
-type ComputedRef<T> = Readonly<Ref<Readonly<T>>>
 
 export default defineComponent({
   name: 'WaveformContainer',
@@ -89,7 +86,7 @@ export default defineComponent({
         return
       }
       console.error('Unable to get waveform: ', error.value)
-    })
+    }, { immediate: true })
 
     return {
       isLoading,

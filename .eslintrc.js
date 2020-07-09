@@ -26,12 +26,20 @@ module.exports = {
     },
     {
       'files': [
+        '**/*.js'
+      ],
+      'parserOptions': {
+        'ecmaVersion': 7,
+        'sourceType': 'module'
+      }
+    },
+    {
+      'files': [
         '**/*.ts',
         '**/*.tsx',
         '**/*.vue' // Vue files are expected to be written in TS
       ],
       'extends': [
-        'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
         'plugin:@typescript-eslint/recommended-requiring-type-checking',
       ],
@@ -46,7 +54,13 @@ module.exports = {
         'no-unused-expressions': 'off',
         '@typescript-eslint/no-unused-expressions': [ 'error' ],
 
-        "@typescript-eslint/explicit-function-return-type": 'off',
+        '@typescript-eslint/explicit-function-return-type': 'off',
+
+        // Constraining rules added by @typescript-eslint/eslint-plugin@3.5.0
+        '@typescript-eslint/no-floating-promises': 'off',
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/restrict-template-expressions': 'off'
       }
     },
     {

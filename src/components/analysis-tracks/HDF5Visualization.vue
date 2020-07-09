@@ -56,7 +56,7 @@ export default defineComponent({
   setup (props) {
     const loading = ref(true)
     const error = ref<string | undefined>()
-    const hdf5 = ref<HDF5>(undefined)
+    const hdf5 = ref<HDF5>()
 
     onMounted(() => watch(() => props.resultUuid, () => {
       (async () => {
@@ -69,14 +69,14 @@ export default defineComponent({
           if (!resp.ok) {
             throw resp
           }
-          const json = await resp.json()
+          const json: HDF5[] = await resp.json()
           hdf5.value = json[0]
         } catch (e) {
           error.value = e
         }
         loading.value = false
       })()
-    }))
+    }, { immediate: true }))
 
     return {
       formatResponseError,

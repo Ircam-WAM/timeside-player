@@ -10,7 +10,6 @@ import {
   defineComponent,
   computed,
   ref,
-  Ref,
   watch,
   watchEffect
 } from '@vue/composition-api'
@@ -18,9 +17,6 @@ import {
 import { PlayState, CurrentTimeSource } from '@/store/audio'
 import { useStore } from '@/store/index'
 import { formatSeconds } from '@/utils/format-seconds'
-
-// FIXME: This type will be defined by vue@3
-type ComputedRef<T> = Readonly<Ref<Readonly<T>>>
 
 export default defineComponent({
   name: 'Timer',
@@ -79,11 +75,11 @@ export default defineComponent({
       innerCount.value = value
     })
 
-    const current: ComputedRef<string> = computed(() => {
+    const current = computed<string>(() => {
       return formatSeconds(innerCount.value / 1000)
     })
 
-    const total: ComputedRef<string> = computed(() => {
+    const total = computed<string>(() => {
       return formatSeconds(store.state.audio.duration / 1000)
     })
 
