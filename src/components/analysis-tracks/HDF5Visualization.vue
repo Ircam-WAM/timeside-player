@@ -91,5 +91,10 @@ export default defineComponent({
 <style lang="less" scoped>
 .hdf5-visualization {
   width: 100%;
+  height: 100%;
+}
+
+.error {
+  color: red;
 }
 </style>

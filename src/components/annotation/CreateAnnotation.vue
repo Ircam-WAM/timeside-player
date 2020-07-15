@@ -23,20 +23,20 @@
       v-model="form.startTime"
       name="start-time"
       type="number"
-      placeholder="Start"
+      placeholder="Start (seconds)"
       required
     >
     <input
       v-model="form.stopTime"
       name="stop-time"
       type="number"
-      placeholder="Stop"
+      placeholder="Stop (seconds)"
       required
     >
     <button
       :disabled="loading"
     >
-      {{ loading ? 'Loading...' : 'Submit' }}
+      {{ loading ? 'Loading...' : 'Add' }}
     </button>
     <div
       v-if="error"
@@ -105,6 +105,7 @@ export default defineComponent({
 <style lang="less" scoped>
 .create-annotation {
   text-align: center;
+  padding: 10px;
 
   & > * {
     margin: 0 auto;

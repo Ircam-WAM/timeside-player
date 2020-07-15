@@ -1,20 +1,18 @@
 <template>
   <div class="annotations">
-    <CreateAnnotation :track-id="trackId" @new-annotation="onNew($event)" />
+    <CreateAnnotation
+      :track-id="trackId"
+      @new-annotation="annotations.add($event)"
+    />
     <template v-if="annotations">
-      <div
-        v-for="a of annotations"
+      <Annotation
+        v-for="a of annotations.annotations"
         :key="a.uuid"
+        :annotation="a"
         class="annotation"
-      >
-        <p>Title: {{ a.title }}</p>
-        <p>Description: {{ a.description }}</p>
-        <p>Start time: {{ a.startTime }}</p>
-        <p>Stop time: {{ a.stopTime }}</p>
-        <button :disabled="loadingDestroy" @click="destroyAnnotation(a.uuid)">
-          {{ loadingDestroy ? 'Loading...' : 'Delete Annotation' }}
-        </button>
-      </div>
+        @click.native="$emit('select-annotation', a)"
+        @destroy="annotations.remove($event)"
+      />
     </template>
   </div>
 </template>
@@ -22,82 +20,33 @@
 <script lang="ts">
 import {
   defineComponent,
-  ref,
-  onMounted,
-  watch
+  PropType
 } from '@vue/composition-api'
 
-import api, { Annotation } from '@/utils/api'
-
+import Annotation from '@/components/annotation/Annotation.vue'
 import CreateAnnotation from '@/components/annotation/CreateAnnotation.vue'
+import { AnnotationStore } from '@/utils/annotation-store'
 
 export default defineComponent({
   props: {
     trackId: {
       type: String,
       required: true
+    },
+    annotations: {
+      type: Object as PropType<AnnotationStore>,
+      required: true
     }
   },
   components: {
-    CreateAnnotation
-  },
-  setup (props) {
-    const loading = ref(false)
-    const error = ref()
-    const annotations = ref<Annotation[]>()
-
-    onMounted(() => watch(() => props.trackId, () => {
-      (async () => {
-        loading.value = true
-        try {
-          annotations.value = await api.listAnnotations({ trackUuid: props.trackId })
-        } catch (e) {
-          error.value = e
-        }
-        loading.value = false
-      })()
-    }, { immediate: true }))
-
-    const onNew = (at: Annotation) => {
-      if (!annotations.value) {
-        return
-      }
-      annotations.value.push(at)
-    }
-
-    const loadingDestroy = ref(false)
-
-    const destroyAnnotation = async (removedId: string | undefined) => {
-      if (removedId === undefined) {
-        return
-      }
-      if (!annotations.value) {
-        return
-      }
-      try {
-        await api.destroyAnnotation({ uuid: removedId })
-        annotations.value = annotations.value.filter(a => a.uuid !== removedId)
-      } catch (e) {
-        console.error(e)
-      }
-    }
-
-    return {
-      loading,
-      error,
-      annotations,
-      onNew,
-      destroyAnnotation,
-      loadingDestroy
-    }
+    CreateAnnotation,
+    Annotation
   }
 })
 </script>
 
 <style lang="less" scoped>
-.annotation {
-  background: grey;
-  display: inline-block;
-  margin: 10px;
+.annotations {
+  position: relative;
 }
 </style>

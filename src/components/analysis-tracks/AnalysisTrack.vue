@@ -1,6 +1,6 @@
 <template>
   <div class="analysis-track">
-    <div class="info">
+    <div class="info-box" :title="analysis ? analysis.uuid : undefined">
       <div v-if="loadingAnalysis">
         Loading analysis...
       </div>
@@ -8,7 +8,12 @@
         Error retrieving analysis: {{ errorAnalysis }}
       </div>
       <div v-else-if="analysis">
-        <p>{{ analysis.title }}</p>
+        <p class="info-type">
+          Analysis Track
+        </p>
+        <p class="info-title">
+          {{ analysis.title }}
+        </p>
       </div>
       <div v-else>
         Unexpected behavior
@@ -150,23 +155,12 @@ export default defineComponent({
 <style lang="less">
 .analysis-track {
   width: 100%;
-  height: 300px;
+  height: 200px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
   position: relative;
-}
-
-.info {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  z-index: 5;
-
-  background-color: #c4c4c494;
-  padding: 10px;
-  width: 120px;
 }
 </style>

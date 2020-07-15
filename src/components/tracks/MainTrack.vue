@@ -20,8 +20,6 @@
 <script lang="ts">
 import {
   defineComponent,
-  onMounted,
-  onUnmounted,
   ref,
   watch,
   PropType,
@@ -29,7 +27,6 @@ import {
 } from '@vue/composition-api'
 
 import { useStore } from '@/store/index'
-import { PlayState } from '@/store/audio'
 import { Region as RegionType } from '@/types/region'
 
 import TrackPluginsContainer from '@/components/track-elements/TrackPluginsContainer.vue'
@@ -68,26 +65,6 @@ export default defineComponent({
       emit('selection', selection.value)
     }, { immediate: true })
 
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === ' ' || e.key === 'Spacebar') {
-        e.preventDefault()
-        switch (store.state.audio.playState) {
-          case PlayState.Play:
-            store.commit.audio.setPlayState(PlayState.Pause)
-            break
-          case PlayState.Stop:
-          case PlayState.Pause:
-            store.commit.audio.setPlayState(PlayState.Play)
-            break
-          default:
-            console.error('Unknown PlayState', store.state.audio.playState)
-        }
-      }
-    }
-
-    onMounted(() => { window.addEventListener('keydown', onKeyDown) })
-    onUnmounted(() => { window.removeEventListener('keydown', onKeyDown) })
-
     return {
       // Use a different name to avoid namespace conflicts with `selection` props
       innerSelection: selection,
@@ -100,5 +77,9 @@ export default defineComponent({
 <style lang="less" scoped>
 .maintrack-container {
   position: relative;
+}
+
+.maintrack {
+  height: 70px;
 }
 </style>

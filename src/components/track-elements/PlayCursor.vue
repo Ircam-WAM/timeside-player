@@ -67,6 +67,9 @@ export default defineComponent({
       } else {
         return {
           duration: store.state.audio.duration,
+          // Need to explicit set delay / endDelay to avoid cursor offset when adding/removing selection
+          delay: 0,
+          endDelay: 0,
           iterations: 1,
           // Keep cursor at the end when the animation is finished
           fill: 'forwards'

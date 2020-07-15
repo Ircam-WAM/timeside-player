@@ -77,14 +77,5 @@ describe ('Player.vue', () => {
 
     // Initial state should be stop
     expect(store.state.audio.playState).toBe(PlayState.Stop)
-
-    window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }))
-    expect(store.state.audio.playState).toBe(PlayState.Play)
-
-    window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }))
-    expect(store.state.audio.playState).toBe(PlayState.Pause)
-
-    window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }))
-    expect(store.state.audio.playState).toBe(PlayState.Play)
   })
 })

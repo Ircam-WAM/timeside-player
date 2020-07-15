@@ -84,6 +84,6 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .waveform {
-  min-height: 100px;
+  min-height: 50px;
 }
 </style>

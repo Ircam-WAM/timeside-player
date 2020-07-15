@@ -1,27 +1,23 @@
 <template>
   <div>
-    <CreateAnnotationTrack
-      :item-id="itemId"
-      @new-annotation="onNew"
-    />
-    <div v-if="loading">
+    <div v-if="annotationTracks.loading">
       Loading...
     </div>
     <div
-      v-else-if="error"
+      v-else-if="annotationTracks.error"
       class="error"
     >
-      Error: {{ error }}
+      Error: {{ formatResponseError(annotationTracks.error) }}
     </div>
     <div
       v-else-if="annotationTracks"
       class="annotation-tracks"
     >
       <AnnotationTrack
-        v-for="a of annotationTracks"
+        v-for="a of annotationTracks.annotationTracks"
         :key="a.uuid"
         :annotation-track="a"
-        @destroy="onDestroy($event)"
+        @destroy="annotationTracks.remove($event)"
       />
     </div>
     <div v-else>
@@ -31,66 +27,24 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  ref,
-  onMounted,
-  watch
-} from '@vue/composition-api'
-
+import { defineComponent, PropType } from '@vue/composition-api'
+import { AnnotationTrackStore } from '@/utils/annotation-track-store'
+import { formatResponseError } from '@/utils/response-error'
 import AnnotationTrack from './AnnotationTrack.vue'
-
-import CreateAnnotationTrack from '@/components/annotation/CreateAnnotationTrack.vue'
-import api, { AnnotationTrack as AnnotationTrackType } from '@/utils/api'
 
 export default defineComponent({
   props: {
-    itemId: {
-      type: String,
+    annotationTracks: {
+      type: Object as PropType<AnnotationTrackStore>,
       required: true
     }
   },
   components: {
-    CreateAnnotationTrack,
     AnnotationTrack
   },
-  setup (props) {
-    const annotationTracks = ref<AnnotationTrackType[]>()
-    const loading = ref(false)
-    const error = ref()
-
-    onMounted(() => watch(() => props.itemId, () => {
-      (async () => {
-        loading.value = true
-        try {
-          annotationTracks.value = await api.listAnnotationTracks({ itemUuid: props.itemId })
-        } catch (e) {
-          error.value = e
-        }
-        loading.value = false
-      })()
-    }, { immediate: true }))
-
-    const onNew = (at: AnnotationTrackType) => {
-      if (!annotationTracks.value) {
-        return
-      }
-      annotationTracks.value.push(at)
-    }
-
-    const onDestroy = (removedId: string) => {
-      if (!annotationTracks.value) {
-        return
-      }
-      annotationTracks.value = annotationTracks.value.filter(a => a.uuid !== removedId)
-    }
-
+  setup () {
     return {
-      loading,
-      error,
-      annotationTracks,
-      onNew,
-      onDestroy
+      formatResponseError
     }
   }
 })

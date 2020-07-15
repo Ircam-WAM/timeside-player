@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils'
+import Player from '@/components/Player.vue'
 import PlayerContainer from '@/components/PlayerContainer.vue'
 import { useStore, resetStore } from '@/store/index'
 
@@ -40,15 +41,8 @@ const getShallowMount = async () => {
 describe ('PlayerContainer.vue', () => {
   it('should show metadata (title, description, uuid)', async (done) => {
     const { wrapper } = await getShallowMount()
-    const metadataContainer = wrapper.find('.item-metadata')
+    const metadataContainer = wrapper.find(Player)
     expect(metadataContainer.exists()).toBe(true)
-
-    expect(metadataContainer.find('.title').text())
-      .toBe(`title: ${fooItem.title}`)
-    expect(metadataContainer.find('.description').text())
-      .toBe(`description: ${fooItem.description}`)
-    expect(metadataContainer.find('.uuid').text())
-      .toBe(`uuid: ${fooItem.uuid}`)
 
     // Explicit call wrapper.destroy to remove side-effects in the next test
     // Without this, the keydown event handler attached to the window will be run twice

@@ -340,7 +340,7 @@ rect {
 
 .content {
   cursor: grab;
-  fill: rgba(255, 0, 0, 0.5);
+  fill: rgba(92, 196, 255, 0.63);
 }
 
 .close {

@@ -1,37 +1,47 @@
 <template>
   <form
     ref="formEl"
-    class="create-annotation-track"
+    class="create-annotation-track generic-form"
     @submit.prevent="submit"
   >
-    <p>Add an anotation track</p>
-    <input
-      v-model="form.title"
-      placeholder="Title"
-      name="title"
-      type="text"
-      required
-    >
-    <input
-      v-model="form.description"
-      placeholder="Description"
-      name="description"
-      type="text"
-      required
-    >
-    <div>
-      <label for="is-public">Public</label>
+    <p class="form-title">
+      Add an annotation track
+    </p>
+    <div class="field">
+      <input
+        v-model="form.title"
+        placeholder="Title"
+        name="title"
+        type="text"
+        required
+      >
+    </div>
+    <div class="field">
+      <input
+        v-model="form.description"
+        placeholder="Description"
+        name="description"
+        type="text"
+        required
+      >
+    </div>
+    <div class="field left">
       <input
         id="is-public"
         v-model="form.isPublic"
         type="checkbox"
         name="isPublic"
       >
+      <label for="is-public">Make annotation public</label>
     </div>
     <button
+      class="btn green-btn"
       :disabled="loading"
     >
-      {{ loading ? 'Loading...' : 'Submit' }}
+      {{ loading ? 'Loading...' : 'Add' }}
+    </button>
+    <button type="button" class="btn grey-btn" @click="$emit('close')">
+      Cancel
     </button>
     <div
       v-if="error"
@@ -79,7 +89,7 @@ export default defineComponent({
         toasted.success('AnnotationTrack added !')
         form.value = initialForm()
         formEl.value?.reset()
-        emit('new-annotation', newAnnotation)
+        emit('new-annotation-track', newAnnotation)
       } catch (e) {
         error.value = e
       }
@@ -97,14 +107,10 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-.create-annotation-track {
-  text-align: center;
-
-  & > * {
-    margin: 0 auto;
-    margin-bottom: 10px;
-    display: block;
-  }
+.form-title {
+  font-weight: bold;
+  font-size: 18px;
+  margin-top: 0;
 }
 
 .error {

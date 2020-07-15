@@ -19,26 +19,10 @@
       <div v-else-if="!itemDetail">
         Item not found
       </div>
-      <div v-else>
-        <div class="item-metadata">
-          <div class="title">
-            <b>title</b>: {{ itemDetail.title }}
-          </div>
-          <div class="description">
-            <b>description</b>: {{ itemDetail.description }}
-          </div>
-          <div class="samplerate">
-            <b>sample rate</b>: {{ itemDetail.samplerate }}
-          </div>
-          <div class="duration">
-            <b>audio duration</b>: {{ itemDetail.audioDuration }}
-          </div>
-          <div class="uuid">
-            <b>uuid</b>: {{ itemDetail.uuid }}
-          </div>
-        </div>
-        <Player :item="itemDetail" />
-      </div>
+      <Player
+        v-else
+        :item="itemDetail"
+      />
     </template>
   </div>
 </template>

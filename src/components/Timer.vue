@@ -1,7 +1,8 @@
 <template>
   <div class="timer">
-    current: {{ current }}
-    total: {{ total }}
+    <span class="current" title="current time">{{ current }}</span>
+    /
+    <span class="total" title="total time">{{ total }}</span>
   </div>
 </template>
 

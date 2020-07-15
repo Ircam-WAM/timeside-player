@@ -52,7 +52,7 @@ export default defineComponent({
     const stepsize = computed(() => props.hdf5.data_object.frame_metadata.stepsize)
 
     const start = computed(() => props.start || 0)
-    const stop = computed(() => props.stop || duration.value)
+    const stop = computed(() => props.stop || duration.value * 1000)
 
     const points = computed(() => props.hdf5.data_object.value.numpyArray.map((y, idx) => {
       // the signal is displayed recomposing the time interval
@@ -105,6 +105,7 @@ export default defineComponent({
 <style lang="less" scoped>
 .framewise-visualization {
   width: 100%;
-  min-height: 300px;
+  min-height: 50px;
+  height: 100%;
 }
 </style>

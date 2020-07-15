@@ -1,18 +1,13 @@
 <template>
-  <div class="annotation">
-    <b>
-      Annotation Track: {{ annotation.title }}
-      <span v-if="annotation.description">- {{ annotation.description }}</span>
-    </b>
-    <p class="author">
-      Author: {{ annotation.author }}
-    </p>
-    <p class="is-public">
-      Public: {{ annotation.isPublic }}
-    </p>
-    <button @click="destroy">
-      {{ loadingDestroy ? 'Loading...' : 'Delete' }}
-    </button>
+  <div class="annotation" :style="style" :title="annotation.uuid">
+    <div class="title-box">
+      <p class="title">
+        {{ annotation.title }}
+      </p>
+      <p v-if="annotation.description" class="description">
+        {{ annotation.description }}
+      </p>
+    </div>
   </div>
 </template>
 
@@ -20,40 +15,72 @@
 import {
   defineComponent,
   PropType,
-  ref
+  computed
 } from '@vue/composition-api'
 
-import api, { AnnotationTrack } from '@/utils/api'
+import useTrackHelpers from '@/utils/use-track-helpers'
+import { Annotation } from '@/utils/api'
 
 export default defineComponent({
   props: {
     annotation: {
-      type: Object as PropType<AnnotationTrack>,
+      type: Object as PropType<Annotation>,
       required: true
     }
   },
-  setup (props, { emit }) {
-    const loadingDestroy = ref(false)
-    const errorDestroy = ref()
+  setup (props) {
+    const { timeToPosition } = useTrackHelpers()
 
-    async function destroy () {
-      if (!props.annotation.uuid) {
-        throw new Error(`Unexpected props.annotation.uuid: ${props.annotation.uuid}`)
+    const style = computed(() => {
+      const left = timeToPosition((props.annotation.startTime || 0) * 1000)
+      const right = timeToPosition(props.annotation.stopTime * 1000)
+
+      // https://stackoverflow.com/a/3426956
+      function hashCode (str: string) {
+        var hash = 0
+        for (var i = 0; i < str.length; i++) {
+          hash = str.charCodeAt(i) + ((hash << 5) - hash)
+        }
+        return hash
       }
-      loadingDestroy.value = true
-      try {
-        await api.destroyAnnotationTrack({ uuid: props.annotation.uuid })
-        emit('destroy', props.annotation.uuid)
-      } catch (e) {
-        errorDestroy.value = e
+
+      function intToRGB (i: number) {
+        const c = (i & 0x00FFFFFF)
+          .toString(16)
+          .toUpperCase()
+
+        return '00000'.substring(0, 6 - c.length) + c
       }
-      loadingDestroy.value = false
-    }
+
+      function hexToRgb (hex: string) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+
+        return result ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16)
+        } : null
+      }
+
+      const style: Record<string, string> = {
+        left: `${left}px`,
+        width: `${right - left}px`
+      }
+
+      // Generate annotation color from title
+      if (props.annotation.title) {
+        const hex = intToRGB(hashCode(props.annotation.title))
+        const rgb = hexToRgb(hex)
+        if (rgb) {
+          style.backgroundColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 1)`
+        }
+      }
+
+      return style
+    })
 
     return {
-      destroy,
-      loadingDestroy,
-      errorDestroy
+      style
     }
   }
 })
@@ -61,9 +88,39 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .annotation {
-  background: #80808045;
-  width: 100%;
-  margin: 5px;
-  padding: 10px;
+  position: absolute;
+  background: grey;
+  display: inline-block;
+  margin: 0;
+  top: 0;
+  height: 100%;
+  cursor: pointer;
+
+  opacity: 0.5;
+  &:hover {
+    opacity: 1;
+  }
+
+  & .title-box {
+    position: absolute;
+    top: 0;
+    background-color: inherit;
+    min-width: 100%;
+    color: white;
+    font-size: 18px;
+    padding: 7px 20px;
+
+    & p {
+      margin: 0;
+
+      &:not(:last-child) {
+        margin-bottom: 3px;
+      }
+    }
+
+    & .title {
+      font-weight: bold;
+    }
+  }
 }
 </style>
