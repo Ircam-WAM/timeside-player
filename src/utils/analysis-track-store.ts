@@ -13,7 +13,6 @@ export interface AnalysisTrackStore {
   error: Response | Error | undefined;
   add (at: AnalysisTrack): void;
   remove (uuid: string): void;
-  getLastAdded(): AnalysisTrack | undefined;
 }
 
 export default function (itemUuid: ComputedRef<string>): AnalysisTrackStore {
@@ -48,21 +47,12 @@ export default function (itemUuid: ComputedRef<string>): AnalysisTrackStore {
     analysisTracks.value = analysisTracks.value.filter(at => at.uuid !== uuid)
   }
 
-  function getLastAdded () {
-    if (!analysisTracks.value) {
-      return undefined
-    }
-    return analysisTracks.value[0]
-  }
-
   return reactive({
     analysisTracks,
     loading,
     error,
 
     add,
-    remove,
-
-    getLastAdded
+    remove
   })
 }

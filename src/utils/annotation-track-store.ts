@@ -13,7 +13,6 @@ export interface AnnotationTrackStore {
   error: Response | Error | undefined;
   add (at: AnnotationTrack): void;
   remove (uuid: string): void;
-  getLastAdded(): AnnotationTrack | undefined;
 }
 
 export default function (itemUuid: ComputedRef<string>): AnnotationTrackStore {
@@ -48,21 +47,12 @@ export default function (itemUuid: ComputedRef<string>): AnnotationTrackStore {
     annotationTracks.value = annotationTracks.value.filter(at => at.uuid !== uuid)
   }
 
-  function getLastAdded () {
-    if (!annotationTracks.value) {
-      return
-    }
-    return annotationTracks.value[0]
-  }
-
   return reactive({
     annotationTracks,
     loading,
     error,
 
     add,
-    remove,
-
-    getLastAdded
+    remove
   })
 }

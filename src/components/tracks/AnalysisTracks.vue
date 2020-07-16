@@ -25,10 +25,9 @@
             :nb-pixels="2048"
           />
         </div>
-        <transition-group name="animate-track" tag="div">
+        <transition-group name="animate-track" tag="div" @enter="newTrack">
           <AnalysisTrack
             v-for="at of analysisTracks.analysisTracks"
-            ref="analysisTrackRefs"
             :key="at.uuid"
             :start="selection ? selection.start : undefined"
             :stop="selection ? selection.stop : undefined"
@@ -55,10 +54,7 @@
 import {
   defineComponent,
   PropType,
-  computed,
-  onMounted,
-  watch,
-  ref
+  computed
 } from '@vue/composition-api'
 import { useStore } from '@/store/index'
 
@@ -72,7 +68,6 @@ import AnalysisTrack from '@/components/analysis-tracks/AnalysisTrack.vue'
 import { formatResponseError } from '@/utils/response-error'
 
 import { AnalysisTrackStore } from '@/utils/analysis-track-store'
-import { AnalysisTrack as AnalysisTrackType } from '@/utils/api'
 import { Region as RegionType } from '@/types/region'
 
 export default defineComponent({
@@ -98,41 +93,17 @@ export default defineComponent({
 
     AnalysisTrack
   },
-  setup ({ analysisTracks }) {
+  setup () {
     const store = useStore()
-    // FIXME: On vue@3 release, switch to functions refs
-    // See https://composition-api.vuejs.org/api.html#template-refs
-    const analysisTrackRefs = ref<{ $el: Element, _props: { analysisTrack: AnalysisTrackType } }[]>([])
 
-    // Scroll to new element when added
-    const atLength = computed(() => analysisTracks.analysisTracks ? analysisTracks.analysisTracks.length : 0)
-    onMounted(() => watch(atLength, (newLength, oldLength) => {
-      if (newLength === 0) {
-        return
-      }
-      // Check only one item has been added
-      if (newLength - oldLength !== 1) {
-        return
-      }
-      // Get last added in store
-      const lastAdded = analysisTracks.getLastAdded()
-      if (!lastAdded) {
-        console.warn('unexpected empty last added')
-        return
-      }
-      // Refs are not ordered, we have to find by props
-      const newElementRef = analysisTrackRefs.value.find(r => r._props.analysisTrack === lastAdded)
-      if (!newElementRef) {
-        console.warn('new item not found')
-        return
-      }
-      newElementRef.$el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }))
+    function newTrack (el: Element) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
 
     return {
-      analysisTrackRefs,
       formatResponseError,
-      lastTime: computed(() => store.state.audio.duration)
+      lastTime: computed(() => store.state.audio.duration),
+      newTrack
     }
   }
 })

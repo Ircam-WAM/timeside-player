@@ -13,7 +13,7 @@
       v-else-if="annotationTracks"
       class="annotation-tracks"
     >
-      <transition-group name="animate-track" tag="div">
+      <transition-group name="animate-track" tag="div" @enter="newTrack">
         <AnnotationTrack
           v-for="a of annotationTracks.annotationTracks"
           ref="annotationTrackRefs"
@@ -33,15 +33,10 @@
 <script lang="ts">
 import {
   defineComponent,
-  PropType,
-  onMounted,
-  watch,
-  computed,
-  ref
+  PropType
 } from '@vue/composition-api'
 import { AnnotationTrackStore } from '@/utils/annotation-track-store'
 import { formatResponseError } from '@/utils/response-error'
-import { AnnotationTrack as AnnotationTrackType } from '@/utils/api'
 
 import AnnotationTrack from './AnnotationTrack.vue'
 
@@ -55,39 +50,14 @@ export default defineComponent({
   components: {
     AnnotationTrack
   },
-  setup ({ annotationTracks }) {
-    // FIXME: On vue@3 release, switch to functions refs
-    // See https://composition-api.vuejs.org/api.html#template-refs
-    const annotationTrackRefs = ref<{ $el: Element, _props: { annotationTrack: AnnotationTrackType } }[]>([])
-
-    // Scroll to new element when added
-    const atLength = computed(() => annotationTracks.annotationTracks ? annotationTracks.annotationTracks.length : 0)
-    onMounted(() => watch(atLength, (newLength, oldLength) => {
-      if (newLength === 0) {
-        return
-      }
-      // Check only one item has been added
-      if (newLength - oldLength !== 1) {
-        return
-      }
-      // Get last added in store
-      const lastAdded = annotationTracks.getLastAdded()
-      if (!lastAdded) {
-        console.warn('unexpected empty last added')
-        return
-      }
-      // Refs are not ordered, we have to find by props
-      const newElementRef = annotationTrackRefs.value.find(r => r._props.annotationTrack === lastAdded)
-      if (!newElementRef) {
-        console.warn('new item not found')
-        return
-      }
-      newElementRef.$el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }))
+  setup () {
+    function newTrack (el: Element) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
 
     return {
       formatResponseError,
-      annotationTrackRefs
+      newTrack
     }
   }
 })
