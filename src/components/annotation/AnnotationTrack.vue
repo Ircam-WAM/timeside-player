@@ -66,6 +66,7 @@
       <Annotations
         :track-id="annotationTrack.uuid"
         :annotations="annotations"
+        :selection="selection"
         @select-annotation="selectedAnnotation = $event"
       />
     </div>
@@ -120,16 +121,21 @@ import {
   computed
 } from '@vue/composition-api'
 
+import Annotations from '@/components/annotation/Annotations.vue'
+
 import annotationStore from '@/utils/annotation-store'
 import api, { AnnotationTrack, Annotation } from '@/utils/api'
 import { formatResponseError } from '@/utils/response-error'
-import Annotations from '@/components/annotation/Annotations.vue'
+import { Region as RegionType } from '@/types/region'
 
 export default defineComponent({
   props: {
     annotationTrack: {
       type: Object as PropType<AnnotationTrack>,
       required: true
+    },
+    selection: {
+      type: Object as PropType<RegionType>
     }
   },
   components: {
@@ -198,7 +204,6 @@ export default defineComponent({
 }
 
 .annotation-track {
-  background: #80808045;
   position: relative;
 }
 

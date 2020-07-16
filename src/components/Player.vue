@@ -13,10 +13,6 @@
         <div class="item-info">
           <div class="title-container">
             <span class="title">{{ item.title }}</span>
-            <span class="uuid">({{ item.uuid }})</span>
-          </div>
-          <div class="description">
-            {{ item.description }}
           </div>
         </div>
         <div>
@@ -61,6 +57,14 @@
       <div v-if="currentTab === Tab.Info" class="info-tab">
         <table class="info-table">
           <tbody>
+            <tr class="uuid">
+              <th>uuid</th>
+              <td>{{ item.uuid }}</td>
+            </tr>
+            <tr class="description">
+              <th>description</th>
+              <td>{{ item.description }}</td>
+            </tr>
             <tr class="samplerate">
               <th>sample rate</th>
               <td>{{ item.samplerate }} Hz</td>
@@ -91,6 +95,7 @@
         </div>
         <AnnotationTracks
           :item-id="item.uuid"
+          :selection="selection"
           :annotation-tracks="annotationTracks"
         />
         <AnalysisTracks
@@ -260,6 +265,9 @@ export default defineComponent({
 .tabs {
   display: flex;
 
+  border-top: 5px solid #606062;
+  border-left: 5px solid #606062;
+
   .tab {
     &.active {
       background: white;
@@ -304,8 +312,19 @@ export default defineComponent({
 }
 
 .info-table {
+  tr {
+    margin-bottom: 5px;
+  }
   th {
+    padding-left: 5px;
     padding-right: 20px;
+    color: #444;
+    background-color: #f9f9f9;
+    border-right: .3em solid #ddd;
+  }
+  td {
+    padding-top: 5px;
+    padding-left: 20px;
   }
 }
 
@@ -327,7 +346,7 @@ export default defineComponent({
 
   .form-title {
     font-weight: bold;
-    font-size: 18px;
+    font-size: 20px;
     margin-top: 0;
   }
 
@@ -340,6 +359,7 @@ export default defineComponent({
         border: 1px solid grey;
         padding: 7px 10px;
         width: 100%;
+        font-size: 16px;
       }
 
       position: relative;
@@ -351,7 +371,7 @@ export default defineComponent({
         position: absolute;
         right: 7px;
         top: 7px;
-        pointer-events: none;
+        pointer-events: noneet
       }
     }
 
@@ -386,6 +406,7 @@ export default defineComponent({
     width: 100%;
     cursor: pointer;
     margin-bottom: 5px;
+    border-radius: 5px;
   }
 
   .green-btn {

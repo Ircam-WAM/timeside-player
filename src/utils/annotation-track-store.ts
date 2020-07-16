@@ -3,16 +3,17 @@ import {
   onMounted,
   watch,
   ComputedRef,
-  Ref
+  reactive
 } from '@vue/composition-api'
 import api, { AnnotationTrack } from '@/utils/api'
 
 export interface AnnotationTrackStore {
-  annotationTracks: Ref<AnnotationTrack[] | undefined>;
-  loading: Ref<boolean>;
-  error: Ref<Response | Error | undefined>;
+  annotationTracks: AnnotationTrack[] | undefined;
+  loading: boolean;
+  error: Response | Error | undefined;
   add (at: AnnotationTrack): void;
   remove (uuid: string): void;
+  getLastAdded(): AnnotationTrack | undefined;
 }
 
 export default function (itemUuid: ComputedRef<string>): AnnotationTrackStore {
@@ -47,12 +48,21 @@ export default function (itemUuid: ComputedRef<string>): AnnotationTrackStore {
     annotationTracks.value = annotationTracks.value.filter(at => at.uuid !== uuid)
   }
 
-  return {
+  function getLastAdded () {
+    if (!annotationTracks.value) {
+      return
+    }
+    return annotationTracks.value[0]
+  }
+
+  return reactive({
     annotationTracks,
     loading,
     error,
 
     add,
-    remove
-  }
+    remove,
+
+    getLastAdded
+  })
 }

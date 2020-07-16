@@ -20,12 +20,14 @@
 <script lang="ts">
 import {
   defineComponent,
-  PropType
+  PropType,
+  computed
 } from '@vue/composition-api'
 
 import Annotation from '@/components/annotation/Annotation.vue'
 import CreateAnnotation from '@/components/annotation/CreateAnnotation.vue'
 import { AnnotationStore } from '@/utils/annotation-store'
+import { Region as RegionType } from '@/types/region'
 
 export default defineComponent({
   props: {
@@ -36,11 +38,27 @@ export default defineComponent({
     annotations: {
       type: Object as PropType<AnnotationStore>,
       required: true
+    },
+    selection: {
+      type: Object as PropType<RegionType>
     }
   },
   components: {
     CreateAnnotation,
     Annotation
+  },
+  setup (props) {
+    const filteredAnnotations = computed(() => {
+      if (!props.selection) {
+        return props.annotations
+      }
+      // TODO: Filter annotations according to props.selection
+      return props.annotations
+    })
+
+    return {
+      filteredAnnotations
+    }
   }
 })
 </script>

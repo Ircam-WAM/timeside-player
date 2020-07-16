@@ -11,22 +11,32 @@
     </div>
     <div v-else class="tracks">
       <div class="track-list">
-        <WaveformContainer
-          class="waveform-zoom"
-          :item-id="itemId"
-          :start="selection ? selection.start : undefined"
-          :stop="selection ? selection.stop : undefined"
-          :nb-pixels="2048"
-        />
-        <AnalysisTrack
-          v-for="at of analysisTracks.analysisTracks"
-          :key="at.uuid"
-          :start="selection ? selection.start : undefined"
-          :stop="selection ? selection.stop : undefined"
-          :analysis-track="at"
-          class="analysis-track"
-          @deleted="analysisTracks.remove($event)"
-        />
+        <div>
+          <div class="info-box">
+            <p class="info-type">
+              Waveform
+            </p>
+          </div>
+          <WaveformContainer
+            class="waveform-zoom"
+            :item-id="itemId"
+            :start="selection ? selection.start : undefined"
+            :stop="selection ? selection.stop : undefined"
+            :nb-pixels="2048"
+          />
+        </div>
+        <transition-group name="animate-track" tag="div">
+          <AnalysisTrack
+            v-for="at of analysisTracks.analysisTracks"
+            ref="analysisTrackRefs"
+            :key="at.uuid"
+            :start="selection ? selection.start : undefined"
+            :stop="selection ? selection.stop : undefined"
+            :analysis-track="at"
+            class="analysis-track"
+            @deleted="analysisTracks.remove($event)"
+          />
+        </transition-group>
       </div>
       <TrackPluginsContainer>
         <InteractivePlayCursor
@@ -45,7 +55,10 @@
 import {
   defineComponent,
   PropType,
-  computed
+  computed,
+  onMounted,
+  watch,
+  ref
 } from '@vue/composition-api'
 import { useStore } from '@/store/index'
 
@@ -59,6 +72,7 @@ import AnalysisTrack from '@/components/analysis-tracks/AnalysisTrack.vue'
 import { formatResponseError } from '@/utils/response-error'
 
 import { AnalysisTrackStore } from '@/utils/analysis-track-store'
+import { AnalysisTrack as AnalysisTrackType } from '@/utils/api'
 import { Region as RegionType } from '@/types/region'
 
 export default defineComponent({
@@ -84,10 +98,39 @@ export default defineComponent({
 
     AnalysisTrack
   },
-  setup () {
+  setup ({ analysisTracks }) {
     const store = useStore()
+    // FIXME: On vue@3 release, switch to functions refs
+    // See https://composition-api.vuejs.org/api.html#template-refs
+    const analysisTrackRefs = ref<{ $el: Element, _props: { analysisTrack: AnalysisTrackType } }[]>([])
+
+    // Scroll to new element when added
+    const atLength = computed(() => analysisTracks.analysisTracks ? analysisTracks.analysisTracks.length : 0)
+    onMounted(() => watch(atLength, (newLength, oldLength) => {
+      if (newLength === 0) {
+        return
+      }
+      // Check only one item has been added
+      if (newLength - oldLength !== 1) {
+        return
+      }
+      // Get last added in store
+      const lastAdded = analysisTracks.getLastAdded()
+      if (!lastAdded) {
+        console.warn('unexpected empty last added')
+        return
+      }
+      // Refs are not ordered, we have to find by props
+      const newElementRef = analysisTrackRefs.value.find(r => r._props.analysisTrack === lastAdded)
+      if (!newElementRef) {
+        console.warn('new item not found')
+        return
+      }
+      newElementRef.$el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }))
 
     return {
+      analysisTrackRefs,
       formatResponseError,
       lastTime: computed(() => store.state.audio.duration)
     }
@@ -107,6 +150,17 @@ export default defineComponent({
 
 .track-list > *:not(:last-child) {
   margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #c6c6c6;
+}
+
+.animate-track-enter-active {
+  transition: box-shadow 5s;
+}
+
+.animate-track-enter,
+.animate-track-leave-to {
+  box-shadow: 10px 10px 45px rgba(0, 0, 0, 0.6);
 }
 
 .error {
