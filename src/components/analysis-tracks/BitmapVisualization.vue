@@ -119,7 +119,7 @@ export default defineComponent({
 <style lang="less" scoped>
 .bitmap-visualization {
   width: 100%;
-  height: 300px;
+  height: 100%;
 
   display: flex;
   justify-content: center;
