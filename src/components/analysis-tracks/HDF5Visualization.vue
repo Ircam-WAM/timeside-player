@@ -70,6 +70,9 @@ export default defineComponent({
             throw resp
           }
           const json: HDF5[] = await resp.json()
+          if (json.length === 0) {
+            throw new Error('result sent an empty array')
+          }
           hdf5.value = json[0]
         } catch (e) {
           error.value = e
