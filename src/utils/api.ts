@@ -12,7 +12,8 @@ import {
 // First item is the default one
 export const baseUrls: readonly string[] = [
   'https://sandbox.wasabi.telemeta.org',
-  'https://wasabi.telemeta.org'
+  'https://wasabi.telemeta.org',
+  'https://timeside.ircam.fr'
 ]
 
 export const basePath = window.localStorage.getItem('api-url') || baseUrls[0]
