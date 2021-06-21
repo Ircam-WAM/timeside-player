@@ -9,12 +9,14 @@ import {
   LocalStorageJWTToken
 } from '@ircam/timeside-sdk'
 
-// First item is the default one
-export const baseUrls: readonly string[] = [
+const defaultBaseUrls = [
   'https://sandbox.wasabi.telemeta.org',
   'https://wasabi.telemeta.org',
   'https://timeside.ircam.fr'
 ]
+
+// First item is the default one
+export const baseUrls: readonly string[] = process?.env?.VUE_APP_TIMESIDE_BASE_URL?.split(',') ?? defaultBaseUrls
 
 export const basePath = window.localStorage.getItem('api-url') || baseUrls[0]
 

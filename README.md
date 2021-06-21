@@ -61,6 +61,13 @@ If you want to load the package from a CDN for an up-to-date version, see [lib-e
 npm install
 ```
 
+## Configure environment
+
+```
+cp env.example .env.local
+$EDITOR .env.local
+```
+
 ### Compiles and hot-reloads for development
 ```
 npm run serve
