@@ -30,7 +30,7 @@ import {
   ref
 } from '@vue/composition-api'
 
-import { HDF5 } from '@/utils/api'
+import { HDF5, basePath } from '@/utils/api'
 import FramewiseVisualization from '@/components/analysis-tracks/FramewiseVisualization.vue'
 
 import { formatResponseError } from '@/utils/response-error'
@@ -64,7 +64,7 @@ export default defineComponent({
         try {
           // FIXME: API should implement it in schema in the future
           // See: https://github.com/Parisson/TimeSide/issues/174#issuecomment-630867653
-          const resultUrl = `https://sandbox.wasabi.telemeta.org/timeside/results/${props.resultUuid}/json/`
+          const resultUrl = `${basePath}/timeside/results/${props.resultUuid}/json/`
           const resp = await fetch(resultUrl)
           if (!resp.ok) {
             throw resp
