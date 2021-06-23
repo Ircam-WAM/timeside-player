@@ -23,11 +23,7 @@ const getShallowMount = async () => {
   })
 
   // Skip initial call
-  try {
-    await store.getters.items.getPromiseById(fooItem.uuid)
-  } catch (e) {
-    expect(e === undefined)
-  }
+  store.getters.items.getPromiseById(fooItem.uuid)?.catch()
 
   // Set store value
   store.commit.items.unsetPromise(fooItem.uuid)
@@ -41,7 +37,7 @@ const getShallowMount = async () => {
 describe ('PlayerContainer.vue', () => {
   it('should show metadata (title, description, uuid)', async (done) => {
     const { wrapper } = await getShallowMount()
-    const metadataContainer = wrapper.find(Player)
+    const metadataContainer = wrapper.findComponent(Player)
     expect(metadataContainer.exists()).toBe(true)
 
     // Explicit call wrapper.destroy to remove side-effects in the next test

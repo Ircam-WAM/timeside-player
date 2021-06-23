@@ -1,7 +1,7 @@
 import { shallowMount, mount, createLocalVue } from '@vue/test-utils'
 import VueRouter from 'vue-router'
 import router from '@/router'
-
+import { ItemList } from '@/utils/api'
 
 import { useStore, resetStore } from '@/store/index'
 import List from '@/components/List.vue'
@@ -15,25 +15,15 @@ describe('List.vue', () => {
       stubs: [ 'router-link' ]
     })
 
-    // Skip initial call
-    try {
-      await store.state.itemList.promise
-    } catch (e) {
-      expect(e === undefined)
-    }
-
-    store.dispatch.itemList.getItems()
+    store.commit.itemList.setPromise(new Promise<ItemList[]>(() => {
+      // this promise never resolves
+    }))
     await wrapper.vm.$nextTick()
 
     // Test Loading exist
     expect(wrapper.find('.loading').text()).toEqual("Loading...")
 
-    try {
-      await store.state.itemList.promise
-    } catch (e) {
-      expect(e === undefined)
-    }
-
+    store.commit.itemList.unsetPromise()
     await wrapper.vm.$nextTick()
 
     // Test Loading do not exist
@@ -65,11 +55,7 @@ describe('List.vue', () => {
       stubs: [ 'router-link', 'Login' ]
     })
 
-    try {
-      await store.state.itemList.promise
-    } catch (e) {
-      expect(e === undefined)
-    }
+    store.commit.itemList.setError(new Response(null, { status: 401 }))
     await wrapper.vm.$nextTick()
     expect(wrapper.findComponent(Login))
     done()
@@ -86,11 +72,8 @@ describe('List.vue', () => {
       router
     })
 
-    try {
-      await store.state.itemList.promise
-    } catch (e) {
-      expect(e === undefined)
-    }
+    // Discard component request
+    store.state.itemList.promise?.catch()
 
     const listItems = [
       { title: 'Beat it', description: 'Test case 1', uuid: '0' },
