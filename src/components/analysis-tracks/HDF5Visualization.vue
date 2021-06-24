@@ -13,6 +13,11 @@
         :stop="stop"
       />
     </template>
+    <template v-else-if="hdf5.time_mode === 'global'">
+      <div>
+        {{ hdf5.id_metadata.name }} = {{ hdf5.data_object.value.numpyArray[0] }}
+      </div>
+    </template>
     <template v-else-if="hdf5.time_mode === 'timewise'">
       <div>time_mode === 'timewise' is not implemented</div>
     </template>
