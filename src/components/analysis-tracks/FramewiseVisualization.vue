@@ -1,15 +1,22 @@
 <template>
-  <FluidSVG
-    class="framewise-visualization"
-    @resized="svgSize = $event"
-  >
-    <g class="chart-data">
-      <path
-        class="line"
-        :d="path"
-      />
-    </g>
-  </FluidSVG>
+  <div class="framewise-container">
+    <YAxis
+      class="yaxis-visualization"
+      :min_data="minValue"
+      :max_data="maxValue"
+    />
+    <FluidSVG
+      class="framewise-visualization"
+      @resized="svgSize = $event"
+    >
+      <g class="chart-data">
+        <path
+          class="line"
+          :d="path"
+        />
+      </g>
+    </FluidSVG>
+  </div>
 </template>
 
 <script lang="ts">
@@ -25,6 +32,7 @@ import { scaleLinear } from 'd3-scale'
 import { line, curveNatural } from 'd3-shape'
 
 import FluidSVG from '@/components/utils/FluidSVG.vue'
+import YAxis from './YAxis.vue'
 
 export default defineComponent({
   components: {
@@ -46,6 +54,13 @@ export default defineComponent({
       default: undefined
     }
   },
+<<<<<<< HEAD
+=======
+  components: {
+    FluidSVG,
+    YAxis
+  },
+>>>>>>> 8ca0d84 (add y axis but it doesn't work well yet)
   setup (props) {
     const svgSize = ref<ClientRect | undefined>()
 
@@ -109,18 +124,31 @@ export default defineComponent({
       return d3line(pointsD3) as string
     })
 
+    const minValue = Math.min(0, border.value.min)
+    const maxValue = Math.max(0, border.value.max)
+
     return {
       svgSize,
-      path
+      path,
+      minValue,
+      maxValue
     }
   }
 })
 </script>
 
 <style lang="less" scoped>
+.framewise-container {
+  width: 100%;
+  height: 100%;
+}
+.yaxis-visualization {
+  position: absolute;
+  height: 100%;
+}
 .framewise-visualization {
   width: 100%;
-  min-height: 50px;
   height: 100%;
+  // min-height: 50px
 }
 </style>
