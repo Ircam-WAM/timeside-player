@@ -79,14 +79,12 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-.maintrack-and-axis-container{
-  margin-left: 50px;
-}
+
 .maintrack-container {
   position: relative;
 }
 
 .maintrack {
-  height: 70px;
+  height: 50px;
 }
 </style>
