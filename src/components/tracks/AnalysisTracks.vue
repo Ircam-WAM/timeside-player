@@ -11,20 +11,6 @@
     </div>
     <div v-else class="tracks">
       <div class="track-list">
-        <div>
-          <div class="info-box">
-            <p class="info-type">
-              Waveform
-            </p>
-          </div>
-          <WaveformContainer
-            class="waveform-zoom"
-            :item-id="itemId"
-            :start="selection ? selection.start : undefined"
-            :stop="selection ? selection.stop : undefined"
-            :nb-pixels="2048"
-          />
-        </div>
         <transition-group name="animate-track" tag="div" @enter="newTrack">
           <AnalysisTrack
             v-for="at of analysisTracks.analysisTracks"
@@ -32,16 +18,17 @@
             :start="selection ? selection.start : undefined"
             :stop="selection ? selection.stop : undefined"
             :analysis-track="at"
+            :add-annotation="addAnnotation"
             class="analysis-track"
             @deleted="analysisTracks.remove($event)"
           />
         </transition-group>
       </div>
-      <TrackPluginsContainer>
+      <!-- <TrackPluginsContainer>
         <InteractivePlayCursor
           :selection="selection"
         />
-      </TrackPluginsContainer>
+      </TrackPluginsContainer> -->
     </div>
     <Axis
       :first-time="selection ? selection.start : 0"
@@ -61,8 +48,6 @@ import { useAudioStore } from '@/store/audio'
 import TrackPluginsContainer from '@/components/track-elements/TrackPluginsContainer.vue'
 import InteractivePlayCursor from '@/components/track-elements/InteractivePlayCursor.vue'
 import Axis from '@/components/track-elements/Axis.vue'
-import WaveformContainer from '@/components/track-elements/WaveformContainer.vue'
-
 import AnalysisTrack from '@/components/analysis-tracks/AnalysisTrack.vue'
 
 import { formatResponseError } from '@/utils/response-error'
@@ -74,10 +59,8 @@ export default defineComponent({
   name: 'AnalysisTracks',
   components: {
     TrackPluginsContainer,
-    WaveformContainer,
     Axis,
     InteractivePlayCursor,
-
     AnalysisTrack
   },
   props: {
@@ -92,10 +75,23 @@ export default defineComponent({
     selection: {
       type: Object as PropType<RegionType>,
       default: undefined
+    },
+    addAnnotation: {
+      type: Boolean,
+      required: true
     }
   },
-  setup () {
+  components: {
+    TrackPluginsContainer,
+    Axis,
+    InteractivePlayCursor,
+    AnalysisTrack
+  },
+  setup (props) {
+    var addAnnotation = props.addAnnotation
+
     const audioStore = useAudioStore()
+>>>>>>> 3c5c3d9 (new look, working on annotations)
 
     function newTrack (el: Element) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -104,7 +100,8 @@ export default defineComponent({
     return {
       formatResponseError,
       lastTime: computed(() => audioStore.state.duration),
-      newTrack
+      newTrack,
+      addAnnotation
     }
   }
 })

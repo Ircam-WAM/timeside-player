@@ -348,4 +348,5 @@ rect {
 .close {
   cursor: pointer;
 }
+
 </style>

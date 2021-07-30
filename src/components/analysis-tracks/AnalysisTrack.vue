@@ -7,19 +7,14 @@
       <div v-else-if="errorAnalysis">
         Error retrieving analysis: {{ errorAnalysis }}
       </div>
-      <div v-else-if="analysis">
-        <p class="info-type">
-          Analysis Track
-        </p>
-        <p class="info-title">
-          {{ analysis.title }}
-        </p>
+      <div v-else-if="analysis" class="info-title">
+        {{ analysis.title }}
       </div>
       <div v-else>
         Unexpected behavior
       </div>
       <button class="delete" @click="deleteAt">
-        {{ loadingDelete ? 'Loading...' : 'Delete' }}
+        {{ loadingDelete ? 'Loading...' : 'x' }}
       </button>
     </div>
     <div v-if="loadingResult || loadingAnalysis">
@@ -49,6 +44,9 @@
       <div v-else>
         Unknwon type of visualization (mimeType: "{{ result.mimeType }}", hdf5: "{{ result.hdf5 }}")
       </div>
+      <TrackPluginsContainer v-if="addAnnotation" class="track-plugins-container">
+        <Region v-model="innerSelection" />
+      </TrackPluginsContainer>
     </template>
     <div v-else>
       Unexpected behavior (result undefined)
@@ -68,6 +66,8 @@ import {
 
 import HDF5Visualization from '@/components/analysis-tracks/HDF5Visualization.vue'
 import BitmapVisualization from '@/components/analysis-tracks/BitmapVisualization.vue'
+import TrackPluginsContainer from '@/components/track-elements/TrackPluginsContainer.vue'
+import Region from '@/components/track-elements/Region.vue'
 
 import { useApi, Analysis, AnalysisTrack } from '@/utils/api'
 import { AnalysisRenderTypeEnum, getUuidFromAnalysisUrl } from '@ircam/timeside-sdk'
@@ -76,7 +76,9 @@ import useResult from '@/utils/use-result'
 export default defineComponent({
   components: {
     HDF5Visualization,
-    BitmapVisualization
+    BitmapVisualization,
+    TrackPluginsContainer,
+    Region
   },
   props: {
     analysisTrack: {
@@ -92,12 +94,17 @@ export default defineComponent({
       type: Number,
       required: false,
       default: undefined
+    },
+    addAnnotation: {
+      type: Boolean,
+      required: true
     }
   },
   emits: [ 'deleted' ],
   // See https://github.com/Parisson/TimeSide/issues/174
   setup (props, { emit }) {
     const { api } = useApi()
+    var addAnnotation = props.addAnnotation
     // Reactive analysisTrack
     const _analysisTrack = computed(() => props.analysisTrack)
     const { loading: loadingResult, result, error: errorResult } = useResult(_analysisTrack)
@@ -146,7 +153,8 @@ export default defineComponent({
       analysis,
       loadingAnalysis,
       errorAnalysis,
-      AnalysisRenderTypeEnum
+      AnalysisRenderTypeEnum,
+      addAnnotation
     }
   }
 })
@@ -163,4 +171,5 @@ export default defineComponent({
 
   position: relative;
 }
+
 </style>

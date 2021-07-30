@@ -26,17 +26,22 @@
           <div class="actions">
             <button
               :class="{ 'active': isAnalysisTrackFormOpen }"
-              @click="isAnalysisTrackFormOpen = !isAnalysisTrackFormOpen; isAnnotationTrackFormOpen = false"
+              @click="isAnalysisTrackFormOpen = !isAnalysisTrackFormOpen; isAnnotationTrackFormOpen = false; isAnnotationTrackListOpen = false"
             >
               <span class="plus-picto">+</span>
               Analysis
             </button>
             <button
               :class="{ 'active': isAnnotationTrackFormOpen }"
-              @click="isAnnotationTrackFormOpen = !isAnnotationTrackFormOpen; isAnalysisTrackFormOpen = false"
+              @click="isAnnotationTrackFormOpen = !isAnnotationTrackFormOpen; isAnalysisTrackFormOpen = false; isAnnotationTrackListOpen = false"
             >
               <span class="plus-picto">+</span>
               Annotation
+            </button>
+            <button
+              @click="isAnnotationTrackListOpen = !isAnnotationTrackListOpen; isAnalysisTrackFormOpen = false; isAnnotationTrackFormOpen = false"
+            >
+              <span class="option-picto">...</span>
             </button>
           </div>
         </div>
@@ -58,6 +63,11 @@
             @close="isAnnotationTrackFormOpen = false"
           />
         </div>
+        <div v-if="isAnnotationTrackListOpen" class="create-form-container">
+          <CreateAnnotationTrackList
+            class="create-form"
+          />
+        </div>
         <AnnotationTracks
           :item-id="item.uuid"
           :selection="selection"
@@ -67,6 +77,7 @@
           :item-id="item.uuid"
           :selection="selection"
           :analysis-tracks="analysisTracks"
+          :add-annotation="isAnnotationTrackFormOpen"
         />
       </div>
     </div>
@@ -101,6 +112,7 @@ import AnalysisTracks from '@/components/tracks/AnalysisTracks.vue'
 import AnnotationTracks from '@/components/annotation/AnnotationTracks.vue'
 import CreateAnalysisTrack from '@/components/analysis-tracks/CreateAnalysisTrack.vue'
 import CreateAnnotationTrack from '@/components/annotation/CreateAnnotationTrack.vue'
+import CreateAnnotationTrackList from '@/components/annotation/CreateAnnotationTrackList.vue'
 
 import analysisTrackStore from '@/store/analysis-track'
 import annotationTrackStore from '@/store/annotation-track'
@@ -120,7 +132,8 @@ export default defineComponent({
     Controls,
     AnnotationTracks,
     CreateAnalysisTrack,
-    CreateAnnotationTrack
+    CreateAnnotationTrack,
+    CreateAnnotationTrackList
   },
   props: {
     item: {
@@ -157,6 +170,8 @@ export default defineComponent({
     const isAnnotationTrackFormOpen = ref(false)
     const annotationTracks = annotationTrackStore(computed(() => props.item.uuid))
 
+    const isAnnotationTrackListOpen = ref(false)
+
     return {
       el,
       onSelection,
@@ -172,7 +187,9 @@ export default defineComponent({
       analysisTracks,
 
       isAnnotationTrackFormOpen,
-      annotationTracks
+      annotationTracks,
+
+      isAnnotationTrackListOpen
     }
   }
 })
@@ -210,10 +227,10 @@ export default defineComponent({
     font-size: 16px;
     display: block;
     background: gainsboro;
-    color: black;
+    color: #2c3e50;
     border: none;
     cursor: pointer;
-    padding: 10px 15px;
+    padding: 7px 10px;
   }
 }
 
@@ -249,8 +266,15 @@ export default defineComponent({
   }
 }
 
-.info-tab, .analysis-tab {
-  padding: 20px 0;
+.option-picto {
+  font-size: 20px;
+  font-weight: bold;
+  margin-left: -13px;
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
 }
 
 .info-tab {
@@ -276,10 +300,11 @@ export default defineComponent({
 }
 
 .create-form-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 200px;
+  position: absolute;
+  margin-left: 5px;
+  z-index: 2;
+  background-color: white;
+  opacity: 0.95;
 }
 
 .error {
@@ -305,22 +330,12 @@ export default defineComponent({
 
         background: none;
         border: 1px solid grey;
-        padding: 7px 10px;
+        padding: 5px 7px;
         width: 100%;
         font-size: 16px;
       }
 
       position: relative;
-      &:after {
-        content: '<>';
-        font: 17px "Consolas", monospace;
-        transform: rotate(90deg);
-
-        position: absolute;
-        right: 7px;
-        top: 7px;
-        pointer-events: noneet
-      }
     }
 
     input[type="text"], textarea {
@@ -347,24 +362,16 @@ export default defineComponent({
   }
 
   .btn {
-    padding: 7px 10px;
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 16px;
     border: none;
-    width: 100%;
     cursor: pointer;
     margin-bottom: 5px;
     border-radius: 5px;
-  }
-
-  .green-btn {
-    background: #32762F;
-    color: white;
+    background-color: gainsboro
   }
 
   .grey-btn {
     background-color: #E9EAEC;
-    color: black;
     font-weight: normal;
   }
 
@@ -380,31 +387,31 @@ export default defineComponent({
     z-index: 5;
 
     background-color: #c4c4c494;
-    padding: 10px;
-    width: 160px;
+    padding: 5px;
     border-radius: 5px;
 
+    display: flex;
+    justify-content: space-between;
+
     & .info-type {
-      font-weight: bold;
       margin-top: 5px;
-      margin-bottom: 10px;
-      font-size: 18px;
+      margin-bottom: 5px;
+      font-size: 14px;
     }
 
     & .info-title {
-      margin-top: 5px;
-      margin-bottom: 10px;
-      font-size: 18px;
+      margin-top: 2px;
+      font-size: 14px;
+      text-align: left;
     }
 
     .delete {
-      background-color: #DB4D27;
-      color: white;
       border: none;
       font-size: 16px;
-      padding: 7px 15px;
-      border-radius: 5px;
       cursor: pointer;
+      background: rgba(0,0,0,0);
+      color: #2c3e50;
+      margin-right: -5px;
     }
   }
 }

@@ -1,8 +1,5 @@
 <template>
   <div>
-    <p class="form-title">
-      Add an analysis track
-    </p>
     <div v-if="analysisError">
       {{ formatResponseError(analysisError) }}
     </div>
@@ -54,7 +51,7 @@
         </select>
       </div>
       <div>
-        <button type="submit" class="btn green-btn">
+        <button type="submit" class="btn">
           <template v-if="submitLoading">
             Loading...
           </template>

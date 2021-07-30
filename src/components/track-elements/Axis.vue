@@ -86,6 +86,6 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .x-axis-container {
-  min-height: 30px;
+  min-height: 20px;
 }
 </style>
