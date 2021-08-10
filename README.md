@@ -25,7 +25,7 @@ This project is built with :
 <div id="timeside-player"></div>
 
 <!-- Load latest version -->
-<script src="https://unpkg.com/@ircam/timeside-player@latest/dist/timeside-player.umd.min.js"></script>
+<script src="https://unpkg.com/@ircam/timeside-player@latest/lib/timeside-player.umd.min.js"></script>
 
 <!-- Init the player -->
 <script>
