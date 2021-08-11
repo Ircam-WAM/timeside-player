@@ -22,6 +22,17 @@
       :width="width"
       @mousedown.stop="startMove"
     />
+    <text
+      v-if="width"
+      ref="el"
+      :x="start"
+      y="50"
+      height="100%"
+      :width="width"
+      @mousedown.stop="startMove"
+    >
+      Hello World
+    </text>
     <rect
       v-if="stop"
       class="delimiter right"
@@ -68,8 +79,9 @@ import {
   inject,
   onMounted,
   onUnmounted,
-  watchEffect
-} from 'vue'
+  watchEffect,
+  Ref
+} from '@vue/composition-api'
 import { assertIsDefined } from '@/utils/type-assert'
 import { Region as RegionType } from '@/types/region'
 import { usePlayerRect } from '@/utils/use-player-rect'
@@ -85,17 +97,14 @@ enum Direction {
 export default defineComponent({
   name: 'Region',
   props: {
-    modelValue: {
+    value: {
       type: Object as PropType<RegionType>,
-      required: false,
-      default: undefined
+      required: false
     }
   },
-  emits: [
-    'update:modelValue'
-  ],
   setup (props, { emit }) {
-    const parentContainer = inject(slotContainerKey)
+    // FIXME: Type inference from symbol not working here. Redeclaring type
+    const parentContainer = inject<Ref<SVGSVGElement | undefined>>(slotContainerKey)
     if (!parentContainer) {
       throw new Error('Region.vue expects to be a child of TrackPluginsContainer.vue')
     }
@@ -124,34 +133,34 @@ export default defineComponent({
     }
 
     // one-way data binding
-    watch(() => props.modelValue, (input) => setPosition(input), { immediate: true })
+    watch(() => props.value, (input) => setPosition(input), { immediate: true })
 
     // Recompute absolute coordinates from time values
     // when a resize occurs
-    watch(playerSize, () => setPosition(props.modelValue), { immediate: true })
+    watch(playerSize, () => setPosition(props.value), { immediate: true })
 
     // manually notify parent of the changes
     // instead of watch start/stop
     // in order to optimize performances
     const notifyParent = () => {
       if (start.value === undefined || stop.value === undefined) {
-        emit('update:modelValue', undefined)
+        emit('input', undefined)
         return
       }
       const newVal = {
         start: positionToTime(start.value),
         stop: positionToTime(stop.value)
       }
-      if (props.modelValue === undefined) {
-        emit('update:modelValue', newVal)
+      if (props.value === undefined) {
+        emit('input', newVal)
         return
       }
-      if (props.modelValue.start === newVal.start &&
-          props.modelValue.stop === newVal.stop) {
+      if (props.value.start === newVal.start &&
+          props.value.stop === newVal.stop) {
         // Do nothing
         return
       }
-      emit('update:modelValue', newVal)
+      emit('input', newVal)
     }
 
     const closeHandler = () => {
@@ -348,4 +357,5 @@ rect {
 .close {
   cursor: pointer;
 }
+
 </style>

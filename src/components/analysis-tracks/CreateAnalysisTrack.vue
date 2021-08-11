@@ -1,87 +1,44 @@
 <template>
-  <div>
+  <div class="list-container">
     <div v-if="analysisError">
       {{ formatResponseError(analysisError) }}
     </div>
-    <form
-      v-else
-      class="generic-form"
-      @submit.prevent="submit"
+    <div
+      v-if="analysisLoading"
     >
-      <div class="field select-wrapper">
-        <!--<label for="analysis">Analysis</label>-->
-        <!--
-          Use `@input` instead of `v-model` to set loading option
-        -->
-        <select
-          id="analysis"
-          v-model="selectedAnalysisId"
-          required
-        >
-          <option
-            v-if="analysisLoading"
-            selected
-            disabled
-            value=""
-          >
-            Loading...
-          </option>
-          <template v-if="analysis">
-            <option
-              selected
-              disabled
-              value=""
-            >
-              Analysis type
-            </option>
-            <option
-              v-for="a of analysis"
-              :key="a.uuid"
-              :value="a.uuid"
-            >
-              {{ a.title }}
-              <template v-if="a.description">
-                ({{ a.description }})
-              </template>
-            </option>
-          </template>
-          <template v-else>
-            Unexpected: analysis undefined but analysisLoading = false
-          </template>
-        </select>
-      </div>
-      <div>
-        <button type="submit" class="btn">
-          <template v-if="submitLoading">
-            Loading...
-          </template>
-          <template v-else>
-            Add
-          </template>
-        </button>
-        <div v-if="submitError" class="error">
-          An error occured while adding analysis track: {{ formatResponseError(submitError) }}
+      Loading...
+    </div>
+    <div
+      v-else
+    >
+      <div
+        v-for="a of analysis"
+        :key="a.uuid"
+        :value="a.uuid"
+        class="checklist"
+        @click="submit(a)"
+      >
+        <div class="checkbox" />
+        <div>
+          {{ a.title }}
         </div>
-        <button type="button" class="btn grey-btn" @click="$emit('close')">
-          Cancel
-        </button>
       </div>
-    </form>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import {
   defineComponent,
-  onMounted,
-  ref,
-  computed
+  ref
 } from 'vue'
 
 import { useApi, Analysis, AnalysisTrack } from '@/utils/api'
 import { getAnalysisUrl, getItemUrl } from '@ircam/timeside-sdk'
 
 import { formatResponseError } from '@/utils/response-error'
+
+import useAnalysis from '@/utils/analysis-list-store'
 
 export default defineComponent({
   props: {
@@ -95,55 +52,27 @@ export default defineComponent({
     'close'
   ],
   setup (props, { emit }) {
-    const analysis = ref<Array<Analysis>>()
-    const analysisLoading = ref(true)
-    const selectedAnalysisId = ref<Analysis['uuid']>('')
-    const analysisError = ref<Response>()
     const { api, currentBaseUrl } = useApi()
-
-    onMounted(async () => {
-      try {
-        const resp = await api.listAnalysis()
-        analysis.value = resp
-        analysisLoading.value = false
-        analysisError.value = undefined
-      } catch (e) {
-        if (e instanceof Response) {
-          analysisError.value = e
-        } else {
-          console.error('Unknown error occured', e)
-        }
-      }
-    })
-
-    const selectedAnalysis = computed(() => {
-      if (!analysis.value) {
-        return undefined
-      }
-      if (!selectedAnalysisId.value) {
-        return undefined
-      }
-      return analysis.value.find(el => el.uuid === selectedAnalysisId.value)
-    })
+    const { analysis, analysisLoading, analysisError } = useAnalysis()
+    const selectedAnalysisId = ref<Analysis['uuid']>()
 
     const submitLoading = ref(false)
     const submitError = ref<Response | Error | undefined>()
 
-    async function submit () {
-      if (!selectedAnalysisId.value) {
-        throw new Error('unexpected submit: no selectedAnalysisId')
+    async function submit (selectedAnalysis: Analysis) {
+      if (!selectedAnalysis.uuid) {
+        return undefined
       }
-
       // Building URL
       // https://github.com/Parisson/TimeSide/issues/188
       const analysisTrack: AnalysisTrack = {
         item: getItemUrl(currentBaseUrl, props.itemId),
-        analysis: getAnalysisUrl(currentBaseUrl, selectedAnalysisId.value)
+        analysis: getAnalysisUrl(currentBaseUrl, selectedAnalysis.uuid)
       }
       submitLoading.value = true
       try {
         const at = await api.createAnalysisTrack({ analysisTrack })
-        if (!selectedAnalysis.value) {
+        if (!selectedAnalysis) {
           throw new Error('unexpected empty selectedAnalysis')
         }
         emit('new-analysis-track', at)
@@ -169,7 +98,27 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-.error {
-  color: red;
+.list-container {
+  opacity: 0.95;
+  cursor: pointer;
+}
+.checklist {
+  text-align: left;
+  font-size: 16px;
+  display: flex;
+  margin-top: 2px;
+  position: relative;
+  top: 50%
+}
+.checklist:hover {
+  background: gainsboro;
+}
+.checkbox {
+  height: 15px;
+  width: 15px;
+  border: solid;
+  border-color: black;
+  border-width: 1px;
+  margin: 0px 5px;
 }
 </style>

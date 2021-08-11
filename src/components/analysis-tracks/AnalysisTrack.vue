@@ -45,7 +45,7 @@
         Unknwon type of visualization (mimeType: "{{ result.mimeType }}", hdf5: "{{ result.hdf5 }}")
       </div>
       <TrackPluginsContainer v-if="addAnnotation" class="track-plugins-container">
-        <Region v-model="innerSelection" />
+        <CreateAnnotationRegion v-model="innerSelection" />
       </TrackPluginsContainer>
     </template>
     <div v-else>
@@ -67,7 +67,7 @@ import {
 import HDF5Visualization from '@/components/analysis-tracks/HDF5Visualization.vue'
 import BitmapVisualization from '@/components/analysis-tracks/BitmapVisualization.vue'
 import TrackPluginsContainer from '@/components/track-elements/TrackPluginsContainer.vue'
-import Region from '@/components/track-elements/Region.vue'
+import CreateAnnotationRegion from '@/components/annotation/CreateAnnotationRegion.vue'
 
 import { useApi, Analysis, AnalysisTrack } from '@/utils/api'
 import { AnalysisRenderTypeEnum, getUuidFromAnalysisUrl } from '@ircam/timeside-sdk'
@@ -78,7 +78,7 @@ export default defineComponent({
     HDF5Visualization,
     BitmapVisualization,
     TrackPluginsContainer,
-    Region
+    CreateAnnotationRegion
   },
   props: {
     analysisTrack: {

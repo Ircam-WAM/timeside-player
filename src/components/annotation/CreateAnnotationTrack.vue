@@ -32,7 +32,7 @@
         type="checkbox"
         name="isPublic"
       >
-      <label for="is-public">Make annotation public</label>
+      <label for="is-public">Make annotations public</label>
     </div>
     <button
       class="btn green-btn"
@@ -112,11 +112,6 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-.form-title {
-  font-weight: bold;
-  font-size: 18px;
-  margin-top: 0;
-}
 
 .error {
   color: red;

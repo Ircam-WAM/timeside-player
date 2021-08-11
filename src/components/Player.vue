@@ -3,8 +3,41 @@
     ref="el"
     class="player"
   >
-    <div class="first-line">
-      <span class="title">{{ item.title }}</span>
+    <div class="top-line">
+      <div class="title">
+        {{ item.title }}
+        <div>
+          <span
+            class="information-bubble"
+            @mouseover="hover = true"
+            @mouseleave="hover = false"
+          >
+            i
+          </span>
+          <div v-if="hover">
+            <table class="info-table">
+              <tbody>
+                <tr>
+                  <th>uuid</th>
+                  <td>{{ item.uuid }}</td>
+                </tr>
+                <tr v-if="item.description">
+                  <th>Description</th>
+                  <td>{{ item.description }}</td>
+                </tr>
+                <tr>
+                  <th>Sample rate</th>
+                  <td>{{ item.samplerate }} Hz</td>
+                </tr>
+                <tr>
+                  <th>Audio duration</th>
+                  <td>{{ item.audioDuration }} seconds</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
       <Audio v-if="audioSrcs" :audio-srcs="audioSrcs" />
     </div>
     <div v-if="audioReady">
@@ -39,6 +72,7 @@
               Annotation
             </button>
             <button
+              :class="{ 'active': isAnnotationTrackListOpen }"
               @click="isAnnotationTrackListOpen = !isAnnotationTrackListOpen; isAnalysisTrackFormOpen = false; isAnnotationTrackFormOpen = false"
             >
               <span class="option-picto">...</span>
@@ -50,6 +84,7 @@
         <div v-if="isAnalysisTrackFormOpen" class="create-form-container">
           <CreateAnalysisTrack
             :item-id="item.uuid"
+            :analysis-tracks="analysisTracks"
             class="create-form"
             @new-analysis-track="analysisTracks.add($event); isAnalysisTrackFormOpen = false"
             @close="isAnalysisTrackFormOpen = false"
@@ -65,7 +100,8 @@
         </div>
         <div v-if="isAnnotationTrackListOpen" class="create-form-container">
           <CreateAnnotationTrackList
-            class="create-form"
+            :annotation-tracks="annotationTracks"
+            class="annotation-track-list"
           />
         </div>
         <AnnotationTracks
@@ -189,7 +225,9 @@ export default defineComponent({
       isAnnotationTrackFormOpen,
       annotationTracks,
 
-      isAnnotationTrackListOpen
+      isAnnotationTrackListOpen,
+
+      hover: false
     }
   }
 })
@@ -197,18 +235,23 @@ export default defineComponent({
 
 <style lang="less" scoped>
 
-.first-line {
+.top-line {
   display: flex;
+  position: relative;
   justify-content: space-between;
+
   .title {
     font-size: 18px;
     text-align: left;
+    position: relative;
+    display: flex;
   }
-}
-
-.description {
-  color: grey;
-  font-size: 12px;
+  .information-bubble {
+    padding: 3px 11px;
+    background: gainsboro;
+    border-radius: 20px;
+    margin-left: 10px;
+  }
 }
 
 .line {
@@ -263,18 +306,17 @@ export default defineComponent({
       margin-top: -23px;
       margin-right: 5px;
     }
-  }
-}
 
-.option-picto {
-  font-size: 20px;
-  font-weight: bold;
-  margin-left: -13px;
-  -webkit-transform: rotate(90deg);
-  -moz-transform: rotate(90deg);
-  -o-transform: rotate(90deg);
-  -ms-transform: rotate(90deg);
-  transform: rotate(90deg);
+    & .option-picto {
+      font-size: 20px;
+      font-weight: bold;
+      -webkit-transform: rotate(90deg);
+      -moz-transform: rotate(90deg);
+      -o-transform: rotate(90deg);
+      -ms-transform: rotate(90deg);
+      transform: rotate(90deg);
+    }
+  }
 }
 
 .info-tab {
@@ -283,28 +325,41 @@ export default defineComponent({
 }
 
 .info-table {
+  position: absolute;
+  z-index: 6;
+  background-color: white;
+  opacity: 0.95;
+  font-size: 14px;
+  min-width: 400px;
+
   tr {
     margin-bottom: 5px;
   }
   th {
     padding-left: 5px;
-    padding-right: 20px;
+    padding-right: 10px;
     color: #444;
     background-color: #f9f9f9;
     border-right: .3em solid #ddd;
   }
   td {
     padding-top: 5px;
-    padding-left: 20px;
+    padding-left: 10px;
   }
 }
 
 .create-form-container {
   position: absolute;
-  margin-left: 5px;
+  margin-left: 2px;
   z-index: 2;
   background-color: white;
   opacity: 0.95;
+}
+
+.annotation-track-list {
+  position: absolute;
+  left: 215px;
+  min-width: 100px;
 }
 
 .error {
@@ -319,8 +374,9 @@ export default defineComponent({
 ::v-deep(*) {
   .form-title {
     font-weight: bold;
-    font-size: 20px;
-    margin-top: 0;
+    font-size: 18px;
+    margin-top: 5px;
+    margin-bottom: 10px
   }
 
   .generic-form {
@@ -367,11 +423,15 @@ export default defineComponent({
     cursor: pointer;
     margin-bottom: 5px;
     border-radius: 5px;
-    background-color: gainsboro
+    background-color: gainsboro;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding: 5px
   }
 
   .grey-btn {
-    background-color: #E9EAEC;
+    padding: 5px;
+    background-color: gainsboro;
     font-weight: normal;
   }
 
@@ -408,6 +468,7 @@ export default defineComponent({
     .delete {
       border: none;
       font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
       background: rgba(0,0,0,0);
       color: #2c3e50;
