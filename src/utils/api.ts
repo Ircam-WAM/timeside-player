@@ -1,4 +1,3 @@
-import portableFetch from 'portable-fetch'
 import { inject, InjectionKey } from 'vue'
 import {
   TimesideApi,
@@ -65,9 +64,7 @@ export function createApi (baseUrl?: string): API {
   persistentToken.init()
 
   const urlConfig = {
-    basePath: currentBaseUrl,
-    // For tests where fetch and browser compatibility
-    fetchApi: portableFetch
+    basePath: currentBaseUrl
   }
 
   // rawApi is the the api without jwt middlewares (to refresh tokens)
