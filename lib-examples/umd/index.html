@@ -1,25 +1,25 @@
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<title>Test UMD</title>
-		<!-- Style needs to be manually imported: https://github.com/vitejs/vite/issues/1579 -->
-		<!--<link href="https://unpkg.com/@ircam/timeside-player@latest/lib/style.css" rel="stylesheet">-->
-		<link href="../../lib/style.css" rel="stylesheet">
-	</head>
-	<body>
-		<div id="timeside-player"></div>
-		<!--<script src="https://unpkg.com/@ircam/timeside-player@latest/lib/timeside-player.umd.js"></script>-->
-		<script src="../../lib/timeside-player.umd.js"></script>
-		<script>
-			const timesideUuid = 'f5cdd56b-acdb-449a-96ff-cbb561d43a9c'
-			const player = window.TimesidePlayer('#timeside-player', timesideUuid, 'https://sandbox.wasabi.telemeta.org')
+  <head>
+    <meta charset="UTF-8">
+    <title>Test UMD</title>
+    <!-- Style needs to be manually imported: https://github.com/vitejs/vite/issues/1579 -->
+    <link href="https://unpkg.com/@ircam/timeside-player@latest/lib/style.css" rel="stylesheet">
+    <!--<link href="../../lib/style.css" rel="stylesheet">-->
+  </head>
+  <body>
+    <div id="timeside-player"></div>
+    <script src="https://unpkg.com/@ircam/timeside-player@latest/lib/timeside-player.umd.js"></script>
+    <!--<script src="../../lib/timeside-player.umd.js"></script>-->
+    <script>
+      const timesideUuid = 'f5cdd56b-acdb-449a-96ff-cbb561d43a9c'
+      const player = window.TimesidePlayer('#timeside-player', timesideUuid, 'https://timeside.ircam.fr')
 
-			// You can also provide an Element
-			// const el = document.querySelector('#timeside-player')
-			// const player = window.timesidePlayer(el, timesideUuid)
+      // You can also provide an Element
+      // const el = document.querySelector('#timeside-player')
+      // const player = window.timesidePlayer(el, timesideUuid)
 
-			// Destroy the player
-			// player.destroy()
-		</script>
-	</body>
+      // Destroy the player
+      // player.destroy()
+    </script>
+  </body>
 </html>

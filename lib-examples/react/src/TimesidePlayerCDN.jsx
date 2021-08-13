@@ -8,9 +8,9 @@ export default function TimesidePlayerWrapper(props) {
   // Load from UMD bundle
   const load = async () => {
     if (!window.timesidePlayer) {
-      await import('https://unpkg.com/@ircam/timeside-player@latest/lib/timeside-player.umd.min.js')
+      await import('https://unpkg.com/@ircam/timeside-player@latest/lib/timeside-player.umd.js')
     }
-    const TimesidePlayer = window.timesidePlayer
+    const TimesidePlayer = window.TimesidePlayer
     playerInstance = TimesidePlayer(playerEl.current, props.uuid)
   }
 
