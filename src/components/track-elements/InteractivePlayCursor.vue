@@ -1,7 +1,5 @@
 <template>
-  <PlayCursor
-    :selection="selection"
-  />
+  <PlayCursor :selection="selection" />
 </template>
 
 <script lang="ts">
@@ -11,14 +9,12 @@ import {
   onMounted,
   onUnmounted,
   watchEffect,
-  PropType,
-  Ref
-} from '@vue/composition-api'
+  PropType
+} from 'vue'
 
 import PlayCursor from '@/components/track-elements/PlayCursor.vue'
 
-import { useStore } from '@/store/index'
-import { CurrentTimeSource } from '@/store/audio'
+import { useAudioStore, CurrentTimeSource } from '@/store/audio'
 import { usePlayerRect } from '@/utils/use-player-rect'
 import useTrackHelpers from '@/utils/use-track-helpers'
 
@@ -33,16 +29,16 @@ export default defineComponent({
   },
   props: {
     selection: {
-      type: Object as PropType<RegionType>
+      type: Object as PropType<RegionType>,
+      default: undefined
     }
   },
   setup (props) {
-    const store = useStore()
+    const store = useAudioStore()
     const playerSize = usePlayerRect()
     const { positionToTime } = useTrackHelpers()
 
-    // FIXME: Type inference from symbol not working here. Redeclaring type
-    const parentContainer = inject<Ref<SVGSVGElement | undefined>>(slotContainerKey)
+    const parentContainer = inject(slotContainerKey)
     if (!parentContainer) {
       throw new Error('InteractivePlayCursor.vue expects to be a child of TrackPluginsContainer.vue')
     }
@@ -54,7 +50,7 @@ export default defineComponent({
       }
       const currentTime = positionToTime(clientX - playerSize.value.left, props.selection)
 
-      store.commit.audio.setCurrentTime({
+      store.mutations.setCurrentTime({
         value: currentTime,
         source: CurrentTimeSource.Cursor
       })

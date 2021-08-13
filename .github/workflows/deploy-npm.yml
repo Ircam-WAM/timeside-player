@@ -18,12 +18,12 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install
-        run: npm install
+        run: yarn install
 
       - name: Build
-        run: npm run build-lib
+        run: yarn run build-lib
 
       - name: Publish
-        run: npm publish --access public
+        run: yarn publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

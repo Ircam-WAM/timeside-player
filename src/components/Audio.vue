@@ -1,7 +1,6 @@
 <template>
   <div class="audio">
     <audio
-      v-if="audioSrcs"
       ref="el"
       autoplay
       controls
@@ -9,7 +8,7 @@
       @pause="onPause"
       @playing="onPlaying"
       @ended="onEnded"
-      @error="audioError = $event"
+      @error="onError"
       @durationchange="onDurationChange"
       @seeked="onSeeked"
     >
@@ -24,12 +23,6 @@
         <code>audio</code> element.
       </p>
     </audio>
-    <p
-      v-else
-      class="error"
-    >
-      Your selection have no valid audio file
-    </p>
     <p
       v-if="audioError"
       class="error"
@@ -49,10 +42,9 @@ import {
   PropType,
   computed,
   watch
-} from '@vue/composition-api'
-import { useStore } from '@/store/index'
-import { PlayState, CurrentTimeSource } from '@/store/audio'
-import { AudioSrc } from '@/store/items'
+} from 'vue'
+import { useAudioStore, PlayState, CurrentTimeSource } from '@/store/audio'
+import { AudioSrc } from '@/utils/audio-srcs'
 import { assertIsDefined } from '@/utils/type-assert'
 
 export default defineComponent({
@@ -63,67 +55,74 @@ export default defineComponent({
     }
   },
   setup () {
-    const store = useStore()
+    const store = useAudioStore()
     const el: Ref<HTMLAudioElement | undefined> = ref()
     const audioError = ref<Error | undefined>()
+
+    const getEventEl = (ev: Event): HTMLAudioElement => {
+      assertIsDefined(ev.target)
+      return ev.target as HTMLAudioElement
+    }
 
     /*
     * Audio/Media element events
     */
     const onTimeUpdate = (ev: Event) => {
-      assertIsDefined(ev.target)
-      const target = ev.target as HTMLAudioElement
-      store.commit.audio.setCurrentTime({
+      const target = getEventEl(ev)
+      store.mutations.setCurrentTime({
         value: target.currentTime * 1000,
         source: CurrentTimeSource.TimeUpdate
       })
     }
-    const onPause = () => {
-      assertIsDefined(el.value)
+    const onPause = (ev: Event) => {
+      const target = getEventEl(ev)
 
       // Avoids an infinite loop between play/pause state (reproducible on Firefox 73)
-      if (el.value.seeking) {
+      if (target.seeking) {
         return
       }
 
-      store.commit.audio.setCurrentTime({
-        value: el.value.currentTime * 1000,
+      store.mutations.setCurrentTime({
+        value: target.currentTime * 1000,
         source: CurrentTimeSource.TimeUpdate
       })
-      store.commit.audio.setPlayState(PlayState.Pause)
+      store.mutations.setPlayState(PlayState.Pause)
     }
-    const onPlaying = () => {
-      assertIsDefined(el.value)
-      store.commit.audio.setCurrentTime({
-        value: el.value.currentTime * 1000,
+    const onPlaying = (ev: Event) => {
+      const target = getEventEl(ev)
+      store.mutations.setCurrentTime({
+        value: target.currentTime * 1000,
         source: CurrentTimeSource.TimeUpdate
       })
-      store.commit.audio.setPlayState(PlayState.Play)
+      store.mutations.setPlayState(PlayState.Play)
     }
-    const onEnded = () => {
-      assertIsDefined(el.value)
-      store.commit.audio.setCurrentTime({
-        value: el.value.currentTime * 1000,
+    const onEnded = (ev: Event) => {
+      const target = getEventEl(ev)
+      store.mutations.setCurrentTime({
+        value: target.currentTime * 1000,
         source: CurrentTimeSource.TimeUpdate
       })
-      store.commit.audio.setPlayState(PlayState.Stop)
+      store.mutations.setPlayState(PlayState.Stop)
     }
-    const onDurationChange = () => {
-      assertIsDefined(el.value)
-      store.commit.audio.setDuration(el.value.duration * 1000)
+    const onDurationChange = (ev: Event) => {
+      const target = getEventEl(ev)
+      store.mutations.setDuration(target.duration * 1000)
     }
-    const onSeeked = () => {
-      assertIsDefined(el.value)
-      store.commit.audio.setCurrentTime({
-        value: el.value.currentTime * 1000,
+    const onSeeked = (ev: Event) => {
+      const target = getEventEl(ev)
+      store.mutations.setCurrentTime({
+        value: target.currentTime * 1000,
         source: CurrentTimeSource.Seek
       })
+    }
+    const onError = (ev: Event) => {
+      audioError.value = new Error(`code = ${(ev.currentTarget as HTMLAudioElement).error?.code}`)
     }
 
     /*
     * Set currentTime of audioFile when store's currentTime is updated
     */
-    const currentTime = computed(() => store.state.audio.currentTime)
+    const currentTime = computed(() => store.state.currentTime)
     onMounted(() => watch([ currentTime ], () => {
       // Do not update audio's currentTime if update comes from audio
       if (currentTime.value.source !== CurrentTimeSource.Cursor) {
@@ -144,14 +143,14 @@ export default defineComponent({
     */
     onMounted(() => watch([ audioError ], () => {
       if (audioError.value !== undefined) {
-        store.commit.audio.setPlayState(PlayState.Stop)
+        store.mutations.setPlayState(PlayState.Stop)
       }
     }, { immediate: true }))
 
     /*
     * Update playState according to store's value
     */
-    const playStateInput = computed(() => store.state.audio.playState)
+    const playStateInput = computed(() => store.state.playState)
     onMounted(() => watch([ playStateInput ], () => {
       const audio = el.value
       if (!audio) {
@@ -160,7 +159,7 @@ export default defineComponent({
       }
 
       // Set currentTimeOutput to to avoid cursor jump
-      store.commit.audio.setCurrentTime({
+      store.mutations.setCurrentTime({
         value: audio.currentTime * 1000,
         source: CurrentTimeSource.TimeUpdate
       })
@@ -185,7 +184,7 @@ export default defineComponent({
       immediate: true
     }))
 
-    const playbackRate = computed(() => store.state.audio.playbackRate)
+    const playbackRate = computed(() => store.state.playbackRate)
     watch([ playbackRate ], () => {
       // Silently returns for before ready
       if (!el.value) {
@@ -217,6 +216,7 @@ export default defineComponent({
       onPause,
       onPlaying,
       onEnded,
+      onError,
       audioError,
       onDurationChange,
       onSeeked

@@ -6,7 +6,10 @@
     Unable to retrieve HDF5 : {{ formatResponseError(error) }}
   </div>
   <div v-else class="hdf5-visualization">
-    <template v-if="hdf5.time_mode === 'framewise'">
+    <p v-if="hdf5 === undefined">
+      unexpected error: hdf5 is undefined
+    </p>
+    <template v-else-if="hdf5.time_mode === 'framewise'">
       <FramewiseVisualization
         :hdf5="hdf5"
         :start="start"
@@ -28,14 +31,17 @@ import {
   onMounted,
   watch,
   ref
-} from '@vue/composition-api'
+} from 'vue'
 
-import { HDF5, basePath } from '@/utils/api'
+import { HDF5, useApi } from '@/utils/api'
 import FramewiseVisualization from '@/components/analysis-tracks/FramewiseVisualization.vue'
 
 import { formatResponseError } from '@/utils/response-error'
 
 export default defineComponent({
+  components: {
+    FramewiseVisualization
+  },
   props: {
     resultUuid: {
       type: String,
@@ -43,17 +49,17 @@ export default defineComponent({
     },
     start: {
       type: Number,
-      required: false
+      required: false,
+      default: undefined
     },
     stop: {
       type: Number,
-      required: false
+      required: false,
+      default: undefined
     }
   },
-  components: {
-    FramewiseVisualization
-  },
   setup (props) {
+    const { currentBaseUrl } = useApi()
     const loading = ref(true)
     const error = ref<string | undefined>()
     const hdf5 = ref<HDF5>()
@@ -64,7 +70,7 @@ export default defineComponent({
         try {
           // FIXME: API should implement it in schema in the future
           // See: https://github.com/Parisson/TimeSide/issues/174#issuecomment-630867653
-          const resultUrl = `${basePath}/timeside/results/${props.resultUuid}/json/`
+          const resultUrl = `${currentBaseUrl}/timeside/results/${props.resultUuid}/json/`
           const resp = await fetch(resultUrl)
           if (!resp.ok) {
             throw resp

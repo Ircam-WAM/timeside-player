@@ -28,7 +28,7 @@
       v-else-if="waveform"
       :waveform="waveform"
       class="waveform"
-      @mousedown.native="$emit('mousedown', $event)"
+      @mousedown="$emit('mousedown', $event)"
     >
       <slot />
     </Waveform>
@@ -42,13 +42,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch } from '@vue/composition-api'
+import { defineComponent, computed, watch } from 'vue'
 
 import useWaveform from '@/utils/use-waveform'
 import Waveform from '@/components/track-elements/Waveform.vue'
 
 export default defineComponent({
   name: 'WaveformContainer',
+  components: {
+    Waveform
+  },
   props: {
     itemId: {
       type: String,
@@ -57,21 +60,24 @@ export default defineComponent({
     // start of the waveform's region in ms
     start: {
       type: Number,
-      required: false
+      required: false,
+      default: undefined
     },
     // stop of the waveform's region in ms
     stop: {
       type: Number,
-      required: false
+      required: false,
+      default: undefined
     },
     nbPixels: {
       type: Number,
-      required: false
+      required: false,
+      default: undefined
     }
   },
-  components: {
-    Waveform
-  },
+  emits: [
+    'mousedown'
+  ],
   setup (props) {
     // Reactive params
     const { isLoading, error, isValid, waveform } = useWaveform(computed(() => ({

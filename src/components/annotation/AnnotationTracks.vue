@@ -34,21 +34,21 @@
 import {
   defineComponent,
   PropType
-} from '@vue/composition-api'
-import { AnnotationTrackStore } from '@/utils/annotation-track-store'
+} from 'vue'
+import { AnnotationTrackStore } from '@/store/annotation-track'
 import { formatResponseError } from '@/utils/response-error'
 
 import AnnotationTrack from './AnnotationTrack.vue'
 
 export default defineComponent({
+  components: {
+    AnnotationTrack
+  },
   props: {
     annotationTracks: {
       type: Object as PropType<AnnotationTrackStore>,
       required: true
     }
-  },
-  components: {
-    AnnotationTrack
   },
   setup () {
     function newTrack (el: Element) {

@@ -3,22 +3,23 @@ import {
   onMounted,
   watch,
   ComputedRef,
-  Ref
-} from '@vue/composition-api'
-import api, { Annotation } from '@/utils/api'
+  reactive
+} from 'vue'
+import { useApi, Annotation } from '@/utils/api'
 
 export interface AnnotationStore {
-  annotations: Ref<Annotation[] | undefined>;
+  annotations: Annotation[] | undefined
 
-  fetch (): Promise<void>;
-  loadingFetch: ComputedRef<boolean>;
-  errorFetch: ComputedRef<Response | Error | undefined>;
+  fetch: () => Promise<void>
+  loadingFetch: boolean
+  errorFetch: Response | Error | undefined
 
-  add (at: Annotation): void;
-  remove (uuid: string): void;
+  add: (at: Annotation) => void
+  remove: (uuid: string) => void
 }
 
 export default function (annotationTrackUuid: ComputedRef<string>): AnnotationStore {
+  const { api } = useApi()
   const annotations = ref<Annotation[]>()
 
   const loadingFetch = ref(false)
@@ -28,7 +29,7 @@ export default function (annotationTrackUuid: ComputedRef<string>): AnnotationSt
     await fetch()
   }, { immediate: true }))
 
-  async function fetch () {
+  async function fetch (): Promise<void> {
     loadingFetch.value = true
     try {
       annotations.value = await api.listAnnotations({ trackUuid: annotationTrackUuid.value })
@@ -38,19 +39,19 @@ export default function (annotationTrackUuid: ComputedRef<string>): AnnotationSt
     loadingFetch.value = false
   }
 
-  function add (a: Annotation) {
-    annotations.value = annotations.value || []
+  function add (a: Annotation): void {
+    annotations.value = annotations.value ?? []
     annotations.value.push(a)
   }
 
-  function remove (uuid: string) {
-    if (!annotations.value) {
+  function remove (uuid: string): void {
+    if (annotations.value === undefined) {
       return
     }
     annotations.value = annotations.value.filter(a => a.uuid !== uuid)
   }
 
-  return {
+  return reactive({
     annotations,
 
     fetch,
@@ -59,5 +60,5 @@ export default function (annotationTrackUuid: ComputedRef<string>): AnnotationSt
 
     add,
     remove
-  }
+  })
 }

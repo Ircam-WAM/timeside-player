@@ -68,9 +68,8 @@ import {
   inject,
   onMounted,
   onUnmounted,
-  watchEffect,
-  Ref
-} from '@vue/composition-api'
+  watchEffect
+} from 'vue'
 import { assertIsDefined } from '@/utils/type-assert'
 import { Region as RegionType } from '@/types/region'
 import { usePlayerRect } from '@/utils/use-player-rect'
@@ -86,14 +85,17 @@ enum Direction {
 export default defineComponent({
   name: 'Region',
   props: {
-    value: {
+    modelValue: {
       type: Object as PropType<RegionType>,
-      required: false
+      required: false,
+      default: undefined
     }
   },
+  emits: [
+    'update:modelValue'
+  ],
   setup (props, { emit }) {
-    // FIXME: Type inference from symbol not working here. Redeclaring type
-    const parentContainer = inject<Ref<SVGSVGElement | undefined>>(slotContainerKey)
+    const parentContainer = inject(slotContainerKey)
     if (!parentContainer) {
       throw new Error('Region.vue expects to be a child of TrackPluginsContainer.vue')
     }
@@ -122,34 +124,34 @@ export default defineComponent({
     }
 
     // one-way data binding
-    watch(() => props.value, (input) => setPosition(input), { immediate: true })
+    watch(() => props.modelValue, (input) => setPosition(input), { immediate: true })
 
     // Recompute absolute coordinates from time values
     // when a resize occurs
-    watch(playerSize, () => setPosition(props.value), { immediate: true })
+    watch(playerSize, () => setPosition(props.modelValue), { immediate: true })
 
     // manually notify parent of the changes
     // instead of watch start/stop
     // in order to optimize performances
     const notifyParent = () => {
       if (start.value === undefined || stop.value === undefined) {
-        emit('input', undefined)
+        emit('update:modelValue', undefined)
         return
       }
       const newVal = {
         start: positionToTime(start.value),
         stop: positionToTime(stop.value)
       }
-      if (props.value === undefined) {
-        emit('input', newVal)
+      if (props.modelValue === undefined) {
+        emit('update:modelValue', newVal)
         return
       }
-      if (props.value.start === newVal.start &&
-          props.value.stop === newVal.stop) {
+      if (props.modelValue.start === newVal.start &&
+          props.modelValue.stop === newVal.stop) {
         // Do nothing
         return
       }
-      emit('input', newVal)
+      emit('update:modelValue', newVal)
     }
 
     const closeHandler = () => {

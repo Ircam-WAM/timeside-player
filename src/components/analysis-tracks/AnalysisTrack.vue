@@ -64,17 +64,13 @@ import {
   ref,
   onMounted,
   watch
-} from '@vue/composition-api'
+} from 'vue'
 
 import HDF5Visualization from '@/components/analysis-tracks/HDF5Visualization.vue'
 import BitmapVisualization from '@/components/analysis-tracks/BitmapVisualization.vue'
 
-import api, {
-  Analysis,
-  AnalysisTrack,
-  AnalysisRenderTypeEnum,
-  getUuidFromAnalysisUrl
-} from '@/utils/api'
+import { useApi, Analysis, AnalysisTrack } from '@/utils/api'
+import { AnalysisRenderTypeEnum, getUuidFromAnalysisUrl } from '@ircam/timeside-sdk'
 import useResult from '@/utils/use-result'
 
 export default defineComponent({
@@ -89,15 +85,19 @@ export default defineComponent({
     },
     start: {
       type: Number,
-      required: false
+      required: false,
+      default: undefined
     },
     stop: {
       type: Number,
-      required: false
+      required: false,
+      default: undefined
     }
   },
+  emits: [ 'deleted' ],
   // See https://github.com/Parisson/TimeSide/issues/174
   setup (props, { emit }) {
+    const { api } = useApi()
     // Reactive analysisTrack
     const _analysisTrack = computed(() => props.analysisTrack)
     const { loading: loadingResult, result, error: errorResult } = useResult(_analysisTrack)

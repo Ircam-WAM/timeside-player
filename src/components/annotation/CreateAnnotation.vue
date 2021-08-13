@@ -51,10 +51,10 @@
 import {
   defineComponent,
   ref
-} from '@vue/composition-api'
+} from 'vue'
 
-import { useToasted } from '@/utils/vue-toasted'
-import api, { basePath, getAnnotationTrackUrl } from '@/utils/api'
+import { useApi } from '@/utils/api'
+import { getAnnotationTrackUrl } from '@ircam/timeside-sdk'
 
 export default defineComponent({
   props: {
@@ -63,9 +63,12 @@ export default defineComponent({
       required: true
     }
   },
+  emits: [
+    'new-annotation'
+  ],
   setup (props, { emit }) {
+    const { api, currentBaseUrl } = useApi()
     const formEl = ref<HTMLFormElement>()
-    const toasted = useToasted()
     const initialForm = () => ({
       title: '',
       description: '',
@@ -78,11 +81,10 @@ export default defineComponent({
     const error = ref()
 
     async function submit () {
-      const track = getAnnotationTrackUrl(basePath, props.trackId)
+      const track = getAnnotationTrackUrl(currentBaseUrl, props.trackId)
       const annotation = { track, ...form.value }
       try {
         const newAnnotation = await api.createAnnotation({ annotation })
-        toasted.success('Annotation added !')
         form.value = initialForm()
         formEl.value?.reset()
         emit('new-annotation', newAnnotation)

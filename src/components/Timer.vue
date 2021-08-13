@@ -13,16 +13,15 @@ import {
   ref,
   watch,
   watchEffect
-} from '@vue/composition-api'
+} from 'vue'
 
-import { PlayState, CurrentTimeSource } from '@/store/audio'
-import { useStore } from '@/store/index'
+import { useAudioStore, PlayState, CurrentTimeSource } from '@/store/audio'
 import { formatSeconds } from '@/utils/format-seconds'
 
 export default defineComponent({
   name: 'Timer',
   setup () {
-    const store = useStore()
+    const store = useAudioStore()
     const innerCount = ref(0)
 
     let intervalId: (number | undefined)
@@ -43,9 +42,9 @@ export default defineComponent({
     }
 
     // Update on playState
-    const playState = computed(() => store.state.audio.playState)
+    const playState = computed(() => store.state.playState)
     watch([ playState ], () => {
-      innerCount.value = store.state.audio.currentTime.value
+      innerCount.value = store.state.currentTime.value
 
       switch (playState.value) {
         case PlayState.Play:
@@ -66,7 +65,7 @@ export default defineComponent({
 
     // Update on seek
     watchEffect(() => {
-      const { value, source } = store.state.audio.currentTime
+      const { value, source } = store.state.currentTime
 
       // Improves animation performance and avoids flickering
       if (source !== CurrentTimeSource.Seek) {
@@ -81,7 +80,7 @@ export default defineComponent({
     })
 
     const total = computed<string>(() => {
-      return formatSeconds(store.state.audio.duration / 1000)
+      return formatSeconds(store.state.duration / 1000)
     })
 
     return {

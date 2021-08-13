@@ -20,18 +20,18 @@
 import {
   defineComponent,
   computed
-} from '@vue/composition-api'
+} from 'vue'
 
-import { useStore } from '@/store/index'
+import { useAudioStore } from '@/store/audio'
 
 export default defineComponent({
   name: 'Controls',
   setup () {
-    const store = useStore()
+    const audioStore = useAudioStore()
 
     const playbackRate = computed({
-      get: () => store.state.audio.playbackRate,
-      set: val => { store.commit.audio.setPlayBackRate(val) }
+      get: () => audioStore.state.playbackRate,
+      set: val => { audioStore.mutations.setPlayBackRate(val) }
     })
     return {
       playbackRate

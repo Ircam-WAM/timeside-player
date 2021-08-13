@@ -16,7 +16,7 @@ import {
   defineComponent,
   PropType,
   computed
-} from '@vue/composition-api'
+} from 'vue'
 
 import useTrackHelpers from '@/utils/use-track-helpers'
 import { Annotation } from '@/utils/api'
@@ -37,8 +37,8 @@ export default defineComponent({
 
       // https://stackoverflow.com/a/3426956
       function hashCode (str: string) {
-        var hash = 0
-        for (var i = 0; i < str.length; i++) {
+        let hash = 0
+        for (let i = 0; i < str.length; i++) {
           hash = str.charCodeAt(i) + ((hash << 5) - hash)
         }
         return hash
@@ -53,13 +53,15 @@ export default defineComponent({
       }
 
       function hexToRgb (hex: string) {
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-
-        return result ? {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+        if (!result) {
+          return null
+        }
+        return {
           r: parseInt(result[1], 16),
           g: parseInt(result[2], 16),
           b: parseInt(result[3], 16)
-        } : null
+        }
       }
 
       const style: Record<string, string> = {

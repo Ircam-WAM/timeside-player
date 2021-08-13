@@ -1,0 +1,18 @@
+{
+  extends: [
+    'plugin:vue/vue3-recommended',
+    'eslint:recommended',
+    'standard-with-typescript',
+    '@vue/typescript'
+  ],
+  parserOptions: {
+    project: './tsconfig.json'
+  },
+  rules: {
+    'array-bracket-spacing': [ 'warn', 'always' ],
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': 'error',
+    'eqeqeq': [ 'warn', 'always' ],
+    'vue/max-attributes-per-line': 'off'
+  }
+}

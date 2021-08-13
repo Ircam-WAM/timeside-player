@@ -16,7 +16,7 @@ import {
   watchEffect,
   Ref,
   ref
-} from '@vue/composition-api'
+} from 'vue'
 
 import { scaleLinear, ScaleLinear } from 'd3-scale'
 import { select } from 'd3-selection'
@@ -31,6 +31,9 @@ import { formatSeconds } from '@/utils/format-seconds'
 type d3TickFormat = (domainValue: number | { valueOf(): number }, index: number) => string
 
 export default defineComponent({
+  components: {
+    FluidSVG
+  },
   props: {
     // first time of the axis in ms
     firstTime: {
@@ -43,14 +46,11 @@ export default defineComponent({
       required: true
     }
   },
-  components: {
-    FluidSVG
-  },
   setup (props) {
     const svgSize: Ref<ClientRect | undefined> = ref()
     const group = ref<SVGSVGElement>()
 
-    const xScale = computed(() => {
+    const xScale = computed<ScaleLinear<number, number>>(() => {
       const width = svgSize.value ? svgSize.value.width : 0
       // divide to convert ms to seconds
       const firstTime = props.firstTime / 1000
@@ -60,7 +60,7 @@ export default defineComponent({
       return scaleLinear<number>()
         .domain([ firstTime, lastTime ])
         .range([ 0, width ])
-    }) as Readonly<Ref<ScaleLinear<number, number>>>
+    })
 
     // Axis
     onMounted(() => watchEffect(() => {

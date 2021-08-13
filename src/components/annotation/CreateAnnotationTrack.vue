@@ -47,7 +47,7 @@
       v-if="error"
       class="error"
     >
-      Error: {{ error }}
+      Error: {{ formatResponseError(error) }}
     </div>
   </form>
 </template>
@@ -56,10 +56,11 @@
 import {
   defineComponent,
   ref
-} from '@vue/composition-api'
+} from 'vue'
 
-import { useToasted } from '@/utils/vue-toasted'
-import api, { basePath, getItemUrl } from '@/utils/api'
+import { useApi } from '@/utils/api'
+import { formatResponseError } from '@/utils/response-error'
+import { getItemUrl } from '@ircam/timeside-sdk'
 
 export default defineComponent({
   props: {
@@ -68,9 +69,13 @@ export default defineComponent({
       required: true
     }
   },
+  emits: [
+    'new-annotation-track',
+    'close'
+  ],
   setup (props, { emit }) {
+    const { api, currentBaseUrl } = useApi()
     const formEl = ref<HTMLFormElement>()
-    const toasted = useToasted()
     const initialForm = () => ({
       title: '',
       description: '',
@@ -79,14 +84,13 @@ export default defineComponent({
     const form = ref(initialForm())
 
     const loading = ref(false)
-    const error = ref()
+    const error = ref<Response>()
 
     async function submit () {
-      const item = getItemUrl(basePath, props.itemId)
+      const item = getItemUrl(currentBaseUrl, props.itemId)
       const annotationTrack = { item, ...form.value }
       try {
         const newAnnotation = await api.createAnnotationTrack({ annotationTrack })
-        toasted.success('AnnotationTrack added !')
         form.value = initialForm()
         formEl.value?.reset()
         emit('new-annotation-track', newAnnotation)
@@ -100,7 +104,8 @@ export default defineComponent({
       formEl,
       submit,
       error,
-      loading
+      loading,
+      formatResponseError
     }
   }
 })

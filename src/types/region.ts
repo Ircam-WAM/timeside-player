@@ -1,4 +1,4 @@
 export interface Region {
-  start: number;
-  stop: number;
+  start: number
+  stop: number
 }
