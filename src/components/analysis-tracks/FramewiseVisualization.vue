@@ -56,21 +56,34 @@ export default defineComponent({
     const start = computed(() => props.start || 0)
     const stop = computed(() => props.stop || duration.value * 1000)
 
-    const points = computed(() => props.hdf5.data_object.value.numpyArray.map((y, idx) => {
+    type Point = [ number, number ]
+
+    const points = computed<Point[]>(() => {
       // the signal is displayed recomposing the time interval
       // on the time axis with duration * stepsize / samplerate
-      const x = idx * stepsize.value / samplerate.value * 1000 // convert to ms
-      return [ x, y ]
-    }))
+      const getX = (idx: number) => idx * stepsize.value / samplerate.value * 1000 // convert to ms
 
-    // We look for the maxVal inside the filtered points in order to
+      const p = props.hdf5.data_object.value.numpyArray.map<[number, number]>((y, idx) => {
+        return [ getX(idx), y ]
+      })
+      // we need to add first and last point to draw the abscissa
+      const firstPoint: Point = [ 0, 0 ]
+      const lastPoint: Point = [ getX(p.length), 0 ]
+      return [ firstPoint, ...p, lastPoint ]
+    })
+
+    // We look for the min/max inside the filtered points in order to
     // scale the line on Y absis
     // Uncomment the following line to unscale the zoom value
     // const maxVal = computed(() => Math.max(...props.hdf5.data_object.value.numpyArray))
-    const maxVal = computed(() => {
+    const border = computed(() => {
       const windowPoints = points.value.filter(p => p[0] > start.value && p[0] < stop.value)
       const yValues = windowPoints.map(p => p[1])
-      return Math.max(...yValues)
+
+      return {
+        min: Math.min(...yValues),
+        max: Math.max(...yValues)
+      }
     })
 
     const path = computed<string>(() => {
@@ -82,7 +95,7 @@ export default defineComponent({
         .range([ 0, width ])
 
       const yScale = scaleLinear<number>()
-        .domain([ 0, maxVal.value ])
+        .domain([ border.value.min, border.value.max ])
         .range([ height, 0 ])
 
       const d3line = line<[number, number]>()

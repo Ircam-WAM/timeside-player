@@ -16,6 +16,19 @@
         :stop="stop"
       />
     </template>
+    <template v-else-if="hdf5.time_mode === 'event'">
+      <EventVisualization
+        v-if="hdf5Event !== undefined"
+        :hdf5="hdf5Event"
+        :start="start"
+        :stop="stop"
+      />
+    </template>
+    <template v-else-if="hdf5.time_mode === 'global'">
+      <div>
+        {{ hdf5.id_metadata.name }} = {{ hdf5.data_object.value.numpyArray[0] }} {{ hdf5.id_metadata.unit }}
+      </div>
+    </template>
     <template v-else-if="hdf5.time_mode === 'timewise'">
       <div>time_mode === 'timewise' is not implemented</div>
     </template>
@@ -30,17 +43,21 @@ import {
   defineComponent,
   onMounted,
   watch,
-  ref
+  ref,
+  Ref
 } from 'vue'
 
 import { HDF5, useApi } from '@/utils/api'
+import { HDF5 as HDF5Event } from './HDF5Event'
 import FramewiseVisualization from '@/components/analysis-tracks/FramewiseVisualization.vue'
+import EventVisualization from './EventVisualization.vue'
 
 import { formatResponseError } from '@/utils/response-error'
 
 export default defineComponent({
   components: {
-    FramewiseVisualization
+    FramewiseVisualization,
+    EventVisualization
   },
   props: {
     resultUuid: {
@@ -91,7 +108,8 @@ export default defineComponent({
       formatResponseError,
       loading,
       error,
-      hdf5
+      hdf5,
+      hdf5Event: hdf5 as Ref<HDF5Event | undefined>
     }
   }
 })
