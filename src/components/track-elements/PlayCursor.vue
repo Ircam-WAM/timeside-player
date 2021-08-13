@@ -19,34 +19,24 @@ import {
   watchEffect,
   computed,
   PropType
-} from '@vue/composition-api'
+} from 'vue'
 
 import { assertIsDefined } from '@/utils/type-assert'
 
-import { useStore } from '@/store/index'
-import { PlayState, CurrentTimeSource } from '@/store/audio'
+import { useAudioStore, PlayState, CurrentTimeSource } from '@/store/audio'
 
 import { Region as RegionType } from '@/types/region'
-
-// Polyfill Web Animation API
-// import 'web-animations-js'
-
-const hasWebAnimationAPI = () => {
-  // Note: Some browsers may not support
-  //       all the feature of the Web Animation API
-  //       while validating this test
-  return !!window.document.body.animate
-}
 
 export default defineComponent({
   name: 'PlayCursor',
   props: {
     selection: {
-      type: Object as PropType<RegionType>
+      type: Object as PropType<RegionType>,
+      default: undefined
     }
   },
   setup (props) {
-    const store = useStore()
+    const store = useAudioStore()
     const cursorWidth = 2
     const cursor: Ref<Element | undefined> = ref()
 
@@ -61,12 +51,12 @@ export default defineComponent({
         return {
           duration: stop - start,
           delay: start,
-          endDelay: store.state.audio.duration - stop,
+          endDelay: store.state.duration - stop,
           iterations: 1
         }
       } else {
         return {
-          duration: store.state.audio.duration,
+          duration: store.state.duration,
           // Need to explicit set delay / endDelay to avoid cursor offset when adding/removing selection
           delay: 0,
           endDelay: 0,
@@ -96,13 +86,6 @@ export default defineComponent({
 
     onMounted(async () => {
       assertIsDefined(cursor.value)
-      if (!hasWebAnimationAPI) {
-        console.error('Your browser do not support the Web Animation API. Downloading polyfill..')
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        await import('web-animations-js')
-      }
-
       // Define animation and pause it
       const animation = cursor.value.animate(keyFrames, timing.value)
       animation.pause()
@@ -110,9 +93,9 @@ export default defineComponent({
       // Update cursor's animation when audio's play state is updated
       // Specifying playState as a first param avoids
       // running watch when store's currentTime is updated
-      const playState = computed(() => store.state.audio.playState)
+      const playState = computed(() => store.state.playState)
       watch([ playState ], () => {
-        animation.currentTime = store.state.audio.currentTime.value
+        animation.currentTime = store.state.currentTime.value
         setAnimationPlayState(animation, playState.value)
       }, {
         flush: 'sync',
@@ -121,7 +104,7 @@ export default defineComponent({
 
       // Update on seek
       watchEffect(() => {
-        const { value, source } = store.state.audio.currentTime
+        const { value, source } = store.state.currentTime
         // Improves animation performance and avoids flickering
         if (source !== CurrentTimeSource.Seek) {
           return
@@ -137,14 +120,14 @@ export default defineComponent({
 
       // Update playbackRate of animation when audio is updated
       watchEffect(() => {
-        animation.playbackRate = store.state.audio.playbackRate
+        animation.playbackRate = store.state.playbackRate
       })
     })
 
     return {
       cursorWidth,
       cursor,
-      duration: store.state.audio.duration
+      duration: store.state.duration
     }
   }
 })

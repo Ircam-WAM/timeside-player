@@ -18,7 +18,7 @@ import {
   ref,
   computed,
   PropType
-} from '@vue/composition-api'
+} from 'vue'
 import { HDF5 } from '@/utils/api'
 
 import { scaleLinear } from 'd3-scale'
@@ -27,6 +27,9 @@ import { line, curveNatural } from 'd3-shape'
 import FluidSVG from '@/components/utils/FluidSVG.vue'
 
 export default defineComponent({
+  components: {
+    FluidSVG
+  },
   props: {
     hdf5: {
       type: Object as PropType<HDF5>,
@@ -34,15 +37,14 @@ export default defineComponent({
     },
     start: {
       type: Number,
-      required: false
+      required: false,
+      default: undefined
     },
     stop: {
       type: Number,
-      required: false
+      required: false,
+      default: undefined
     }
-  },
-  components: {
-    FluidSVG
   },
   setup (props) {
     const svgSize = ref<ClientRect | undefined>()
@@ -71,7 +73,7 @@ export default defineComponent({
       return Math.max(...yValues)
     })
 
-    const path = computed(() => {
+    const path = computed<string>(() => {
       const width = svgSize.value ? svgSize.value.width : 0
       const height = svgSize.value ? svgSize.value.height : 0
 
@@ -91,7 +93,7 @@ export default defineComponent({
       // We need to cast it as no-readonly for D3
       const pointsD3 = points.value as unknown as [number, number][]
 
-      return d3line(pointsD3)
+      return d3line(pointsD3) as string
     })
 
     return {

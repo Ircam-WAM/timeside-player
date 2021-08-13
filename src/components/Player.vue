@@ -3,7 +3,7 @@
     ref="el"
     class="player"
   >
-    <Audio :audio-srcs="audioSrcs" />
+    <Audio v-if="audioSrcs" :audio-srcs="audioSrcs" />
     <div v-if="audioReady">
       <!--
         These components need audio to be loaded because
@@ -117,15 +117,15 @@ import {
   ref,
   PropType,
   computed
-} from '@vue/composition-api'
+} from 'vue'
 
-import { useStore } from '@/store/index'
+import { useAudioStore } from '@/store/audio'
 import { Item } from '@/utils/api'
-import { assertIsDefined } from '@/utils/type-assert'
 import { providePlayerRect } from '@/utils/use-player-rect'
 import useBoundingClientRect from '@/utils/use-bounding-client-rect'
 import { Region as RegionType } from '@/types/region'
 
+import { getAudioSrcs } from '@/utils/audio-srcs'
 import bindSelectionUrl from '@/utils/bind-selection-url'
 
 import Controls from '@/components/Controls.vue'
@@ -137,8 +137,8 @@ import AnnotationTracks from '@/components/annotation/AnnotationTracks.vue'
 import CreateAnalysisTrack from '@/components/analysis-tracks/CreateAnalysisTrack.vue'
 import CreateAnnotationTrack from '@/components/annotation/CreateAnnotationTrack.vue'
 
-import analysisTrackStore from '@/utils/analysis-track-store'
-import annotationTrackStore from '@/utils/annotation-track-store'
+import analysisTrackStore from '@/store/analysis-track'
+import annotationTrackStore from '@/store/annotation-track'
 
 enum Tab {
   Info,
@@ -147,12 +147,6 @@ enum Tab {
 
 export default defineComponent({
   name: 'Player',
-  props: {
-    item: {
-      type: Object as PropType<Item>,
-      required: true
-    }
-  },
   components: {
     Audio,
     Timer,
@@ -163,11 +157,14 @@ export default defineComponent({
     CreateAnalysisTrack,
     CreateAnnotationTrack
   },
+  props: {
+    item: {
+      type: Object as PropType<Item>,
+      required: true
+    }
+  },
   setup (props) {
-    // item.uuid should always be defined
-    assertIsDefined(props.item.uuid)
-
-    const store = useStore()
+    const audioStore = useAudioStore()
     const selection = ref<RegionType>()
 
     // Get playerRect and provide it for child components
@@ -175,11 +172,8 @@ export default defineComponent({
     const playerSize = useBoundingClientRect(el)
     providePlayerRect(playerSize)
 
-    const audioSrcs = computed(() => {
-      assertIsDefined(props.item.uuid)
-      return store.getters.items.getAudioSrcs(props.item.uuid)
-    })
-    const audioReady = computed(() => store.getters.audio.isReady)
+    const audioSrcs = computed(() => getAudioSrcs(props.item))
+    const audioReady = computed(() => audioStore.getters.isReady)
 
     const onSelection = (val?: RegionType) => {
       selection.value = val
@@ -193,10 +187,10 @@ export default defineComponent({
     }
 
     const isAnalysisTrackFormOpen = ref(false)
-    const analysisTracks = analysisTrackStore(computed(() => props.item.uuid || ''))
+    const analysisTracks = analysisTrackStore(computed(() => props.item.uuid))
 
     const isAnnotationTrackFormOpen = ref(false)
-    const annotationTracks = annotationTrackStore(computed(() => props.item.uuid || ''))
+    const annotationTracks = annotationTrackStore(computed(() => props.item.uuid))
 
     return {
       el,
@@ -342,8 +336,9 @@ export default defineComponent({
 
 <!-- Global style for the player -->
 <style lang="less" scoped>
-::v-deep {
-
+// https://github.com/vuejs/rfcs/blob/master/active-rfcs/0023-scoped-styles-changes.md
+// https://stackoverflow.com/questions/66183082/avoid-v-deep-duplication-with-scss-and-vue-3#comment121520884_66184174
+::v-deep(*) {
   .form-title {
     font-weight: bold;
     font-size: 20px;

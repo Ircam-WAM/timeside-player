@@ -14,17 +14,17 @@
         v-else-if="error"
         class="error"
       >
-        {{ error }}
+        {{ formatResponseError(error) }}
       </div>
-      <div v-else-if="!itemList">
-        This should not happen: no error, no loading but itemList is undefined
+      <div v-else-if="!items">
+        This should not happen: no error, no loading but items is undefined
       </div>
       <div
         v-else
         class="items"
       >
         <router-link
-          v-for="item of itemList"
+          v-for="item of items"
           :key="item.uuid"
           :to="{ name: 'item', params: { id: item.uuid } }"
         >
@@ -36,36 +36,37 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, onMounted } from '@vue/composition-api'
-import { useStore } from '@/store/index'
+import { defineComponent, computed, onMounted, ref } from 'vue'
 
-import Player from '@/components/Player.vue'
 import Login from '@/components/Login.vue'
 
+import { useApi, ItemList } from '@/utils/api'
 import { formatResponseError } from '@/utils/response-error'
 
 export default defineComponent({
   name: 'List',
-  props: {
-  },
   components: {
-    Player,
     Login
   },
   setup () {
-    const store = useStore()
-    const itemList = computed(() => store.state.itemList.itemList)
-    const isLoading = computed(() => store.getters.itemList.isLoading)
-    const isUnauthorized = computed(() => store.getters.itemList.isUnauthorized)
-    const error = computed(() => {
-      const err = store.state.itemList.error
-      if (!err) {
-        return undefined
-      }
-      return formatResponseError(err)
-    })
+    const { api } = useApi()
+    const isLoading = ref(false)
+    const error = ref<Response>()
+    const items = ref<ItemList[]>()
 
-    const getItems = async () => { await store.dispatch.itemList.getItems() }
+    const isUnauthorized = computed(() => error.value?.status === 401 || false)
+
+    const getItems = async () => {
+      isLoading.value = true
+      error.value = undefined
+      try {
+        items.value = await api.listItems({})
+      } catch (e) {
+        error.value = e
+      } finally {
+        isLoading.value = false
+      }
+    }
 
     onMounted(() => { getItems() })
     const onLogin = () => { getItems() }
@@ -73,8 +74,9 @@ export default defineComponent({
     return {
       isLoading,
       isUnauthorized,
-      itemList,
+      items,
       error,
+      formatResponseError,
       onLogin
     }
   }

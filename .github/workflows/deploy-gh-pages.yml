@@ -19,25 +19,14 @@ jobs:
           node-version: '13.x'
 
       - name: Install
-        run: npm install
+        run: yarn install
 
       - name: Lint
-        run: npm run lint
-
-      - name: Unit test
-        run: npm run test:unit
-
-      - name: Integration test
-        run: npm run test:e2e:headless
-        env:
-          # See https://docs.cypress.io/guides/guides/environment-variables.html
-          CYPRESS_TIMESIDE_BASE_URL: ${{ secrets.TIMESIDE_BASE_URL_E2E_TEST }}
-          CYPRESS_TIMESIDE_USER: ${{ secrets.TIMESIDE_USER_E2E_TEST }}
-          CYPRESS_TIMESIDE_PASS: ${{ secrets.TIMESIDE_PASS_E2E_TEST }}
+        run: yarn run lint
 
       # Generates `dist/` directory
       - name: Build
-        run: npm run build
+        run: yarn run build
 
       # Use of SSH Key stored as secret instead of auto-created GITHUB_TOKEN secret
       # Because of this issue on public repo:

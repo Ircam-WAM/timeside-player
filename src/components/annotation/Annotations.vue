@@ -4,13 +4,13 @@
       :track-id="trackId"
       @new-annotation="annotations.add($event)"
     />
-    <template v-if="annotations">
+    <template v-if="annotations.annotations">
       <Annotation
         v-for="a of annotations.annotations"
         :key="a.uuid"
         :annotation="a"
         class="annotation"
-        @click.native="$emit('select-annotation', a)"
+        @click="$emit('select-annotation', a)"
         @destroy="annotations.remove($event)"
       />
     </template>
@@ -22,14 +22,18 @@ import {
   defineComponent,
   PropType,
   computed
-} from '@vue/composition-api'
+} from 'vue'
 
 import Annotation from '@/components/annotation/Annotation.vue'
 import CreateAnnotation from '@/components/annotation/CreateAnnotation.vue'
-import { AnnotationStore } from '@/utils/annotation-store'
+import { AnnotationStore } from '@/store/annotation'
 import { Region as RegionType } from '@/types/region'
 
 export default defineComponent({
+  components: {
+    CreateAnnotation,
+    Annotation
+  },
   props: {
     trackId: {
       type: String,
@@ -40,13 +44,13 @@ export default defineComponent({
       required: true
     },
     selection: {
-      type: Object as PropType<RegionType>
+      type: Object as PropType<RegionType>,
+      default: undefined
     }
   },
-  components: {
-    CreateAnnotation,
-    Annotation
-  },
+  emits: [
+    'select-annotation'
+  ],
   setup (props) {
     const filteredAnnotations = computed(() => {
       if (!props.selection) {

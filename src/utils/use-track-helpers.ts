@@ -1,28 +1,28 @@
 import { usePlayerRect } from '../utils/use-player-rect'
-import { useStore } from '@/store/index'
+import { useAudioStore } from '@/store/audio'
 
 import { Region as RegionType } from '@/types/region'
 
 interface TrackHelpers {
-  positionToTime: (time: number, selection?: RegionType) => number;
-  timeToPosition: (pos: number) => number;
+  positionToTime: (time: number, selection?: RegionType) => number
+  timeToPosition: (pos: number) => number
 }
 
 export default function useTrackHelpers (): TrackHelpers {
-  const store = useStore()
+  const audioStore = useAudioStore()
   const playerSize = usePlayerRect()
 
-  const positionToTime = (pos: number, selection?: RegionType) => {
+  const positionToTime = (pos: number, selection?: RegionType): number => {
     const duration = (() => {
-      if (selection) {
+      if (selection !== undefined) {
         return selection.stop - selection.start
       }
-      return store.state.audio.duration
+      return audioStore.state.duration
     })()
-    const offset = selection ? selection.start : 0
+    const offset = (selection !== undefined) ? selection.start : 0
     const width = playerSize.value.width
 
-    if (!width) {
+    if (width === 0) {
       console.warn('positionToTime: unexpected width', width)
       return 0
     }
@@ -32,11 +32,11 @@ export default function useTrackHelpers (): TrackHelpers {
     return Math.round(offset + pos / width * duration)
   }
 
-  const timeToPosition = (time: number) => {
-    const duration = store.state.audio.duration
+  const timeToPosition = (time: number): number => {
+    const duration = audioStore.state.duration
     const width = playerSize.value.width
 
-    if (!duration) {
+    if (duration === 0) {
       console.warn('timeToPosition: unexpected duration', duration)
       return 0
     }

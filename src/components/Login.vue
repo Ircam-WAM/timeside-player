@@ -5,7 +5,7 @@
   >
     <p>
       Fill in your
-      <a href="loginUrl" target="_blank">
+      <a :href="loginUrl" target="_blank">
         WASABI credentials
       </a>
     </p>
@@ -47,14 +47,17 @@ import {
   defineComponent,
   ref,
   computed
-} from '@vue/composition-api'
+} from 'vue'
 
 import { formatResponseError } from '@/utils/response-error'
 
-import { rawApi, persistentToken, JWTToken } from '@/utils/api'
+import { useApi } from '@/utils/api'
+import { JWTToken } from '@ircam/timeside-sdk'
 
 export default defineComponent({
+  emits: [ 'success' ],
   setup (_, { emit }) {
+    const { rawApi, persistentToken, currentBaseUrl } = useApi()
     const loading = ref(false)
     const input = ref({
       username: '',
@@ -89,13 +92,16 @@ export default defineComponent({
       loading.value = false
     }
 
+    const loginUrl = computed(() => `${currentBaseUrl}/admin/login/`)
+
     return {
       submit,
       loading,
       input,
       apiError,
       errorFmt,
-      isUnauthorized
+      isUnauthorized,
+      loginUrl
     }
   }
 })
@@ -122,9 +128,6 @@ export default defineComponent({
 
   & .fields > *:not(:last-child) {
     margin-bottom: 5px;
-  }
-
-  & .submit {
   }
 }
 

@@ -23,11 +23,11 @@ import {
   onMounted,
   watch,
   toRefs
-} from '@vue/composition-api'
+} from 'vue'
 
 import useBoundingClientRect from '@/utils/use-bounding-client-rect'
-import { newAbortableApi } from '@/utils/api'
-import { useStore } from '@/store/index'
+import { useApi } from '@/utils/api'
+import { useAudioStore } from '@/store/audio'
 import { formatResponseError } from '@/utils/response-error'
 
 export default defineComponent({
@@ -38,23 +38,26 @@ export default defineComponent({
     },
     start: {
       type: Number,
-      required: false
+      required: false,
+      default: undefined
     },
     stop: {
       type: Number,
-      required: false
+      required: false,
+      default: undefined
     }
   },
   setup (props) {
+    const { newAbortableApi } = useApi()
     const container = ref()
     const containerSize = useBoundingClientRect(container)
     const loading = ref(true)
     const error = ref<Response | undefined>()
-    const store = useStore()
+    const store = useAudioStore()
     const imageSrc = ref('')
 
     const start = computed(() => props.start || 0)
-    const stop = computed(() => props.stop || store.state.audio.duration)
+    const stop = computed(() => props.stop || store.state.duration)
 
     let abortController: AbortController | undefined
 
@@ -79,13 +82,14 @@ export default defineComponent({
         })
         const blob = await resp.raw.blob()
         imageSrc.value = URL.createObjectURL(blob)
-        loading.value = false
       } catch (e) {
         if (e instanceof DOMException && e.name === 'AbortError') {
           return
         }
         console.error('retrieveResultVisualization failed', e)
         error.value = e
+      } finally {
+        loading.value = false
       }
     }
 

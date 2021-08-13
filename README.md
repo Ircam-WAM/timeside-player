@@ -8,7 +8,7 @@ Demo: https://ircam-web.github.io/timeside-player/
 
 This project is built with :
 * Typescript
-* Vue.JS (with Composition API)
+* Vue 3
 * ESLint: Linting
 * Jest: Unit Testing
 * Cypress: End-to-end testing
@@ -24,13 +24,17 @@ This project is built with :
 <!-- Player location -->
 <div id="timeside-player"></div>
 
+<!-- Load CSS -->
+<link href="https://unpkg.com/@ircam/timeside-player@latest/lib/style.css" rel="stylesheet">
+
 <!-- Load latest version -->
-<script src="https://unpkg.com/@ircam/timeside-player@latest/lib/timeside-player.umd.min.js"></script>
+<script src="https://unpkg.com/@ircam/timeside-player@latest/lib/timeside-player.umd.js"></script>
 
 <!-- Init the player -->
 <script>
 	const timesideUuid = '733f655a-1c9d-4ab8-93af-53eeddb030db'
-	const player = window.timesidePlayer('#timeside-player', timesideUuid)
+	const apiUrl = 'https://sandbox.wasabi.telemeta.org'
+	const player = window.TimesidePlayer('#timeside-player', timesideUuid, apiUrl)
 </script>
 ```
 

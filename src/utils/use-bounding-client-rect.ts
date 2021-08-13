@@ -1,18 +1,9 @@
-import { Ref, ref, onMounted, onUnmounted } from '@vue/composition-api'
+import { Ref, ref, onMounted, onBeforeUnmount } from 'vue'
 import { assertIsDefined } from '@/utils/type-assert'
-import ResizeObserverPolyfill from 'resize-observer-polyfill';
 
-export interface SimpleDOMRect {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  left: number;
-}
-
-export default function useBoundingClientRect(el: Ref<Element | undefined>): Ref<SimpleDOMRect> {
+export default function useBoundingClientRect (el: Ref<Element | undefined>): Ref<DOMRectReadOnly> {
   let observer: ResizeObserver
-  const clientRect = ref<SimpleDOMRect>({ x: 0, y: 0, width: 0, height: 0, left: 0 })
+  const clientRect = ref<DOMRect>(new DOMRectReadOnly())
 
   // Set initial value
   onMounted(() => {
@@ -22,7 +13,7 @@ export default function useBoundingClientRect(el: Ref<Element | undefined>): Ref
 
   // start ResizeObserver
   onMounted(() => {
-    observer = new ResizeObserverPolyfill(entries => {
+    observer = new ResizeObserver(entries => {
       assertIsDefined(el.value)
       const resized = entries.find(e => e.target === el.value)
       assertIsDefined(resized)
@@ -37,8 +28,8 @@ export default function useBoundingClientRect(el: Ref<Element | undefined>): Ref
   })
 
   // stop ResizeObserver
-  onUnmounted(() => {
-    if (observer) {
+  onBeforeUnmount(() => {
+    if (observer !== undefined) {
       assertIsDefined(el.value)
       observer.unobserve(el.value)
     }

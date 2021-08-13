@@ -18,24 +18,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from '@vue/composition-api'
-import { useToasted } from '@/utils/vue-toasted'
+import { defineComponent } from 'vue'
+import { useApi } from '@/utils/api'
 import SelectAPI from '@/components/SelectAPI.vue'
-import List from '@/components/List.vue'
-
-import { persistentToken } from '@/utils/api'
 
 export default defineComponent({
   name: 'App',
   components: {
-    List,
     SelectAPI
   },
   setup () {
-    const toasted = useToasted()
-    onMounted(() => {
-      toasted.success('🎉 Welcome to timeside-player !')
-    })
+    const { persistentToken } = useApi()
 
     function logout () {
       persistentToken.removeToken()
@@ -59,9 +52,7 @@ export default defineComponent({
   margin-top: 60px;
 }
 
-#app ::v-deep {
-  *, *::before, *::after {
-    box-sizing: border-box;
-  }
+#app ::v-deep(*, *::before, *::after) {
+  box-sizing: border-box;
 }
 </style>

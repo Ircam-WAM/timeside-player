@@ -4,18 +4,19 @@ import {
   watch,
   ComputedRef,
   reactive
-} from '@vue/composition-api'
-import api, { AnnotationTrack } from '@/utils/api'
+} from 'vue'
+import { useApi, AnnotationTrack } from '@/utils/api'
 
 export interface AnnotationTrackStore {
-  annotationTracks: AnnotationTrack[] | undefined;
-  loading: boolean;
-  error: Response | Error | undefined;
-  add (at: AnnotationTrack): void;
-  remove (uuid: string): void;
+  annotationTracks: AnnotationTrack[] | undefined
+  loading: boolean
+  error: Response | Error | undefined
+  add: (at: AnnotationTrack) => void
+  remove: (uuid: string) => void
 }
 
 export default function (itemUuid: ComputedRef<string>): AnnotationTrackStore {
+  const { api } = useApi()
   const annotationTracks = ref<AnnotationTrack[]>()
   const loading = ref(false)
   const error = ref<Response | Error | undefined>()
@@ -24,24 +25,24 @@ export default function (itemUuid: ComputedRef<string>): AnnotationTrackStore {
     await fetch()
   }, { immediate: true }))
 
-  async function fetch () {
+  async function fetch (): Promise<void> {
     loading.value = true
     try {
       // Reverse array to show last-recently-added item first
-      annotationTracks.value = (await api.listAnnotationTracks({ itemUuid: itemUuid.value })).reverse()
+      annotationTracks.value = (await api.listAnnotationTracks({ itemUuid: itemUuid.value })).reverse() as AnnotationTrack[]
     } catch (e) {
       error.value = e
     }
     loading.value = false
   }
 
-  function add (at: AnnotationTrack) {
-    annotationTracks.value = annotationTracks.value || []
+  function add (at: AnnotationTrack): void {
+    annotationTracks.value = annotationTracks.value ?? []
     annotationTracks.value.unshift(at)
   }
 
-  function remove (uuid: string) {
-    if (!annotationTracks.value) {
+  function remove (uuid: string): void {
+    if (annotationTracks.value === undefined) {
       return
     }
     annotationTracks.value = annotationTracks.value.filter(at => at.uuid !== uuid)

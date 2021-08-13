@@ -119,32 +119,37 @@ import {
   PropType,
   ref,
   computed
-} from '@vue/composition-api'
+} from 'vue'
 
 import Annotations from '@/components/annotation/Annotations.vue'
 
-import annotationStore from '@/utils/annotation-store'
-import api, { AnnotationTrack, Annotation } from '@/utils/api'
+import annotationStore from '@/store/annotation'
+import { useApi, AnnotationTrack, Annotation } from '@/utils/api'
 import { formatResponseError } from '@/utils/response-error'
 import { Region as RegionType } from '@/types/region'
 
 export default defineComponent({
+  components: {
+    Annotations
+  },
   props: {
     annotationTrack: {
       type: Object as PropType<AnnotationTrack>,
       required: true
     },
     selection: {
-      type: Object as PropType<RegionType>
+      type: Object as PropType<RegionType>,
+      default: undefined
     }
   },
-  components: {
-    Annotations
-  },
+  emits: [
+    'destroy'
+  ],
   setup (props, { emit }) {
     const loadingDestroy = ref(false)
     const errorDestroy = ref()
     const selectedAnnotation = ref<Annotation | undefined>()
+    const { api } = useApi()
 
     async function destroy () {
       if (!props.annotationTrack.uuid) {
@@ -238,7 +243,7 @@ export default defineComponent({
     height: 20px;
     margin-right: 7px;
 
-    & ::v-deep path {
+    & ::v-deep(path) {
       fill: #838688;
     }
   }

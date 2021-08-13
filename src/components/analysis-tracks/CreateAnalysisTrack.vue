@@ -4,7 +4,7 @@
       Add an analysis track
     </p>
     <div v-if="analysisError">
-      {{ analysisError }}
+      {{ formatResponseError(analysisError) }}
     </div>
     <form
       v-else
@@ -18,14 +18,14 @@
         -->
         <select
           id="analysis"
+          v-model="selectedAnalysisId"
           required
-          @input="selectedAnalysisId = $event.target.value"
         >
           <option
             v-if="analysisLoading"
             selected
             disabled
-            value="loading"
+            value=""
           >
             Loading...
           </option>
@@ -33,6 +33,7 @@
             <option
               selected
               disabled
+              value=""
             >
               Analysis type
             </option>
@@ -41,11 +42,9 @@
               :key="a.uuid"
               :value="a.uuid"
             >
+              {{ a.title }}
               <template v-if="a.description">
-                {{ a.title }} ({{ a.description }})
-              </template>
-              <template v-else>
-                {{ a.title }}
+                ({{ a.description }})
               </template>
             </option>
           </template>
@@ -80,17 +79,11 @@ import {
   onMounted,
   ref,
   computed
-} from '@vue/composition-api'
+} from 'vue'
 
-import api, {
-  basePath,
-  Analysis,
-  AnalysisTrack,
-  getItemUrl,
-  getAnalysisUrl
-} from '@/utils/api'
+import { useApi, Analysis, AnalysisTrack } from '@/utils/api'
+import { getAnalysisUrl, getItemUrl } from '@ircam/timeside-sdk'
 
-import { useToasted } from '@/utils/vue-toasted'
 import { formatResponseError } from '@/utils/response-error'
 
 export default defineComponent({
@@ -100,12 +93,16 @@ export default defineComponent({
       required: true
     }
   },
+  emits: [
+    'new-analysis-track',
+    'close'
+  ],
   setup (props, { emit }) {
-    const toasted = useToasted()
     const analysis = ref<Array<Analysis>>()
     const analysisLoading = ref(true)
-    const selectedAnalysisId = ref<Analysis['uuid']>()
+    const selectedAnalysisId = ref<Analysis['uuid']>('')
     const analysisError = ref<Response>()
+    const { api, currentBaseUrl } = useApi()
 
     onMounted(async () => {
       try {
@@ -143,8 +140,8 @@ export default defineComponent({
       // Building URL
       // https://github.com/Parisson/TimeSide/issues/188
       const analysisTrack: AnalysisTrack = {
-        item: getItemUrl(basePath, props.itemId),
-        analysis: getAnalysisUrl(basePath, selectedAnalysisId.value)
+        item: getItemUrl(currentBaseUrl, props.itemId),
+        analysis: getAnalysisUrl(currentBaseUrl, selectedAnalysisId.value)
       }
       submitLoading.value = true
       try {
@@ -152,7 +149,6 @@ export default defineComponent({
         if (!selectedAnalysis.value) {
           throw new Error('unexpected empty selectedAnalysis')
         }
-        toasted.success(`Analysis track "${selectedAnalysis.value.title?.toLowerCase()}" added`)
         emit('new-analysis-track', at)
       } catch (e) {
         submitError.value = e

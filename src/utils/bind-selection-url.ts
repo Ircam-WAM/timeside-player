@@ -3,22 +3,23 @@ import {
   computed,
   onMounted,
   watch
-} from '@vue/composition-api'
+} from 'vue'
 
-import useRouter from '@/utils/use-router'
+import { useRouter, useRoute } from 'vue-router'
 import { assertIsDefined } from '@/utils/type-assert'
-import { useStore } from '@/store/index'
+import { useAudioStore } from '@/store/audio'
 
 import { Region as RegionType } from '@/types/region'
 
-export default function bindSelectionUrl(selection: Ref<RegionType | undefined>): void {
-  const { route, router } = useRouter()
-  const store = useStore()
+export default function bindSelectionUrl (selection: Ref<RegionType | undefined>): void {
+  const router = useRouter()
+  const route = useRoute()
+  const audioStore = useAudioStore()
 
-  const onReady = () => {
+  const onReady = (): void => {
     const selectionAsQueryParams = computed(() => {
-      const queryFmt = (val: number) => val.toString()
-      if (!selection.value) {
+      const queryFmt = (val: number): string => val.toString()
+      if (selection.value === undefined) {
         return {
           start: undefined,
           stop: undefined
@@ -32,11 +33,14 @@ export default function bindSelectionUrl(selection: Ref<RegionType | undefined>)
     })
 
     const queryParamsAsSelection = computed(() => {
-      const { start: startRaw, stop: stopRaw } = route.value.query
+      const { start: startRaw, stop: stopRaw } = route.query
+      if (startRaw === null || stopRaw === null) {
+        return undefined
+      }
       if (Array.isArray(startRaw) || Array.isArray(stopRaw)) {
         return undefined
       }
-      if (!startRaw || !stopRaw) {
+      if (startRaw === '' || stopRaw === '') {
         return undefined
       }
       const start = parseInt(startRaw)
@@ -44,7 +48,7 @@ export default function bindSelectionUrl(selection: Ref<RegionType | undefined>)
       if (isNaN(start) || isNaN(start)) {
         return undefined
       }
-      const max = Math.round(store.state.audio.duration)
+      const max = Math.round(audioStore.state.duration)
       if (start < 0 || start > max) {
         console.warn('query params: unexpected start value', start)
         return undefined
@@ -59,31 +63,31 @@ export default function bindSelectionUrl(selection: Ref<RegionType | undefined>)
       }
     })
 
-    const setQueryParams = () => {
+    const setQueryParams = (): void => {
       const { start, stop } = selectionAsQueryParams.value
 
       // Avoid 'NavigationDuplicated' error from vue-route
-      const { start: oldStart, stop: oldStop } = route.value.query
+      const { start: oldStart, stop: oldStop } = route.query
       if (start === oldStart && stop === oldStop) {
         return
       }
 
-      assertIsDefined(route.value.name)
+      assertIsDefined(route.name)
       // Set query params
-      router.value.replace({
-        ...route.value,
-        name: route.value.name, // for typescript
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      router.replace({
+        ...route,
         query: {
-          ...route.value.query,
+          ...route.query,
           start,
           stop
         }
       })
     }
 
-    const setSelection = () => {
+    const setSelection = (): void => {
       // Do not set selection if query params are invalid
-      if (!queryParamsAsSelection.value) {
+      if (queryParamsAsSelection.value === undefined) {
         return
       }
 
@@ -117,12 +121,12 @@ export default function bindSelectionUrl(selection: Ref<RegionType | undefined>)
   // We need audio.isReady to be true before handling query parameters
   // Because we need to check if the query parameters are valid
   // according to the audio's length
-  const ready = computed(() => store.getters.audio.isReady === true)
+  const ready = audioStore.getters.isReady
 
   onMounted(() => {
     let stopReadyWatcher: ReturnType<typeof watch> | null = null
     stopReadyWatcher = watch([ ready ], () => {
-      if (ready.value !== true) {
+      if (!ready.value) {
         return
       }
       onReady()

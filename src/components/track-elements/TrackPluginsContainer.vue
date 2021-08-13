@@ -26,7 +26,7 @@ import {
   Ref,
   provide,
   ref
-} from '@vue/composition-api'
+} from 'vue'
 
 export const slotContainerKey: InjectionKey<Ref<SVGSVGElement | undefined>> = Symbol('track-plugins-container-svg')
 

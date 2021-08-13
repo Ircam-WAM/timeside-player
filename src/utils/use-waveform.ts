@@ -1,8 +1,7 @@
-import { ComputedRef, ref, onMounted, computed, watch } from '@vue/composition-api'
+import { ComputedRef, Ref, ref, onMounted, computed, watch } from 'vue'
 
-import { newAbortableApi, RetrieveItemWaveformRequest } from '@/utils/api'
+import { useApi, RetrieveItemWaveformRequest, ItemWaveformWaveform as WaveformTypeApi } from '@/utils/api'
 import { Waveform as WaveformType, WaveformSegment } from '@/types/waveform'
-import { ItemWaveformWaveform as WaveformTypeApi } from '@/utils/api'
 
 // Convert the api format for easier usage
 function toWaveformSegments (waveformApi: WaveformTypeApi): WaveformType {
@@ -37,7 +36,7 @@ function hasValidLength (waveformApi: WaveformTypeApi): boolean {
 
 function hasValidValues (waveformApi: WaveformTypeApi): boolean {
   const arrayHasConstantValues = (arr: number[]): boolean => {
-    const isEqualFloat = (a: number, b: number) => Math.abs(a - b) <= 0.0001
+    const isEqualFloat = (a: number, b: number): boolean => Math.abs(a - b) <= 0.0001
     return arr.every((val: number) => isEqualFloat(val, arr[0]))
   }
 
@@ -58,26 +57,27 @@ function hasValidValues (waveformApi: WaveformTypeApi): boolean {
 }
 
 interface UseWaveformReturn {
-  isLoading: ComputedRef<boolean>;
-  isValid: ComputedRef<boolean>;
-  error: ComputedRef<Response | undefined>;
-  waveform: ComputedRef<WaveformType | undefined>;
+  isLoading: Ref<boolean>
+  isValid: ComputedRef<boolean>
+  error: Ref<Response | undefined>
+  waveform: ComputedRef<WaveformType | undefined>
 }
 
-export default function useWaveform(params: ComputedRef<RetrieveItemWaveformRequest>): UseWaveformReturn {
+export default function useWaveform (params: ComputedRef<RetrieveItemWaveformRequest>): UseWaveformReturn {
+  const { newAbortableApi } = useApi()
   const isLoading = ref<boolean>(false)
   const error = ref<Response>()
   const waveformApi = ref<WaveformTypeApi>()
 
   const waveform = computed(() => {
-    if (!waveformApi.value) {
+    if (waveformApi.value === undefined) {
       return undefined
     }
     return toWaveformSegments(waveformApi.value)
   })
 
   const isValid = computed(() => {
-    if (!waveformApi.value) {
+    if (waveformApi.value === undefined) {
       return false
     }
     if (!hasValidLength(waveformApi.value)) {
@@ -87,11 +87,11 @@ export default function useWaveform(params: ComputedRef<RetrieveItemWaveformRequ
     return hasValidValues(waveformApi.value)
   })
 
-  let abortController: AbortController | undefined = undefined
+  let abortController: AbortController | undefined
 
-  const retrieve = async () => {
+  const retrieve = async (): Promise<void> => {
     // If a request is already ongoing, we abort it
-    if (abortController) {
+    if (abortController !== undefined) {
       abortController.abort()
     }
 
@@ -105,9 +105,10 @@ export default function useWaveform(params: ComputedRef<RetrieveItemWaveformRequ
       // Check exception after the fetch call
       // in the case where the request had time to finish
       if (abortController.signal.aborted) {
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw new DOMException('', 'AbortError')
       }
-      if (!resp.waveform) {
+      if (resp.waveform === undefined) {
         throw new Error('waveform is empty')
       }
       waveformApi.value = resp.waveform
@@ -126,6 +127,7 @@ export default function useWaveform(params: ComputedRef<RetrieveItemWaveformRequ
   // on mount and when request parameters are updated => update the waveform's data
   onMounted(() => watch([ params ], () => {
     isLoading.value = true
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     retrieve()
   }, { immediate: true }))
 
@@ -133,6 +135,6 @@ export default function useWaveform(params: ComputedRef<RetrieveItemWaveformRequ
     isLoading,
     error,
     isValid,
-    waveform,
+    waveform
   }
 }

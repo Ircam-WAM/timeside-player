@@ -1,5 +1,4 @@
-import { defineModule, defineGetters, defineMutations, defineActions } from 'direct-vuex'
-import { moduleActionContext } from './index'
+import { reactive, computed, inject, InjectionKey } from 'vue'
 
 export enum PlayState {
   Stop,
@@ -14,67 +13,65 @@ export enum CurrentTimeSource {
 }
 
 interface CurrentTime {
-  value: number;
-  source: CurrentTimeSource;
+  value: number
+  source: CurrentTimeSource
 }
 
 export interface AudioState {
-  playState: PlayState;
+  playState: PlayState
   // currentTime of the audio file in ms
-  currentTime: CurrentTime;
+  currentTime: CurrentTime
   // duration of the audio file in ms
-  duration: number;
-  playbackRate: number;
+  duration: number
+  playbackRate: number
 }
 
-const getDefaultState = (): AudioState => ({
-  playState: PlayState.Stop,
-  currentTime: { value: 0, source: CurrentTimeSource.TimeUpdate },
-  duration: 0,
-  playbackRate: 1.0
-})
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export function createAudioStore () {
+  const state = reactive<AudioState>({
+    playState: PlayState.Stop,
+    currentTime: { value: 0, source: CurrentTimeSource.TimeUpdate },
+    duration: 0,
+    playbackRate: 1.0
+  })
 
-const state = getDefaultState
+  const mutations = {
+    setPlayState (playState: PlayState) {
+      state.playState = playState
+    },
 
-const getters = defineGetters<AudioState>()({
-  isReady (state): boolean {
-    return state.duration !== 0
+    setDuration (duration: number) {
+      state.duration = duration
+    },
+
+    setCurrentTime (value: CurrentTime) {
+      state.currentTime = value
+    },
+
+    setPlayBackRate (value: number) {
+      state.playbackRate = value
+    }
   }
-})
 
-const mutations = defineMutations<AudioState>()({
-  resetState (state) {
-    Object.assign(state, getDefaultState())
-  },
-
-  setPlayState (state, playState: PlayState) {
-    state.playState = playState
-  },
-
-  setDuration (state, duration: number) {
-    state.duration = duration
-  },
-
-  setCurrentTime (state, value: CurrentTime) {
-    state.currentTime = value
-  },
-
-  setPlayBackRate (state, value: number) {
-    state.playbackRate = value
+  const getters = {
+    isReady: computed(() => state.duration !== 0)
   }
-})
 
-const actions = defineActions({
-})
+  return {
+    state,
+    getters,
+    mutations
+  }
+}
 
-const m = defineModule({
-  state,
-  getters,
-  mutations,
-  actions,
-  namespaced: true
-})
+type AudioStore = ReturnType<typeof createAudioStore>
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const audioActionContext = (context: any) => moduleActionContext(context, m)
-export default m
+export const audioStoreKey: InjectionKey<AudioStore> = Symbol('audio-store')
+
+export function useAudioStore (): AudioStore {
+  const resolved = inject(audioStoreKey)
+  if (resolved === undefined) {
+    throw new Error('store not found')
+  }
+  return resolved
+}

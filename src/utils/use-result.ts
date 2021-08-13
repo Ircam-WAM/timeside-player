@@ -3,17 +3,18 @@ import {
   watch,
   Ref,
   ref
-} from '@vue/composition-api'
+} from 'vue'
 
-import { newAbortableApi, AnalysisTrack, Result, TimesideApi, getUuidFromResultUrl } from '@/utils/api'
+import { useApi, AnalysisTrack, Result, TimesideApi } from '@/utils/api'
+import { getUuidFromResultUrl } from '@ircam/timeside-sdk'
 
-function timeout (ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms))
+async function timeout (ms: number): Promise<void> {
+  return await new Promise(resolve => setTimeout(resolve, ms))
 }
 
-async function getResult(input: AnalysisTrack, api: TimesideApi, abortController: AbortController) {
-  if (!input.uuid) {
-    throw new Error(`Analysis has empty UUID: ${input}`)
+async function getResult (input: AnalysisTrack, api: TimesideApi, abortController: AbortController): Promise<Result> {
+  if (input.uuid === undefined) {
+    throw new Error(`Analysis has empty UUID: ${JSON.stringify(input)}`)
   }
 
   // polls analysisTrack every X seconds
@@ -23,13 +24,14 @@ async function getResult(input: AnalysisTrack, api: TimesideApi, abortController
   while (at.resultUrl === 'Task running') {
     await timeout(5000)
     if (abortController.signal.aborted) {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw new DOMException('Aborted', 'AbortError')
     }
     at = await api.retrieveAnalysisTrack({ uuid: input.uuid })
   }
 
-  if (!at.resultUrl) {
-    throw new Error(`AnalysisTrack has no resultUrl: ${at}`)
+  if (at.resultUrl === undefined) {
+    throw new Error(`AnalysisTrack has no resultUrl: ${JSON.stringify(at)}`)
   }
 
   let resultUuid
@@ -46,28 +48,29 @@ async function getResult(input: AnalysisTrack, api: TimesideApi, abortController
     }
   }
 
-  return await api.retrieveResult({ uuid: resultUuid })
+  return await api.retrieveResult({ uuid: resultUuid }) as Result
 }
 
 interface ResultReturn {
-  result: Ref<Result | undefined>;
-  error: Ref<Response | undefined>;
-  loading: Ref<boolean>;
+  result: Ref<Result | undefined>
+  error: Ref<Response | undefined>
+  loading: Ref<boolean>
 }
 
 export default function useResult (analysisTrack: Ref<AnalysisTrack>): ResultReturn {
+  const { newAbortableApi } = useApi()
   const result = ref<Result | undefined>(undefined)
   const error = ref<Response | undefined>(undefined)
   const loading = ref(true)
 
-  let abortController: AbortController | undefined = undefined
+  let abortController: AbortController | undefined
 
-  async function setResult () {
+  async function setResult (): Promise<void> {
     loading.value = true
     error.value = undefined
 
     // If a request is already ongoing, we abort it
-    if (abortController) {
+    if (abortController !== undefined) {
       abortController.abort()
     }
 
@@ -86,6 +89,7 @@ export default function useResult (analysisTrack: Ref<AnalysisTrack>): ResultRet
   }
 
   // Fetch analysisTrack when updated
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   onMounted(() => { watch(analysisTrack, () => { setResult() }, { immediate: true }) })
 
   return {

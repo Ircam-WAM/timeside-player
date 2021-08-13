@@ -24,9 +24,9 @@ import {
   watch,
   PropType,
   computed
-} from '@vue/composition-api'
+} from 'vue'
 
-import { useStore } from '@/store/index'
+import { useAudioStore } from '@/store/audio'
 import { Region as RegionType } from '@/types/region'
 
 import TrackPluginsContainer from '@/components/track-elements/TrackPluginsContainer.vue'
@@ -36,16 +36,6 @@ import WaveformContainer from '@/components/track-elements/WaveformContainer.vue
 import Axis from '@/components/track-elements/Axis.vue'
 
 export default defineComponent({
-  props: {
-    itemId: {
-      type: String,
-      required: true
-    },
-    selection: {
-      type: Object as PropType<RegionType>,
-      required: false
-    }
-  },
   components: {
     WaveformContainer,
     TrackPluginsContainer,
@@ -53,8 +43,22 @@ export default defineComponent({
     Region,
     Axis
   },
+  props: {
+    itemId: {
+      type: String,
+      required: true
+    },
+    selection: {
+      type: Object as PropType<RegionType>,
+      required: false,
+      default: undefined
+    }
+  },
+  emits: [
+    'selection'
+  ],
   setup (props, { emit }) {
-    const store = useStore()
+    const audioStore = useAudioStore()
     const selection = ref<RegionType>()
 
     // two-way data binding
@@ -68,7 +72,7 @@ export default defineComponent({
     return {
       // Use a different name to avoid namespace conflicts with `selection` props
       innerSelection: selection,
-      lastTime: computed(() => store.state.audio.duration)
+      lastTime: computed(() => audioStore.state.duration)
     }
   }
 })

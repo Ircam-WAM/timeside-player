@@ -14,13 +14,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watchEffect } from '@vue/composition-api'
-import { baseUrls } from '@/utils/api'
+import { defineComponent, ref, watchEffect } from 'vue'
+import { useApi } from '@/utils/api'
 
 export default defineComponent({
   name: 'SelectAPI',
   setup () {
-    const apiUrl = ref(localStorage.getItem('api-url') || baseUrls[0])
+    const { baseUrls, currentBaseUrl } = useApi()
+    const apiUrl = ref(currentBaseUrl)
 
     watchEffect(() => {
       if (localStorage.getItem('api-url') === apiUrl.value) {

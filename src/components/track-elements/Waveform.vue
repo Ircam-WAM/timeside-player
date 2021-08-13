@@ -18,7 +18,7 @@ import {
   PropType,
   ref,
   computed
-} from '@vue/composition-api'
+} from 'vue'
 
 // d3 imports by module to reduce bundle size
 import { scaleLinear } from 'd3-scale'
@@ -30,19 +30,19 @@ import { Waveform as WaveformType, WaveformSegment } from '@/types/waveform'
 
 export default defineComponent({
   name: 'Waveform',
+  components: {
+    FluidSVG
+  },
   props: {
     waveform: {
       type: Object as PropType<WaveformType>,
       required: true
     }
   },
-  components: {
-    FluidSVG
-  },
-  setup ({ waveform }) {
+  setup (props) {
     const svgSize = ref<ClientRect>()
 
-    const path = computed(() => {
+    const path = computed<string>(() => {
       const height = svgSize.value ? svgSize.value.height : 0
       const width = svgSize.value ? svgSize.value.width : 0
       // Optimization: no need to compute
@@ -51,8 +51,8 @@ export default defineComponent({
       }
 
       // Use scaleLinear because scaleTime() is for dates
-      const firstSegment = waveform.data[0]
-      const lastSegment = waveform.data[waveform.data.length - 1]
+      const firstSegment = props.waveform.data[0]
+      const lastSegment = props.waveform.data[props.waveform.data.length - 1]
       const xScale = scaleLinear<number>()
         .domain([ firstSegment.time, lastSegment.time ])
         .range([ 0, width ])
@@ -62,7 +62,7 @@ export default defineComponent({
       // See https://github.com/Parisson/TimeSide/issues/177
       // You may want to switch to `.domain([ -1, 1 ])`
       const yScale = scaleLinear<number>()
-        .domain([ waveform.meta.minVal, waveform.meta.maxVal ])
+        .domain([ props.waveform.meta.minVal, props.waveform.meta.maxVal ])
         .range([ height, -height ])
 
       const scale = (y: number) => height - (yScale(y) / 2) - (height / 2)
@@ -71,7 +71,7 @@ export default defineComponent({
         .y0((d) => scale(d.min))
         .y1((d) => scale(d.max))
 
-      return d3area(waveform.data)
+      return d3area(props.waveform.data) as string
     })
 
     return {
