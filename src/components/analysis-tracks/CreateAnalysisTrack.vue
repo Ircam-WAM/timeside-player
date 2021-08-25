@@ -30,7 +30,8 @@
 <script lang="ts">
 import {
   defineComponent,
-  ref
+  ref,
+  onMounted
 } from 'vue'
 
 import { useApi, Analysis, AnalysisTrack } from '@/utils/api'
@@ -38,7 +39,7 @@ import { getAnalysisUrl, getItemUrl } from '@ircam/timeside-sdk'
 
 import { formatResponseError } from '@/utils/response-error'
 
-import useAnalysis from '@/utils/analysis-list-store'
+// import useAnalysis from '@/utils/analysis-list-store'
 
 export default defineComponent({
   props: {
@@ -53,8 +54,27 @@ export default defineComponent({
   ],
   setup (props, { emit }) {
     const { api, currentBaseUrl } = useApi()
-    const { analysis, analysisLoading, analysisError } = useAnalysis()
+    // const { analysis, analysisLoading, analysisError } = useAnalysis()
+    const analysis = ref<Array<Analysis>>()
+    const analysisLoading = ref(true)
+    const analysisError = ref<Response>()
+
     const selectedAnalysisId = ref<Analysis['uuid']>()
+
+    onMounted(async () => {
+      try {
+        const resp = await api.listAnalysis()
+        analysis.value = resp
+        analysisLoading.value = false
+        analysisError.value = undefined
+      } catch (e) {
+        if (e instanceof Response) {
+          analysisError.value = e
+        } else {
+          console.error('Unknown error occured', e)
+        }
+      }
+    })
 
     const submitLoading = ref(false)
     const submitError = ref<Response | Error | undefined>()

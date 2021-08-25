@@ -1,55 +1,49 @@
 <template>
-  <form
-    ref="formEl"
+  <div
     class="create-annotation"
-    @submit.prevent="submit"
   >
-    <p>Add an anotation</p>
     <input
       v-model="form.title"
+      class="input title"
       placeholder="Title"
       name="title"
       type="text"
-      required
+      :style="{width: `${width-10}px`}"
     >
-    <input
+    <textarea
       v-model="form.description"
+      class="input description"
       placeholder="Description"
       name="description"
       type="text"
-      required
-    >
-    <input
-      v-model="form.startTime"
-      name="start-time"
-      type="number"
-      placeholder="Start (seconds)"
-      required
-    >
-    <input
-      v-model="form.stopTime"
-      name="stop-time"
-      type="number"
-      placeholder="Stop (seconds)"
-      required
-    >
-    <button
-      :disabled="loading"
-    >
-      {{ loading ? 'Loading...' : 'Add' }}
-    </button>
-    <div
-      v-if="error"
-      class="error"
-    >
-      Error: {{ error }}
+      :style="{width: `${width-10}px`}"
+    />
+    <div class=checkbox-and-label>
+      <input
+        class="input"
+        type="checkbox"
+        id="checkbox"
+        v-model="globalAnnotationBool"
+      >
+      <label
+        for="checkbox"
+        :style="{width: `${width-10}px`}"
+      >
+        Global Annotation
+      </label>
     </div>
-  </form>
+    <button
+      class="add-button"
+      @submit.prevent="submit">
+      Add
+    </button>
+  </div>
 </template>
 
 <script lang="ts">
 import {
   defineComponent,
+  computed,
   ref
 } from 'vue'
 
@@ -58,6 +52,26 @@ import { getAnnotationTrackUrl } from '@ircam/timeside-sdk'
 
 export default defineComponent({
   props: {
+    selection_start: {
+      type: Number,
+      required: false
+    },
+    selection_stop: {
+      type: Number,
+      required: false
+    },
+    start: {
+      type: Number,
+      required: true
+    },
+    stop: {
+      type: Number,
+      required: true
+    },
+    width: {
+      type: Number,
+      required: true
+    },
     trackId: {
       type: String,
       required: true
@@ -68,21 +82,24 @@ export default defineComponent({
   ],
   setup (props, { emit }) {
     const { api, currentBaseUrl } = useApi()
+    const duration = computed(() => 31)
+    const selectionStart = computed(() => props.selection_start || 0)
+    const selectionStop = computed(() => props.selection_stop || duration.value * 1000)
+    const width = props.width
+    const start = props.start
+    const stop = props.stop
+
     const formEl = ref<HTMLFormElement>()
     const initialForm = () => ({
       title: '',
-      description: '',
-      startTime: 0,
-      stopTime: 0
+      description: ''
     })
     const form = ref(initialForm())
-
-    const loading = ref(false)
     const error = ref()
 
     async function submit () {
       const track = getAnnotationTrackUrl(currentBaseUrl, props.trackId)
-      const annotation = { track, ...form.value }
+      const annotation = { track, ...form.value, startTime: start, stopTime: stop }
       try {
         const newAnnotation = await api.createAnnotation({ annotation })
         form.value = initialForm()
@@ -94,29 +111,38 @@ export default defineComponent({
     }
 
     return {
+      selectionStart,
+      selectionStop,
+      width,
       form,
-      formEl,
-      submit,
-      error,
-      loading
+      formEl
     }
   }
 })
+
 </script>
 
 <style lang="less" scoped>
-.create-annotation {
-  text-align: center;
-  padding: 10px;
+.input {
+  margin: 5px;
+}
+.title {
+  margin-top: 5px;
 
-  & > * {
-    margin: 0 auto;
-    margin-bottom: 10px;
-    display: block;
-  }
+}
+.description {
+  min-height: 120px;
 }
 
-.error {
-  color: red;
+.checkbox-and-label {
+  position: absolute;
+  left: 5px;
+  bottom: 10px
 }
+.add-button {
+  position: absolute;
+  right: 5px;
+  bottom: 10px
+}
+
 </style>

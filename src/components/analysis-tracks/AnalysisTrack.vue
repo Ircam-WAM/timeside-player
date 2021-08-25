@@ -44,9 +44,12 @@
       <div v-else>
         Unknwon type of visualization (mimeType: "{{ result.mimeType }}", hdf5: "{{ result.hdf5 }}")
       </div>
-      <TrackPluginsContainer v-if="addAnnotation" class="track-plugins-container">
-        <CreateAnnotationRegion v-model="innerSelection" />
-      </TrackPluginsContainer>
+      <CreateAnnotationRegion
+        class="annotation-container"
+        :result-uuid="result.uuid"
+        :start="start"
+        :stop="stop"
+     />
     </template>
     <div v-else>
       Unexpected behavior (result undefined)
@@ -68,6 +71,7 @@ import HDF5Visualization from '@/components/analysis-tracks/HDF5Visualization.vu
 import BitmapVisualization from '@/components/analysis-tracks/BitmapVisualization.vue'
 import TrackPluginsContainer from '@/components/track-elements/TrackPluginsContainer.vue'
 import CreateAnnotationRegion from '@/components/annotation/CreateAnnotationRegion.vue'
+import { Region as RegionType } from '@/types/region'
 
 import { useApi, Analysis, AnalysisTrack } from '@/utils/api'
 import { AnalysisRenderTypeEnum, getUuidFromAnalysisUrl } from '@ircam/timeside-sdk'
@@ -98,6 +102,10 @@ export default defineComponent({
     addAnnotation: {
       type: Boolean,
       required: true
+    },
+    selection: {
+      type: Object as PropType<RegionType>,
+      required: false
     }
   },
   emits: [ 'deleted' ],
@@ -139,6 +147,16 @@ export default defineComponent({
       })()
     }, { immediate: true }))
 
+    const selection = ref<RegionType>()
+
+    // two-way data binding
+    watch([ () => props.selection ], () => {
+      selection.value = props.selection
+    }, { immediate: true })
+    watch([ selection ], () => {
+      emit('selection', selection.value)
+    }, { immediate: true })
+
     return {
       // result
       result,
@@ -154,7 +172,8 @@ export default defineComponent({
       loadingAnalysis,
       errorAnalysis,
       AnalysisRenderTypeEnum,
-      addAnnotation
+      addAnnotation,
+      innerSelection: selection
     }
   }
 })
@@ -172,4 +191,12 @@ export default defineComponent({
   position: relative;
 }
 
+.annotation-container {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  opacity: 0.7;
+  height: 100%;
+  width: 100%;
+}
 </style>

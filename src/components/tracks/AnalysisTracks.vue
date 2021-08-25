@@ -19,6 +19,7 @@
             :stop="selection ? selection.stop : undefined"
             :analysis-track="at"
             :add-annotation="addAnnotation"
+            :selection="selection"
             class="analysis-track"
             @deleted="analysisTracks.remove($event)"
           />

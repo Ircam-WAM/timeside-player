@@ -1,52 +1,36 @@
 <template>
-  <!--
-    Use stop event modifiers to skip event handlers of InteractivePlayCursor
-    We may remove them and make InteractivePlayCursor check event.target
-  -->
-  <g>
-    <rect
+  <div
+    ref="parentContainer"
+    class="container"
+  >
+    <div
       v-if="start"
       class="delimiter left"
-      :x="start - 4"
-      y="0"
-      height="100%"
+      :style="{position: 'absolute', left: `${start - 4}px`, height: '100%'}"
       @mousedown.stop="startResizeLeft"
     />
-    <rect
+    <div
       v-if="width"
       ref="el"
       class="content"
-      :x="start"
-      y="0"
-      height="100%"
-      :width="width"
-      @mousedown.stop="startMove"
-    />
-    <text
-      v-if="width"
-      ref="el"
-      :x="start"
-      y="50"
-      height="100%"
-      :width="width"
+      :style="{position: 'absolute', left: `${start}px`, height: '100%', width: `${width}px`}"
       @mousedown.stop="startMove"
     >
-      Hello World
-    </text>
-    <rect
+      <CreateAnnotation
+        :selection_start="selection_start"
+        :selection_stop="selection_stop"
+        :width="width"
+      />
+    </div>
+    <div
       v-if="stop"
       class="delimiter right"
-      :x="stop"
-      y="0"
-      height="100%"
+      :style="{position: 'absolute', left: `${stop}px`, height: '100%'}"
       @mousedown.stop="startResizeRight"
     />
     <svg
       v-if="stop && width && width > 40"
-      :x="stop - 40"
-      :y="0"
-      width="40"
-      height="40"
+      :style="{position: 'absolute', left: `${stop - 40}px`, height: '40px', width: '40px'}"
       viewBox="0 0 512 512"
       class="close"
       @mousedown.stop="closeHandler"
@@ -66,7 +50,7 @@
         />
       </g>
     </svg>
-  </g>
+  </div>
 </template>
 
 <script lang="ts">
@@ -76,18 +60,16 @@ import {
   computed,
   watch,
   PropType,
-  inject,
   onMounted,
   onUnmounted,
-  watchEffect,
-  Ref
+  watchEffect
 } from '@vue/composition-api'
 import { assertIsDefined } from '@/utils/type-assert'
 import { Region as RegionType } from '@/types/region'
 import { usePlayerRect } from '@/utils/use-player-rect'
 import useTrackHelpers from '@/utils/use-track-helpers'
 
-import { slotContainerKey } from '@/components/track-elements/TrackPluginsContainer.vue'
+import CreateAnnotation from '@/components/annotation/CreateAnnotation.vue'
 
 enum Direction {
   Left,
@@ -100,15 +82,22 @@ export default defineComponent({
     value: {
       type: Object as PropType<RegionType>,
       required: false
+    },
+    selection_start: {
+      type: Number,
+      required: false
+    },
+    selection_stop: {
+      type: Number,
+      required: false
     }
+  },
+  components: {
+    CreateAnnotation
   },
   setup (props, { emit }) {
     // FIXME: Type inference from symbol not working here. Redeclaring type
-    const parentContainer = inject<Ref<SVGSVGElement | undefined>>(slotContainerKey)
-    if (!parentContainer) {
-      throw new Error('Region.vue expects to be a child of TrackPluginsContainer.vue')
-    }
-
+    const parentContainer = ref<HTMLDivElement>()
     const {
       positionToTime,
       timeToPosition
@@ -322,22 +311,17 @@ export default defineComponent({
       startMove,
       startResizeLeft,
       startResizeRight,
-      closeHandler
+      closeHandler,
+      parentContainer
     }
   }
 })
 </script>
 
 <style lang="less" scoped>
-rect {
-  // Fix offset. Default value is 1px
-  // Without this, rect element with `height: 100%`
-  // would have a height of `100% + 1px`
-  stroke-width: 0;
-}
-
 .delimiter {
   width: 4px;
+  background-color: black;
 
   &.left {
     padding-left: 5px;
@@ -349,9 +333,16 @@ rect {
   }
 }
 
-.content {
+.content  {
   cursor: grab;
-  fill: rgba(92, 196, 255, 0.63);
+  background:#F1948A;
+}
+.contairer {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  width: 100%;
 }
 
 .close {
