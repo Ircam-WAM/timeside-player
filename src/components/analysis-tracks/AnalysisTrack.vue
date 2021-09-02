@@ -47,9 +47,13 @@
       <CreateAnnotationRegion
         class="annotation-container"
         :result-uuid="result.uuid"
-        :start="start"
-        :stop="stop"
-     />
+        :selection="props.selection"
+      />
+      <Annotations
+        class="annotation-container annotations"
+        :selection="props.selection"
+        :playerWidth="playerWidth"
+      />
     </template>
     <div v-else>
       Unexpected behavior (result undefined)
@@ -71,18 +75,21 @@ import HDF5Visualization from '@/components/analysis-tracks/HDF5Visualization.vu
 import BitmapVisualization from '@/components/analysis-tracks/BitmapVisualization.vue'
 import TrackPluginsContainer from '@/components/track-elements/TrackPluginsContainer.vue'
 import CreateAnnotationRegion from '@/components/annotation/CreateAnnotationRegion.vue'
+import Annotations from '@/components/annotation/Annotations.vue'
 import { Region as RegionType } from '@/types/region'
 
 import { useApi, Analysis, AnalysisTrack } from '@/utils/api'
 import { AnalysisRenderTypeEnum, getUuidFromAnalysisUrl } from '@ircam/timeside-sdk'
 import useResult from '@/utils/use-result'
+import { usePlayerRect } from '@/utils/use-player-rect'
 
 export default defineComponent({
   components: {
     HDF5Visualization,
     BitmapVisualization,
     TrackPluginsContainer,
-    CreateAnnotationRegion
+    CreateAnnotationRegion,
+    Annotations
   },
   props: {
     analysisTrack: {
@@ -108,7 +115,7 @@ export default defineComponent({
       required: false
     }
   },
-  emits: [ 'deleted' ],
+  emits: [ 'deleted', 'selection' ],
   // See https://github.com/Parisson/TimeSide/issues/174
   setup (props, { emit }) {
     const { api } = useApi()
@@ -157,6 +164,9 @@ export default defineComponent({
       emit('selection', selection.value)
     }, { immediate: true })
 
+    const playerSize = usePlayerRect()
+    const playerWidth = computed(() => playerSize.value.right - playerSize.value.left)
+
     return {
       // result
       result,
@@ -166,14 +176,15 @@ export default defineComponent({
       // delete analysis track
       deleteAt,
       loadingDelete,
-
+      props,
       // analysis
       analysis,
       loadingAnalysis,
       errorAnalysis,
       AnalysisRenderTypeEnum,
       addAnnotation,
-      innerSelection: selection
+      innerSelection: selection,
+      playerWidth
     }
   }
 })
@@ -190,7 +201,6 @@ export default defineComponent({
 
   position: relative;
 }
-
 .annotation-container {
   position: absolute;
   top: 0px;
@@ -198,5 +208,8 @@ export default defineComponent({
   opacity: 0.7;
   height: 100%;
   width: 100%;
+}
+.annotations{
+  pointer-events: none;
 }
 </style>

@@ -26,7 +26,8 @@
     </template>
     <template v-else-if="hdf5.time_mode === 'segment'">
       <SegmentVisualization
-        :hdf5="hdf5"
+        v-if="hdf5Segment !== undefined"
+        :hdf5="hdf5Segment"
         :start="start"
         :stop="stop"
       />
@@ -56,6 +57,7 @@ import {
 
 import { HDF5, useApi } from '@/utils/api'
 import { HDF5 as HDF5Event } from './HDF5Event'
+import { HDF5 as HDF5Segment } from './HDF5Segment'
 import FramewiseVisualization from '@/components/analysis-tracks/FramewiseVisualization.vue'
 import EventVisualization from './EventVisualization.vue'
 import SegmentVisualization from './SegmentVisualization.vue'
@@ -118,7 +120,8 @@ export default defineComponent({
       loading,
       error,
       hdf5,
-      hdf5Event: hdf5 as Ref<HDF5Event | undefined>
+      hdf5Event: hdf5 as Ref<HDF5Event | undefined>,
+      hdf5Segment: hdf5 as Ref<HDF5Segment | undefined>
     }
   }
 })

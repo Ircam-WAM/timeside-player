@@ -1,6 +1,7 @@
 <template>
-  <div
+  <form
     class="create-annotation"
+    @submit.prevent="submit"
   >
     <input
       v-model="form.title"
@@ -8,7 +9,7 @@
       placeholder="Title"
       name="title"
       type="text"
-      :style="{width: `${width-10}px`}"
+      :style="{width: `${props.width - 10}px`}"
     >
     <textarea
       v-model="form.description"
@@ -16,55 +17,41 @@
       placeholder="Description"
       name="description"
       type="text"
-      :style="{width: `${width-10}px`}"
-    />
-    <div class=checkbox-and-label>
-      <input
-        class="input"
-        type="checkbox"
-        id="checkbox"
-        v-model="globalAnnotationBool"
-      >
-      <label
-        for="checkbox"
-        :style="{width: `${width-10}px`}"
-      >
-        Global Annotation
-      </label>
-    </div>
+      :style="{width: `${props.width -10}px`}"
+    >
+    </textarea>
     <button
-      class="add-button"
-      @submit.prevent="submit">
-      Add
+      class="save-button"
+    >
+      Save
     </button>
-  </div>
+  </form>
 </template>
 
 <script lang="ts">
 import {
   defineComponent,
   computed,
-  ref
+  ref,
+  inject,
+  PropType
 } from 'vue'
 
 import { useApi } from '@/utils/api'
+import { assertIsDefined } from '@/utils/type-assert'
 import { getAnnotationTrackUrl } from '@ircam/timeside-sdk'
+import { selectedAnnotationTrackKey } from '@/components/Player.vue'
+import { Region as RegionType } from '@/types/region'
+import { useAudioStore } from '@/store/audio'
+import { useAnnotationStore } from '@/store/annotation'
 
 export default defineComponent({
   props: {
-    selection_start: {
-      type: Number,
-      required: false
-    },
-    selection_stop: {
-      type: Number,
+    selection: {
+      type: Object as PropType<RegionType>,
       required: false
     },
     start: {
-      type: Number,
-      required: true
-    },
-    stop: {
       type: Number,
       required: true
     },
@@ -72,22 +59,21 @@ export default defineComponent({
       type: Number,
       required: true
     },
-    trackId: {
-      type: String,
+    playerWidth: {
+      type: Number,
       required: true
     }
   },
-  emits: [
-    'new-annotation'
-  ],
+  emits: {
+    close
+  },
   setup (props, { emit }) {
     const { api, currentBaseUrl } = useApi()
-    const duration = computed(() => 31)
-    const selectionStart = computed(() => props.selection_start || 0)
-    const selectionStop = computed(() => props.selection_stop || duration.value * 1000)
-    const width = props.width
-    const start = props.start
-    const stop = props.stop
+    const selectedAnnotationTrack = inject(selectedAnnotationTrackKey)
+    const store = useAudioStore()
+    const selectionStart = computed(() => props.selection?.start || 0)
+    const selectionStop = computed(() => props.selection?.stop || store.state.duration)
+    const annotationStore = useAnnotationStore()
 
     const formEl = ref<HTMLFormElement>()
     const initialForm = () => ({
@@ -98,24 +84,30 @@ export default defineComponent({
     const error = ref()
 
     async function submit () {
-      const track = getAnnotationTrackUrl(currentBaseUrl, props.trackId)
-      const annotation = { track, ...form.value, startTime: start, stopTime: stop }
+      assertIsDefined(selectedAnnotationTrack)
+      if (selectedAnnotationTrack.value === undefined) {
+        throw new Error('no annotations selected')
+      }
+      const track = getAnnotationTrackUrl(currentBaseUrl, selectedAnnotationTrack.value)
+      const startTime = Math.round(props.start * (selectionStop.value - selectionStart.value) / props.playerWidth + selectionStart.value)
+      const stopTime = Math.round((props.start + props.width) * (selectionStop.value - selectionStart.value) / props.playerWidth + selectionStart.value)
+      const annotation = { track, ...form.value, startTime: startTime, stopTime: stopTime }
       try {
-        const newAnnotation = await api.createAnnotation({ annotation })
+        await api.createAnnotation({ annotation })
         form.value = initialForm()
         formEl.value?.reset()
-        emit('new-annotation', newAnnotation)
+        annotationStore.addAnnotation(selectedAnnotationTrack.value, annotation)
+        emit('close')
       } catch (e) {
         error.value = e
       }
     }
 
     return {
-      selectionStart,
-      selectionStop,
-      width,
+      props,
       form,
-      formEl
+      formEl,
+      submit
     }
   }
 })
@@ -132,12 +124,6 @@ export default defineComponent({
 }
 .description {
   min-height: 120px;
-}
-
-.checkbox-and-label {
-  position: absolute;
-  left: 5px;
-  bottom: 10px
 }
 .add-button {
   position: absolute;

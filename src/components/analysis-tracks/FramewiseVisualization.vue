@@ -36,7 +36,8 @@ import YAxis from './YAxis.vue'
 
 export default defineComponent({
   components: {
-    FluidSVG
+    FluidSVG,
+    YAxis
   },
   props: {
     hdf5: {
@@ -54,13 +55,6 @@ export default defineComponent({
       default: undefined
     }
   },
-<<<<<<< HEAD
-=======
-  components: {
-    FluidSVG,
-    YAxis
-  },
->>>>>>> 8ca0d84 (add y axis but it doesn't work well yet)
   setup (props) {
     const svgSize = ref<ClientRect | undefined>()
 
@@ -78,9 +72,9 @@ export default defineComponent({
       // on the time axis with duration * stepsize / samplerate
       const getX = (idx: number) => idx * stepsize.value / samplerate.value * 1000 // convert to ms
 
-      const p = props.hdf5.data_object.value.numpyArray.map<[number, number]>((y, idx) => {
+      const p = props.hdf5.data_object.value.numpyArray.map((y: number, idx: number) => {
         return [ getX(idx), y ]
-      })
+      }) as Point[]
       // we need to add first and last point to draw the abscissa
       const firstPoint: Point = [ 0, 0 ]
       const lastPoint: Point = [ getX(p.length), 0 ]

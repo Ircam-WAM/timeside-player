@@ -82,18 +82,9 @@ export default defineComponent({
       required: true
     }
   },
-  components: {
-    TrackPluginsContainer,
-    Axis,
-    InteractivePlayCursor,
-    AnalysisTrack
-  },
   setup (props) {
     var addAnnotation = props.addAnnotation
-
     const audioStore = useAudioStore()
->>>>>>> 3c5c3d9 (new look, working on annotations)
-
     function newTrack (el: Element) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }

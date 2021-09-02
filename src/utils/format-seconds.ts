@@ -22,7 +22,7 @@ export const formatSeconds = (val: number): string => {
       fixedDigits(seconds) + seconds.toFixed()
     ].join(':')
   }
-  return (seconds.toFixed())
+  return (seconds.toFixed(1))
 }
 
 

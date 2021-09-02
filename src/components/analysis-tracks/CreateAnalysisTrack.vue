@@ -18,10 +18,7 @@
         class="checklist"
         @click="submit(a)"
       >
-        <div class="checkbox" />
-        <div>
-          {{ a.title }}
-        </div>
+       {{ a.title }}
       </div>
     </div>
   </div>
@@ -50,7 +47,6 @@ export default defineComponent({
   },
   emits: [
     'new-analysis-track',
-    'close'
   ],
   setup (props, { emit }) {
     const { api, currentBaseUrl } = useApi()
@@ -121,6 +117,7 @@ export default defineComponent({
 .list-container {
   opacity: 0.95;
   cursor: pointer;
+  padding-right: 5px
 }
 .checklist {
   text-align: left;
@@ -132,13 +129,5 @@ export default defineComponent({
 }
 .checklist:hover {
   background: gainsboro;
-}
-.checkbox {
-  height: 15px;
-  width: 15px;
-  border: solid;
-  border-color: black;
-  border-width: 1px;
-  margin: 0px 5px;
 }
 </style>

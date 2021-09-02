@@ -14,7 +14,7 @@ import {
   defineComponent,
   PropType,
   computed
-} from '@vue/composition-api'
+} from 'vue'
 
 import { HDF5 } from './HDF5Segment'
 
@@ -63,6 +63,10 @@ export default defineComponent({
             t: 0,
             d: 100
           }
+        }
+        return {
+          t: undefined,
+          d: undefined
         }
       })
     )

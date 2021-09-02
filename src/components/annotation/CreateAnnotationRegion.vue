@@ -17,9 +17,12 @@
       @mousedown.stop="startMove"
     >
       <CreateAnnotation
-        :selection_start="selection_start"
-        :selection_stop="selection_stop"
+        v-if="start"
+        :selection="props.selection"
+        :start="start"
         :width="width"
+        :playerWidth="playerWidth"
+        @close="closeHandler"
       />
     </div>
     <div
@@ -63,7 +66,7 @@ import {
   onMounted,
   onUnmounted,
   watchEffect
-} from '@vue/composition-api'
+} from 'vue'
 import { assertIsDefined } from '@/utils/type-assert'
 import { Region as RegionType } from '@/types/region'
 import { usePlayerRect } from '@/utils/use-player-rect'
@@ -87,8 +90,8 @@ export default defineComponent({
       type: Number,
       required: false
     },
-    selection_stop: {
-      type: Number,
+    selection: {
+      type: Object as PropType<RegionType>,
       required: false
     }
   },
@@ -112,6 +115,7 @@ export default defineComponent({
       return stop.value - start.value
     })
     const playerSize = usePlayerRect()
+    const playerWidth = computed(() => playerSize.value.right - playerSize.value.left)
 
     const setPosition = (input?: RegionType) => {
       if (!input) {
@@ -312,7 +316,9 @@ export default defineComponent({
       startResizeLeft,
       startResizeRight,
       closeHandler,
-      parentContainer
+      parentContainer,
+      playerWidth,
+      props
     }
   }
 })
@@ -335,7 +341,7 @@ export default defineComponent({
 
 .content  {
   cursor: grab;
-  background:#F1948A;
+  background:#76D7C4  ;
 }
 .contairer {
   position: absolute;

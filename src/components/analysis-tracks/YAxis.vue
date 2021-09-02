@@ -16,7 +16,7 @@ import {
   watchEffect,
   Ref,
   ref
-} from '@vue/composition-api'
+} from 'vue'
 
 import { scaleLinear, ScaleLinear } from 'd3-scale'
 import { select } from 'd3-selection'

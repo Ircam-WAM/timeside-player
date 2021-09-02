@@ -4,9 +4,6 @@
     class="create-annotation-track generic-form"
     @submit.prevent="submit"
   >
-    <p class="form-title">
-      Add an annotation track
-    </p>
     <div class="field">
       <input
         v-model="form.title"
@@ -24,15 +21,6 @@
         type="text"
         required
       >
-    </div>
-    <div class="field left">
-      <input
-        id="is-public"
-        v-model="form.isPublic"
-        type="checkbox"
-        name="isPublic"
-      >
-      <label for="is-public">Make annotations public</label>
     </div>
     <button
       class="btn green-btn"
