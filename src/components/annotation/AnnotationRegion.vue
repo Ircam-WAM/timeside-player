@@ -17,11 +17,17 @@
       @mousedown.stop="startMove"
     >
       <CreateAnnotation
-        v-if="start"
+        v-if="start && !annotationStore.editingAnnotation"
         :selection="props.selection"
         :start="start"
         :width="width"
-        :playerWidth="playerWidth"
+        @close="closeHandler"
+      />
+      <EditAnnotation
+        v-if="start && annotationStore.editingAnnotation"
+        :selection="props.selection"
+        :start="start"
+        :width="width"
         @close="closeHandler"
       />
     </div>
@@ -65,14 +71,16 @@ import {
   PropType,
   onMounted,
   onUnmounted,
-  watchEffect
+  watchEffect,
 } from 'vue'
 import { assertIsDefined } from '@/utils/type-assert'
 import { Region as RegionType } from '@/types/region'
 import { usePlayerRect } from '@/utils/use-player-rect'
 import useTrackHelpers from '@/utils/use-track-helpers'
-
+import { Annotation } from '@/utils/api'
+import { useAnnotationStore } from '@/store/annotation'
 import CreateAnnotation from '@/components/annotation/CreateAnnotation.vue'
+import EditAnnotation from '@/components/annotation/EditAnnotation.vue'
 
 enum Direction {
   Left,
@@ -80,34 +88,30 @@ enum Direction {
 }
 
 export default defineComponent({
-  name: 'Region',
+  name: 'AnnotationRegion',
   props: {
-    value: {
-      type: Object as PropType<RegionType>,
-      required: false
-    },
-    selection_start: {
-      type: Number,
-      required: false
-    },
     selection: {
       type: Object as PropType<RegionType>,
       required: false
+    },
+    selectedAnnotationForEdition: {
+      type:  Object as PropType<Annotation>,
+      required:false
     }
   },
   components: {
-    CreateAnnotation
+    CreateAnnotation,
+    EditAnnotation
   },
-  setup (props, { emit }) {
-    // FIXME: Type inference from symbol not working here. Redeclaring type
+  setup (props) {
+    const annotationStore = useAnnotationStore()
     const parentContainer = ref<HTMLDivElement>()
-    const {
-      positionToTime,
-      timeToPosition
-    } = useTrackHelpers()
+    const { timeToPosition, positionToTime } = useTrackHelpers()
     const el = ref<HTMLDivElement>()
     const start = ref<number>()
     const stop = ref<number>()
+    let oldselection = props.selection
+
     const width = computed(() => {
       if (start.value === undefined || stop.value === undefined) {
         return undefined
@@ -117,49 +121,29 @@ export default defineComponent({
     const playerSize = usePlayerRect()
     const playerWidth = computed(() => playerSize.value.right - playerSize.value.left)
 
-    const setPosition = (input?: RegionType) => {
-      if (!input) {
-        return
+    watch([ () => annotationStore.editingAnnotation ], () => {
+      if (annotationStore.editingAnnotation === undefined) {
+        start.value = undefined
+        stop.value = undefined
       }
-      start.value = timeToPosition(input.start)
-      stop.value = timeToPosition(input.stop)
-    }
+      else {
+        start.value = timeToPosition(annotationStore.editingAnnotation.annotation.startTime, props.selection)
+        stop.value = timeToPosition(annotationStore.editingAnnotation.annotation.stopTime, props.selection)
+      }
+    })
 
-    // one-way data binding
-    watch(() => props.value, (input) => setPosition(input), { immediate: true })
-
-    // Recompute absolute coordinates from time values
-    // when a resize occurs
-    watch(playerSize, () => setPosition(props.value), { immediate: true })
-
-    // manually notify parent of the changes
-    // instead of watch start/stop
-    // in order to optimize performances
-    const notifyParent = () => {
-      if (start.value === undefined || stop.value === undefined) {
-        emit('input', undefined)
-        return
+    watch([ () => props.selection ], () => {
+      if (start.value !== undefined && stop.value !== undefined) {
+        start.value = timeToPosition(positionToTime(start.value, oldselection), props.selection)
+        stop.value = timeToPosition(positionToTime(stop.value, oldselection), props.selection)
       }
-      const newVal = {
-        start: positionToTime(start.value),
-        stop: positionToTime(stop.value)
-      }
-      if (props.value === undefined) {
-        emit('input', newVal)
-        return
-      }
-      if (props.value.start === newVal.start &&
-          props.value.stop === newVal.stop) {
-        // Do nothing
-        return
-      }
-      emit('input', newVal)
-    }
+      oldselection = props.selection
+    })
 
     const closeHandler = () => {
       start.value = undefined
       stop.value = undefined
-      notifyParent()
+      annotationStore.editingAnnotation = undefined
     }
 
     const startCreate = ({ clientX: startClientX }: MouseEvent) => {
@@ -203,7 +187,6 @@ export default defineComponent({
       }
 
       const stopCreate = () => {
-        notifyParent()
         window.removeEventListener('mousemove', moveCreate)
         window.removeEventListener('mouseup', stopCreate)
       }
@@ -245,7 +228,6 @@ export default defineComponent({
       const stopResize = () => {
         window.removeEventListener('mouseup', stopResize)
         window.removeEventListener('mousemove', resize)
-        notifyParent()
       }
 
       window.addEventListener('mouseup', stopResize)
@@ -276,7 +258,6 @@ export default defineComponent({
       const stopMove = () => {
         window.removeEventListener('mouseup', stopMove)
         window.removeEventListener('mousemove', move)
-        notifyParent()
       }
 
       window.addEventListener('mouseup', stopMove)
@@ -299,7 +280,6 @@ export default defineComponent({
       const stopResize = () => {
         window.removeEventListener('mouseup', stopResize)
         window.removeEventListener('mousemove', resize)
-        notifyParent()
       }
 
       window.addEventListener('mouseup', stopResize)
@@ -318,7 +298,8 @@ export default defineComponent({
       closeHandler,
       parentContainer,
       playerWidth,
-      props
+      props,
+      annotationStore
     }
   }
 })

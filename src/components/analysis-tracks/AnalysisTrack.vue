@@ -44,7 +44,7 @@
       <div v-else>
         Unknwon type of visualization (mimeType: "{{ result.mimeType }}", hdf5: "{{ result.hdf5 }}")
       </div>
-      <CreateAnnotationRegion
+      <AnnotationRegion
         class="annotation-container"
         :result-uuid="result.uuid"
         :selection="props.selection"
@@ -74,7 +74,7 @@ import {
 import HDF5Visualization from '@/components/analysis-tracks/HDF5Visualization.vue'
 import BitmapVisualization from '@/components/analysis-tracks/BitmapVisualization.vue'
 import TrackPluginsContainer from '@/components/track-elements/TrackPluginsContainer.vue'
-import CreateAnnotationRegion from '@/components/annotation/CreateAnnotationRegion.vue'
+import AnnotationRegion from '@/components/annotation/AnnotationRegion.vue'
 import Annotations from '@/components/annotation/Annotations.vue'
 import { Region as RegionType } from '@/types/region'
 
@@ -84,11 +84,12 @@ import useResult from '@/utils/use-result'
 import { usePlayerRect } from '@/utils/use-player-rect'
 
 export default defineComponent({
+  name: 'AnnalysisTrack',
   components: {
     HDF5Visualization,
     BitmapVisualization,
     TrackPluginsContainer,
-    CreateAnnotationRegion,
+    AnnotationRegion,
     Annotations
   },
   props: {

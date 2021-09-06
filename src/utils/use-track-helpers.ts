@@ -5,7 +5,7 @@ import { Region as RegionType } from '@/types/region'
 
 interface TrackHelpers {
   positionToTime: (time: number, selection?: RegionType) => number
-  timeToPosition: (pos: number) => number
+  timeToPosition: (pos: number, selection?: RegionType) => number
 }
 
 export default function useTrackHelpers (): TrackHelpers {
@@ -32,9 +32,16 @@ export default function useTrackHelpers (): TrackHelpers {
     return Math.round(offset + pos / width * duration)
   }
 
-  const timeToPosition = (time: number): number => {
-    const duration = audioStore.state.duration
+  const timeToPosition = (time: number, selection?: RegionType): number => {
     const width = playerSize.value.width
+    let selectionStart = 0
+    const duration = (() => {
+      if (selection !== undefined) {
+        selectionStart=selection.start
+        return selection.stop - selection.start
+      }
+      return audioStore.state.duration
+    })()
 
     if (duration === 0) {
       console.warn('timeToPosition: unexpected duration', duration)
@@ -43,7 +50,7 @@ export default function useTrackHelpers (): TrackHelpers {
 
     // Use int instead of float to avoid updating-loop
     // because oldValue is not always equal newValue for float numbers
-    return Math.round(time * width / duration)
+    return Math.round((time - selectionStart) * width / duration)
   }
 
   return {

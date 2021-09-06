@@ -1,14 +1,20 @@
 import {
   ref,
-  ComputedRef,
   reactive,
   InjectionKey,
   inject
 } from 'vue'
 import { useApi, Annotation } from '@/utils/api'
 
+export interface EditingAnnotation {
+  annotation: Annotation
+  annotationTrack: string
+}
+
 export interface AnnotationStore {
   annotations: Map<string, Annotation[]>
+
+  editingAnnotation?: EditingAnnotation
 
   fetch: (uuid: string) => Promise<void>
   loadingFetch: boolean
@@ -16,11 +22,14 @@ export interface AnnotationStore {
 
   toggleAnnotationTrack: (uuid: string) => void
   addAnnotation: (annotationTrackUuid: string,annotation: Annotation) => void
+  editAnnotation: (annotation: Annotation) => void
+  removeEditingAnnotation: () => void
 }
 
 export function createAnnotationStore (): AnnotationStore {
   const { api } = useApi()
   const annotations = ref(new Map<string, Annotation[]>())
+  const editingAnnotation = ref<EditingAnnotation>()
 
   const loadingFetch = ref(false)
   const errorFetch = ref<Response | Error | undefined>()
@@ -41,9 +50,6 @@ export function createAnnotationStore (): AnnotationStore {
       annotations.value.delete(annotationTrackUuid)
     } else {
       fetch (annotationTrackUuid)
-      for (const a of annotations.value.keys()) {
-        console.log(a)
-      }
     }
   }
 
@@ -59,8 +65,33 @@ export function createAnnotationStore (): AnnotationStore {
     }
   }
 
+  function editAnnotation (a: Annotation): void {
+    if (editingAnnotation.value !== undefined) {
+      let annotationsList = annotations.value.get(editingAnnotation.value.annotationTrack)
+      if (annotationsList !== undefined) {
+        annotationsList[annotationsList.indexOf(editingAnnotation.value.annotation)] = a
+        annotations.value.set(editingAnnotation.value.annotationTrack, annotationsList)
+        editingAnnotation.value = undefined
+      }
+    }
+  }
+
+  function removeEditingAnnotation (): void {
+    if (editingAnnotation.value !== undefined) {
+      let annotationsList = annotations.value.get(editingAnnotation.value.annotationTrack)
+      if (annotationsList !== undefined) {
+        const index = annotationsList.indexOf(editingAnnotation.value.annotation)
+        if (index > -1) {
+          annotationsList.splice(index, 1);
+        }
+        editingAnnotation.value = undefined
+      }
+    }
+  }
+
   return reactive({
     annotations,
+    editingAnnotation,
 
     fetch,
     loadingFetch,
@@ -68,6 +99,8 @@ export function createAnnotationStore (): AnnotationStore {
 
     toggleAnnotationTrack,
     addAnnotation,
+    editAnnotation,
+    removeEditingAnnotation
   })
 }
 

@@ -20,10 +20,15 @@
       :style="{width: `${props.width -10}px`}"
     >
     </textarea>
-    <button
-      class="save-button"
-    >
+    <button class="form-button">
       Save
+    </button>
+    <button
+      type="button"
+      class="form-buttun"
+      @click="destroy"
+    >
+      Delete
     </button>
   </form>
 </template>
@@ -32,14 +37,11 @@
 import {
   defineComponent,
   ref,
-  inject,
   PropType
 } from 'vue'
 
 import { useApi } from '@/utils/api'
-import { assertIsDefined } from '@/utils/type-assert'
 import { getAnnotationTrackUrl } from '@ircam/timeside-sdk'
-import { selectedAnnotationTrackKey } from '@/components/Player.vue'
 import { Region as RegionType } from '@/types/region'
 import { useAnnotationStore } from '@/store/annotation'
 import useTrackHelpers from '@/utils/use-track-helpers'
@@ -66,9 +68,11 @@ export default defineComponent({
   setup (props, { emit }) {
     const { positionToTime } = useTrackHelpers()
     const { api, currentBaseUrl } = useApi()
-    const selectedAnnotationTrack = inject(selectedAnnotationTrackKey)
     const annotationStore = useAnnotationStore()
 
+    if (annotationStore.editingAnnotation === undefined) {
+      throw new Error('editAnnotation.annotationTrack is undefined')
+    }
 
     const formEl = ref<HTMLFormElement>()
     const initialForm = () => ({
@@ -76,20 +80,46 @@ export default defineComponent({
       description: ''
     })
     const form = ref(initialForm())
+    form.value.title = annotationStore.editingAnnotation.annotation.title
+    if (annotationStore.editingAnnotation.annotation.description !== undefined) {
+      form.value.description = annotationStore.editingAnnotation.annotation.description
+    }
     const error = ref()
 
     async function submit () {
+      if (annotationStore.editingAnnotation === undefined) {
+        throw new Error('editAnnotation.annotationTrack is undefined')
+      }
       const startTime = positionToTime(props.start, props.selection)
       const stopTime = positionToTime(props.start + props.width, props.selection)
-      assertIsDefined(selectedAnnotationTrack)
-      if (selectedAnnotationTrack.value === undefined) {
-        throw new Error('no annotationtrack selected')
-      }
-      const track = getAnnotationTrackUrl(currentBaseUrl, selectedAnnotationTrack.value)
-      const annotation = { track, ...form.value, startTime: startTime, stopTime: stopTime }
       try {
-        const newAnnotation = await api.createAnnotation({ annotation })
-        annotationStore.addAnnotation(selectedAnnotationTrack.value, newAnnotation)
+        if (annotationStore.editingAnnotation.annotation.uuid === undefined) {
+          throw new Error('editAnnotation.annotation.uuid is undefined')
+        }
+        const track = getAnnotationTrackUrl(currentBaseUrl, annotationStore.editingAnnotation.annotationTrack)
+        const annotation = { uuid: annotationStore.editingAnnotation.annotation.uuid, track, ...form.value, startTime: startTime, stopTime: stopTime }
+        const updateAnnotation = { uuid: annotationStore.editingAnnotation.annotation.uuid, annotation: annotation }
+        await api.updateAnnotation(updateAnnotation)
+        annotationStore.editAnnotation(annotation)
+        form.value = initialForm()
+        formEl.value?.reset()
+        emit('close')
+      } catch (e) {
+        error.value = e
+      }
+    }
+
+    async function destroy () {
+      if (annotationStore.editingAnnotation === undefined) {
+        throw new Error('editAnnotation.annotationTrack is undefined')
+      }
+      const aUuid = annotationStore.editingAnnotation.annotation.uuid
+      if (aUuid === undefined) {
+        throw new Error('editAnnotation.annotation.uuid is undefined')
+      }
+      try {
+        await api.destroyAnnotation({uuid: aUuid})
+        annotationStore.removeEditingAnnotation()
         form.value = initialForm()
         formEl.value?.reset()
         emit('close')
@@ -102,7 +132,8 @@ export default defineComponent({
       props,
       form,
       formEl,
-      submit
+      submit,
+      destroy
     }
   }
 })
@@ -120,10 +151,6 @@ export default defineComponent({
 .description {
   min-height: 120px;
 }
-.add-button {
-  position: absolute;
-  right: 5px;
-  bottom: 10px
-}
+
 
 </style>
