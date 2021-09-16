@@ -26,11 +26,13 @@ export default defineComponent({
     },
     start: {
       type: Number,
-      required: false
+      required: false,
+      default: undefined
     },
     stop: {
       type: Number,
-      required: false
+      required: false,
+      default: undefined
     }
   },
   setup (props) {

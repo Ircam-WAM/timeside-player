@@ -26,22 +26,19 @@ import FluidSVG from '@/components/utils/FluidSVG.vue'
 
 import { assertIsDefined } from '@/utils/type-assert'
 
-// See https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/d3-axis/index.d.ts
-type d3TickFormat = (domainValue: number | { valueOf(): number }, index: number) => string
-
 export default defineComponent({
+  components: {
+    FluidSVG
+  },
   props: {
-    min_data: {
+    minData: {
       type: Number,
       required: true
     },
-    max_data: {
+    maxData: {
       type: Number,
       required: true
     }
-  },
-  components: {
-    FluidSVG
   },
   setup (props) {
     const svgSize: Ref<ClientRect | undefined> = ref()
@@ -49,13 +46,9 @@ export default defineComponent({
 
     const yScale = computed(() => {
       const height = svgSize.value ? svgSize.value.height : 0
-      // divide to convert ms to seconds
-      const minData = props.min_data
-      const maxData = props.max_data
-
       // Use scaleLinear because scaleTime() is for dates
       return scaleLinear<number>()
-        .domain([ minData, maxData ])
+        .domain([ props.minData, props.maxData ])
         .range([ height, 0 ])
     }) as Readonly<Ref<ScaleLinear<number, number>>>
 

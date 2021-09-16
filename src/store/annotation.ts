@@ -21,7 +21,7 @@ export interface AnnotationStore {
   errorFetch: Response | Error | undefined
 
   toggleAnnotationTrack: (uuid: string) => void
-  addAnnotation: (annotationTrackUuid: string,annotation: Annotation) => void
+  addAnnotation: (annotationTrackUuid: string, annotation: Annotation) => void
   editAnnotation: (annotation: Annotation) => void
   removeEditingAnnotation: () => void
 }
@@ -45,19 +45,19 @@ export function createAnnotationStore (): AnnotationStore {
     loadingFetch.value = false
   }
 
-  function toggleAnnotationTrack (annotationTrackUuid: string): void {
+  async function toggleAnnotationTrack (annotationTrackUuid: string): Promise<void> {
     if (annotations.value.has(annotationTrackUuid)) {
       annotations.value.delete(annotationTrackUuid)
     } else {
-      fetch (annotationTrackUuid)
+      await fetch(annotationTrackUuid)
     }
   }
 
   function addAnnotation (annotationTrackUuid: string, a: Annotation): void {
-    if (annotations.value.has(annotationTrackUuid)){
+    if (annotations.value.has(annotationTrackUuid)) {
       let annotationsList = annotations.value.get(annotationTrackUuid)
       if (annotationsList === undefined) {
-        annotationsList = [a]
+        annotationsList = [ a ]
       } else {
         annotationsList.push(a)
       }
@@ -67,7 +67,7 @@ export function createAnnotationStore (): AnnotationStore {
 
   function editAnnotation (a: Annotation): void {
     if (editingAnnotation.value !== undefined) {
-      let annotationsList = annotations.value.get(editingAnnotation.value.annotationTrack)
+      const annotationsList = annotations.value.get(editingAnnotation.value.annotationTrack)
       if (annotationsList !== undefined) {
         annotationsList[annotationsList.indexOf(editingAnnotation.value.annotation)] = a
         annotations.value.set(editingAnnotation.value.annotationTrack, annotationsList)
@@ -78,11 +78,11 @@ export function createAnnotationStore (): AnnotationStore {
 
   function removeEditingAnnotation (): void {
     if (editingAnnotation.value !== undefined) {
-      let annotationsList = annotations.value.get(editingAnnotation.value.annotationTrack)
+      const annotationsList = annotations.value.get(editingAnnotation.value.annotationTrack)
       if (annotationsList !== undefined) {
         const index = annotationsList.indexOf(editingAnnotation.value.annotation)
         if (index > -1) {
-          annotationsList.splice(index, 1);
+          annotationsList.splice(index, 1)
         }
         editingAnnotation.value = undefined
       }

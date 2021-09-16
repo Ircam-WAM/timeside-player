@@ -25,11 +25,6 @@
           />
         </transition-group>
       </div>
-      <!-- <TrackPluginsContainer>
-        <InteractivePlayCursor
-          :selection="selection"
-        />
-      </TrackPluginsContainer> -->
     </div>
     <Axis
       :first-time="selection ? selection.start : 0"
@@ -46,8 +41,6 @@ import {
 } from 'vue'
 import { useAudioStore } from '@/store/audio'
 
-import TrackPluginsContainer from '@/components/track-elements/TrackPluginsContainer.vue'
-import InteractivePlayCursor from '@/components/track-elements/InteractivePlayCursor.vue'
 import Axis from '@/components/track-elements/Axis.vue'
 import AnalysisTrack from '@/components/analysis-tracks/AnalysisTrack.vue'
 
@@ -59,9 +52,7 @@ import { Region as RegionType } from '@/types/region'
 export default defineComponent({
   name: 'AnalysisTracks',
   components: {
-    TrackPluginsContainer,
     Axis,
-    InteractivePlayCursor,
     AnalysisTrack
   },
   props: {
@@ -82,8 +73,7 @@ export default defineComponent({
       required: true
     }
   },
-  setup (props) {
-    var addAnnotation = props.addAnnotation
+  setup () {
     const audioStore = useAudioStore()
     function newTrack (el: Element) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -92,8 +82,7 @@ export default defineComponent({
     return {
       formatResponseError,
       lastTime: computed(() => audioStore.state.duration),
-      newTrack,
-      addAnnotation
+      newTrack
     }
   }
 })

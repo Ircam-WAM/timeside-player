@@ -18,7 +18,7 @@
         class="checklist"
         @click="submit(a)"
       >
-       {{ a.title }}
+        {{ a.title }}
       </div>
     </div>
   </div>
@@ -46,7 +46,7 @@ export default defineComponent({
     }
   },
   emits: [
-    'new-analysis-track',
+    'new-analysis-track'
   ],
   setup (props, { emit }) {
     const { api, currentBaseUrl } = useApi()

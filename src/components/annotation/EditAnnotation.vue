@@ -18,8 +18,7 @@
       name="description"
       type="text"
       :style="{width: `${props.width -10}px`}"
-    >
-    </textarea>
+    />
     <button class="form-button">
       Save
     </button>
@@ -51,7 +50,8 @@ export default defineComponent({
   props: {
     selection: {
       type: Object as PropType<RegionType>,
-      required: false
+      required: false,
+      default: undefined
     },
     start: {
       type: Number,
@@ -60,7 +60,7 @@ export default defineComponent({
     width: {
       type: Number,
       required: true
-    },
+    }
   },
   emits: [
     'close'
@@ -80,7 +80,7 @@ export default defineComponent({
       description: ''
     })
     const form = ref(initialForm())
-    form.value.title = annotationStore.editingAnnotation.annotation.title
+    form.value.title = annotationStore.editingAnnotation.annotation.title || ''
     if (annotationStore.editingAnnotation.annotation.description !== undefined) {
       form.value.description = annotationStore.editingAnnotation.annotation.description
     }
@@ -118,7 +118,7 @@ export default defineComponent({
         throw new Error('editAnnotation.annotation.uuid is undefined')
       }
       try {
-        await api.destroyAnnotation({uuid: aUuid})
+        await api.destroyAnnotation({ uuid: aUuid })
         annotationStore.removeEditingAnnotation()
         form.value = initialForm()
         formEl.value?.reset()
@@ -151,6 +151,5 @@ export default defineComponent({
 .description {
   min-height: 120px;
 }
-
 
 </style>

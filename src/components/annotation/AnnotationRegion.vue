@@ -71,7 +71,7 @@ import {
   PropType,
   onMounted,
   onUnmounted,
-  watchEffect,
+  watchEffect
 } from 'vue'
 import { assertIsDefined } from '@/utils/type-assert'
 import { Region as RegionType } from '@/types/region'
@@ -89,19 +89,21 @@ enum Direction {
 
 export default defineComponent({
   name: 'AnnotationRegion',
-  props: {
-    selection: {
-      type: Object as PropType<RegionType>,
-      required: false
-    },
-    selectedAnnotationForEdition: {
-      type:  Object as PropType<Annotation>,
-      required:false
-    }
-  },
   components: {
     CreateAnnotation,
     EditAnnotation
+  },
+  props: {
+    selection: {
+      type: Object as PropType<RegionType>,
+      required: false,
+      default: undefined
+    },
+    selectedAnnotationForEdition: {
+      type: Object as PropType<Annotation>,
+      required: false,
+      default: undefined
+    }
   },
   setup (props) {
     const annotationStore = useAnnotationStore()
@@ -110,7 +112,6 @@ export default defineComponent({
     const el = ref<HTMLDivElement>()
     const start = ref<number>()
     const stop = ref<number>()
-    let oldselection = props.selection
 
     const width = computed(() => {
       if (start.value === undefined || stop.value === undefined) {
@@ -121,23 +122,22 @@ export default defineComponent({
     const playerSize = usePlayerRect()
     const playerWidth = computed(() => playerSize.value.right - playerSize.value.left)
 
-    watch([ () => annotationStore.editingAnnotation ], () => {
-      if (annotationStore.editingAnnotation === undefined) {
+    watch(() => annotationStore.editingAnnotation, (editing) => {
+      if (editing === undefined) {
         start.value = undefined
         stop.value = undefined
+        return
       }
-      else {
-        start.value = timeToPosition(annotationStore.editingAnnotation.annotation.startTime, props.selection)
-        stop.value = timeToPosition(annotationStore.editingAnnotation.annotation.stopTime, props.selection)
-      }
+      start.value = timeToPosition(editing.annotation.startTime!, props.selection)
+      stop.value = timeToPosition(editing.annotation.stopTime, props.selection)
     })
 
-    watch([ () => props.selection ], () => {
-      if (start.value !== undefined && stop.value !== undefined) {
-        start.value = timeToPosition(positionToTime(start.value, oldselection), props.selection)
-        stop.value = timeToPosition(positionToTime(stop.value, oldselection), props.selection)
+    watch(() => props.selection, (selection, prevSelection) => {
+      if (start.value === undefined || stop.value === undefined) {
+        return
       }
-      oldselection = props.selection
+      start.value = timeToPosition(positionToTime(start.value, prevSelection), selection)
+      stop.value = timeToPosition(positionToTime(stop.value, prevSelection), selection)
     })
 
     const closeHandler = () => {

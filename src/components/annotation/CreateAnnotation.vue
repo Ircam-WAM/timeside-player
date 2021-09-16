@@ -18,8 +18,7 @@
       name="description"
       type="text"
       :style="{width: `${props.width -10}px`}"
-    >
-    </textarea>
+    />
     <button
       class="save-button"
     >
@@ -49,7 +48,8 @@ export default defineComponent({
   props: {
     selection: {
       type: Object as PropType<RegionType>,
-      required: false
+      required: false,
+      default: undefined
     },
     start: {
       type: Number,
@@ -58,7 +58,7 @@ export default defineComponent({
     width: {
       type: Number,
       required: true
-    },
+    }
   },
   emits: [
     'close'
@@ -68,7 +68,6 @@ export default defineComponent({
     const { api, currentBaseUrl } = useApi()
     const selectedAnnotationTrack = inject(selectedAnnotationTrackKey)
     const annotationStore = useAnnotationStore()
-
 
     const formEl = ref<HTMLFormElement>()
     const initialForm = () => ({

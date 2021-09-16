@@ -37,7 +37,7 @@ export default function useTrackHelpers (): TrackHelpers {
     let selectionStart = 0
     const duration = (() => {
       if (selection !== undefined) {
-        selectionStart=selection.start
+        selectionStart = selection.start
         return selection.stop - selection.start
       }
       return audioStore.state.duration

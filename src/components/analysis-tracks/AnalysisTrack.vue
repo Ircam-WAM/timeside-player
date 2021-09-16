@@ -52,7 +52,7 @@
       <Annotations
         class="annotation-container annotations"
         :selection="props.selection"
-        :playerWidth="playerWidth"
+        :player-width="playerWidth"
       />
     </template>
     <div v-else>
@@ -73,7 +73,6 @@ import {
 
 import HDF5Visualization from '@/components/analysis-tracks/HDF5Visualization.vue'
 import BitmapVisualization from '@/components/analysis-tracks/BitmapVisualization.vue'
-import TrackPluginsContainer from '@/components/track-elements/TrackPluginsContainer.vue'
 import AnnotationRegion from '@/components/annotation/AnnotationRegion.vue'
 import Annotations from '@/components/annotation/Annotations.vue'
 import { Region as RegionType } from '@/types/region'
@@ -88,7 +87,6 @@ export default defineComponent({
   components: {
     HDF5Visualization,
     BitmapVisualization,
-    TrackPluginsContainer,
     AnnotationRegion,
     Annotations
   },
@@ -113,14 +111,14 @@ export default defineComponent({
     },
     selection: {
       type: Object as PropType<RegionType>,
-      required: false
+      required: false,
+      default: undefined
     }
   },
   emits: [ 'deleted', 'selection' ],
   // See https://github.com/Parisson/TimeSide/issues/174
   setup (props, { emit }) {
     const { api } = useApi()
-    var addAnnotation = props.addAnnotation
     // Reactive analysisTrack
     const _analysisTrack = computed(() => props.analysisTrack)
     const { loading: loadingResult, result, error: errorResult } = useResult(_analysisTrack)
@@ -183,7 +181,6 @@ export default defineComponent({
       loadingAnalysis,
       errorAnalysis,
       AnalysisRenderTypeEnum,
-      addAnnotation,
       innerSelection: selection,
       playerWidth
     }

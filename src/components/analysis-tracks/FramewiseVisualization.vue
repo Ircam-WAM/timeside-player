@@ -2,8 +2,8 @@
   <div class="framewise-container">
     <YAxis
       class="yaxis-visualization"
-      :min_data="minValue"
-      :max_data="maxValue"
+      :min-data="minValue"
+      :max-data="maxValue"
     />
     <FluidSVG
       class="framewise-visualization"
