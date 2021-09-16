@@ -13,7 +13,7 @@
           class="annotation"
           :style="{
             left: `${left(annotation.startTime)}px`,
-            width: `${right(annotation.stopTime)-left(annotation.startTime)}px`
+            width: `${right(annotation.stopTime) - left(annotation.startTime)}px`
           }"
           @mouseover="moreInfoUuid = annotation.uuid"
           @mouseleave="moreInfoUuid = undefined"

@@ -36,8 +36,6 @@ import { getAnalysisUrl, getItemUrl } from '@ircam/timeside-sdk'
 
 import { formatResponseError } from '@/utils/response-error'
 
-// import useAnalysis from '@/utils/analysis-list-store'
-
 export default defineComponent({
   props: {
     itemId: {
@@ -50,7 +48,6 @@ export default defineComponent({
   ],
   setup (props, { emit }) {
     const { api, currentBaseUrl } = useApi()
-    // const { analysis, analysisLoading, analysisError } = useAnalysis()
     const analysis = ref<Array<Analysis>>()
     const analysisLoading = ref(true)
     const analysisError = ref<Response>()
