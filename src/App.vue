@@ -49,7 +49,8 @@ export default defineComponent({
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 50px;
+  margin-left: 50px;
 }
 
 #app ::v-deep(*, *::before, *::after) {

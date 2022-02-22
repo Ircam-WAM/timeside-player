@@ -7,19 +7,14 @@
       <div v-else-if="errorAnalysis">
         Error retrieving analysis: {{ errorAnalysis }}
       </div>
-      <div v-else-if="analysis">
-        <p class="info-type">
-          Analysis Track
-        </p>
-        <p class="info-title">
-          {{ analysis.title }}
-        </p>
+      <div v-else-if="analysis" class="info-title">
+        {{ analysis.title }}
       </div>
       <div v-else>
         Unexpected behavior
       </div>
       <button class="delete" @click="deleteAt">
-        {{ loadingDelete ? 'Loading...' : 'Delete' }}
+        {{ loadingDelete ? 'Loading...' : 'x' }}
       </button>
     </div>
     <div v-if="loadingResult || loadingAnalysis">
@@ -49,6 +44,16 @@
       <div v-else>
         Unknwon type of visualization (mimeType: "{{ result.mimeType }}", hdf5: "{{ result.hdf5 }}")
       </div>
+      <AnnotationRegion
+        class="annotation-container"
+        :result-uuid="result.uuid"
+        :selection="props.selection"
+      />
+      <Annotations
+        class="annotation-container annotations"
+        :selection="props.selection"
+        :player-width="playerWidth"
+      />
     </template>
     <div v-else>
       Unexpected behavior (result undefined)
@@ -68,15 +73,22 @@ import {
 
 import HDF5Visualization from '@/components/analysis-tracks/HDF5Visualization.vue'
 import BitmapVisualization from '@/components/analysis-tracks/BitmapVisualization.vue'
+import AnnotationRegion from '@/components/annotation/AnnotationRegion.vue'
+import Annotations from '@/components/annotation/Annotations.vue'
+import { Region as RegionType } from '@/types/region'
 
 import { useApi, Analysis, AnalysisTrack } from '@/utils/api'
 import { AnalysisRenderTypeEnum, getUuidFromAnalysisUrl } from '@ircam/timeside-sdk'
 import useResult from '@/utils/use-result'
+import { usePlayerRect } from '@/utils/use-player-rect'
 
 export default defineComponent({
+  name: 'AnnalysisTrack',
   components: {
     HDF5Visualization,
-    BitmapVisualization
+    BitmapVisualization,
+    AnnotationRegion,
+    Annotations
   },
   props: {
     analysisTrack: {
@@ -92,9 +104,18 @@ export default defineComponent({
       type: Number,
       required: false,
       default: undefined
+    },
+    addAnnotation: {
+      type: Boolean,
+      required: true
+    },
+    selection: {
+      type: Object as PropType<RegionType>,
+      required: false,
+      default: undefined
     }
   },
-  emits: [ 'deleted' ],
+  emits: [ 'deleted', 'selection' ],
   // See https://github.com/Parisson/TimeSide/issues/174
   setup (props, { emit }) {
     const { api } = useApi()
@@ -132,6 +153,19 @@ export default defineComponent({
       })()
     }, { immediate: true }))
 
+    const selection = ref<RegionType>()
+
+    // two-way data binding
+    watch([ () => props.selection ], () => {
+      selection.value = props.selection
+    }, { immediate: true })
+    watch([ selection ], () => {
+      emit('selection', selection.value)
+    }, { immediate: true })
+
+    const playerSize = usePlayerRect()
+    const playerWidth = computed(() => playerSize.value.right - playerSize.value.left)
+
     return {
       // result
       result,
@@ -141,12 +175,14 @@ export default defineComponent({
       // delete analysis track
       deleteAt,
       loadingDelete,
-
+      props,
       // analysis
       analysis,
       loadingAnalysis,
       errorAnalysis,
-      AnalysisRenderTypeEnum
+      AnalysisRenderTypeEnum,
+      innerSelection: selection,
+      playerWidth
     }
   }
 })
@@ -162,5 +198,16 @@ export default defineComponent({
   justify-content: center;
 
   position: relative;
+}
+.annotation-container {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  opacity: 0.7;
+  height: 100%;
+  width: 100%;
+}
+.annotations{
+  pointer-events: none;
 }
 </style>

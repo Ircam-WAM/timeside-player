@@ -1,9 +1,9 @@
 <template>
   <FluidSVG
-    class="x-axis-container"
+    class="y-axis-container"
     @resized="svgSize = $event"
   >
-    <!-- x-axis will be filled by d3 -->
+    <!-- y-axis will be filled by d3 -->
     <g ref="group" />
   </FluidSVG>
 </template>
@@ -20,28 +20,22 @@ import {
 
 import { scaleLinear, ScaleLinear } from 'd3-scale'
 import { select } from 'd3-selection'
-import { axisBottom } from 'd3-axis'
+import { axisLeft } from 'd3-axis'
 
 import FluidSVG from '@/components/utils/FluidSVG.vue'
 
 import { assertIsDefined } from '@/utils/type-assert'
-import { formatSeconds } from '@/utils/format-seconds'
-
-// See https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/d3-axis/index.d.ts
-type d3TickFormat = (domainValue: number | { valueOf(): number }, index: number) => string
 
 export default defineComponent({
   components: {
     FluidSVG
   },
   props: {
-    // first time of the axis in ms
-    firstTime: {
+    minData: {
       type: Number,
       required: true
     },
-    // last time of the axis in ms
-    lastTime: {
+    maxData: {
       type: Number,
       required: true
     }
@@ -50,17 +44,13 @@ export default defineComponent({
     const svgSize: Ref<ClientRect | undefined> = ref()
     const group = ref<SVGSVGElement>()
 
-    const xScale = computed<ScaleLinear<number, number>>(() => {
-      const width = svgSize.value ? svgSize.value.width : 0
-      // divide to convert ms to seconds
-      const firstTime = props.firstTime / 1000
-      const lastTime = props.lastTime / 1000
-
+    const yScale = computed(() => {
+      const height = svgSize.value ? svgSize.value.height : 0
       // Use scaleLinear because scaleTime() is for dates
       return scaleLinear<number>()
-        .domain([ firstTime, lastTime ])
-        .range([ 0, width ])
-    })
+        .domain([ props.minData, props.maxData ])
+        .range([ height, 0 ])
+    }) as Readonly<Ref<ScaleLinear<number, number>>>
 
     // Axis
     onMounted(() => watchEffect(() => {
@@ -69,11 +59,10 @@ export default defineComponent({
       const d3axis = select(group.value)
 
       // Define axis
-      const xAxis = axisBottom(xScale.value)
-        .tickFormat(formatSeconds as d3TickFormat)
+      const yAxis = axisLeft(yScale.value)
 
       // Render axis
-      d3axis.call(xAxis)
+      d3axis.attr('transform', 'translate(50, 0)').call(yAxis)
     }))
 
     return {
@@ -85,7 +74,9 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-.x-axis-container {
-  min-height: 20px;
+.y-axis-container {
+  height: 100%;
+  width: 100%;
+  margin-left: -50px;
 }
 </style>

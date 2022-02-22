@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="maintrack-and-axis-container">
     <div class="maintrack-container">
       <WaveformContainer
         class="maintrack"
@@ -79,11 +79,12 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+
 .maintrack-container {
   position: relative;
 }
 
 .maintrack {
-  height: 70px;
+  height: 50px;
 }
 </style>

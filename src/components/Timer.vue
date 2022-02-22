@@ -16,7 +16,7 @@ import {
 } from 'vue'
 
 import { useAudioStore, PlayState, CurrentTimeSource } from '@/store/audio'
-import { formatSeconds } from '@/utils/format-seconds'
+import { formatSecondsDetailed } from '@/utils/format-seconds'
 
 export default defineComponent({
   name: 'Timer',
@@ -76,11 +76,11 @@ export default defineComponent({
     })
 
     const current = computed<string>(() => {
-      return formatSeconds(innerCount.value / 1000)
+      return formatSecondsDetailed(innerCount.value / 1000)
     })
 
     const total = computed<string>(() => {
-      return formatSeconds(store.state.duration / 1000)
+      return formatSecondsDetailed(store.state.duration / 1000)
     })
 
     return {

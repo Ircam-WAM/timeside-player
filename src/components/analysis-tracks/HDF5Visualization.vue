@@ -24,6 +24,14 @@
         :stop="stop"
       />
     </template>
+    <template v-else-if="hdf5.time_mode === 'segment'">
+      <SegmentVisualization
+        v-if="hdf5Segment !== undefined"
+        :hdf5="hdf5Segment"
+        :start="start"
+        :stop="stop"
+      />
+    </template>
     <template v-else-if="hdf5.time_mode === 'global'">
       <div>
         {{ hdf5.id_metadata.name }} = {{ hdf5.data_object.value.numpyArray[0] }} {{ hdf5.id_metadata.unit }}
@@ -49,15 +57,18 @@ import {
 
 import { HDF5, useApi } from '@/utils/api'
 import { HDF5 as HDF5Event } from './HDF5Event'
+import { HDF5 as HDF5Segment } from './HDF5Segment'
 import FramewiseVisualization from '@/components/analysis-tracks/FramewiseVisualization.vue'
 import EventVisualization from './EventVisualization.vue'
+import SegmentVisualization from './SegmentVisualization.vue'
 
 import { formatResponseError } from '@/utils/response-error'
 
 export default defineComponent({
   components: {
     FramewiseVisualization,
-    EventVisualization
+    EventVisualization,
+    SegmentVisualization
   },
   props: {
     resultUuid: {
@@ -109,7 +120,8 @@ export default defineComponent({
       loading,
       error,
       hdf5,
-      hdf5Event: hdf5 as Ref<HDF5Event | undefined>
+      hdf5Event: hdf5 as Ref<HDF5Event | undefined>,
+      hdf5Segment: hdf5 as Ref<HDF5Segment | undefined>
     }
   }
 })

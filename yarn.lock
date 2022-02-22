@@ -91,10 +91,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.0.tgz#87de7af9c231826fdd68ac7258f77c429e0e5fcf"
   integrity sha512-wdppn25U8z/2yiaT6YGquE6X8sSv7hNMWSXYSSU1jGv/yd6XqjXgTDJ8KP4NgjTXfJ3GbRjeeb8RTV7a/VpM+w==
 
-"@ircam/timeside-sdk@^2.4.0":
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/@ircam/timeside-sdk/-/timeside-sdk-2.5.0.tgz#60df546f7f2b724755dc4981a737e67a6ce395a9"
-  integrity sha512-4yO7OnNmiV4hHKq/bL2g1VfrpQagoXOtwJM8UaeDf3fDhyrnuz1wJjG9d6sMARLe4mnRIycxR7e7Sdb+LRNzSg==
+"@ircam/timeside-sdk@^2.6.0":
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/@ircam/timeside-sdk/-/timeside-sdk-2.6.0.tgz#740ce559e743f9f959ef12f62e5aa6f65f2a8dd1"
+  integrity sha512-SMw+BqdOQzNtMJa/OSofvdjOonK74ixXsbrRbfTqGJEiwbHtJLmvidpmYYvljEqRx08lRImvAv2Hzx9WJnje8A==
   dependencies:
     "@types/jwt-decode" "^2.2.1"
     jwt-decode "^2.2.0"

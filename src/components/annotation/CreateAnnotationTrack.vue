@@ -4,9 +4,6 @@
     class="create-annotation-track generic-form"
     @submit.prevent="submit"
   >
-    <p class="form-title">
-      Add an annotation track
-    </p>
     <div class="field">
       <input
         v-model="form.title"
@@ -24,15 +21,6 @@
         type="text"
         required
       >
-    </div>
-    <div class="field left">
-      <input
-        id="is-public"
-        v-model="form.isPublic"
-        type="checkbox"
-        name="isPublic"
-      >
-      <label for="is-public">Make annotation public</label>
     </div>
     <button
       class="btn green-btn"
@@ -112,11 +100,6 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-.form-title {
-  font-weight: bold;
-  font-size: 18px;
-  margin-top: 0;
-}
 
 .error {
   color: red;

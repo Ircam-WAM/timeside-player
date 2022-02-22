@@ -3,105 +3,99 @@
     ref="el"
     class="player"
   >
-    <Audio v-if="audioSrcs" :audio-srcs="audioSrcs" />
+    <div class="top-line">
+      <div class="title">
+        {{ item.title }}
+        <div>
+          <div
+            class="information-bubble"
+            @mouseover="hover = true"
+            @mouseleave="hover = false"
+          >
+            <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="info-circle" class="svg-inline--fa fa-info-circle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z" /></svg>
+          </div>
+          <div v-if="hover">
+            <table class="info-table">
+              <tbody>
+                <tr>
+                  <th>uuid</th>
+                  <td>{{ item.uuid }}</td>
+                </tr>
+                <tr v-if="item.description">
+                  <th>Description</th>
+                  <td>{{ item.description }}</td>
+                </tr>
+                <tr>
+                  <th>Sample rate</th>
+                  <td>{{ item.samplerate }} Hz</td>
+                </tr>
+                <tr>
+                  <th>Audio duration</th>
+                  <td>{{ item.audioDuration }} seconds</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <Audio v-if="audioSrcs" :audio-srcs="audioSrcs" />
+    </div>
     <div v-if="audioReady">
       <!--
         These components need audio to be loaded because
         they need audio's duration to compute position
       -->
-      <div class="line">
-        <div class="item-info">
-          <div class="title-container">
-            <span class="title">{{ item.title }}</span>
-          </div>
-        </div>
-        <div>
-          <Controls />
-          <Timer class="timer" />
-        </div>
-      </div>
       <MainTrack
         class="main-track"
         :item-id="item.uuid"
         :selection="selection"
         @selection="onSelection"
       />
+      <div>
+        <Timer class="timer" />
+      </div>
       <div class="menu">
         <div class="line">
-          <div class="tabs">
-            <button :class="[ 'tab', { 'active': currentTab === Tab.Info } ]" @click="setTab(Tab.Info)">
-              Information
-            </button>
-            <button :class="[ 'tab', { 'active': currentTab === Tab.Analysis } ]" @click="setTab(Tab.Analysis)">
-              Annotations / Analysis
-            </button>
-          </div>
-          <div v-if="currentTab === Tab.Analysis" class="actions">
+          <div class="actions">
             <button
               :class="{ 'active': isAnalysisTrackFormOpen }"
               @click="isAnalysisTrackFormOpen = !isAnalysisTrackFormOpen; isAnnotationTrackFormOpen = false"
             >
               <span class="plus-picto">+</span>
-              analysis track
+              Analysis
             </button>
             <button
               :class="{ 'active': isAnnotationTrackFormOpen }"
               @click="isAnnotationTrackFormOpen = !isAnnotationTrackFormOpen; isAnalysisTrackFormOpen = false"
             >
               <span class="plus-picto">+</span>
-              annotation track
+              Annotation
             </button>
           </div>
         </div>
       </div>
-      <div v-if="currentTab === Tab.Info" class="info-tab">
-        <table class="info-table">
-          <tbody>
-            <tr class="uuid">
-              <th>uuid</th>
-              <td>{{ item.uuid }}</td>
-            </tr>
-            <tr class="description">
-              <th>description</th>
-              <td>{{ item.description }}</td>
-            </tr>
-            <tr class="samplerate">
-              <th>sample rate</th>
-              <td>{{ item.samplerate }} Hz</td>
-            </tr>
-            <tr class="duration">
-              <th>audio duration</th>
-              <td>{{ item.audioDuration }} seconds</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div v-else-if="currentTab === Tab.Analysis" class="analysis-tab">
+      <div class="analysis-tab">
         <div v-if="isAnalysisTrackFormOpen" class="create-form-container">
           <CreateAnalysisTrack
             :item-id="item.uuid"
+            :analysis-tracks="analysisTracks"
             class="create-form"
             @new-analysis-track="analysisTracks.add($event); isAnalysisTrackFormOpen = false"
             @close="isAnalysisTrackFormOpen = false"
           />
         </div>
         <div v-if="isAnnotationTrackFormOpen" class="create-form-container">
-          <CreateAnnotationTrack
-            :item-id="item.uuid"
-            class="create-form"
-            @new-annotation-track="annotationTracks.add($event); isAnnotationTrackFormOpen = false"
-            @close="isAnnotationTrackFormOpen = false"
+          <CreateAnnotationTrackList
+            class="annotation-track-list"
+            :annotation-tracks="annotationTracks"
+            :item-uuid="item.uuid"
           />
         </div>
-        <AnnotationTracks
-          :item-id="item.uuid"
-          :selection="selection"
-          :annotation-tracks="annotationTracks"
-        />
         <AnalysisTracks
           :item-id="item.uuid"
           :selection="selection"
           :analysis-tracks="analysisTracks"
+          :add-annotation="isAnnotationTrackFormOpen"
         />
       </div>
     </div>
@@ -116,7 +110,10 @@ import {
   defineComponent,
   ref,
   PropType,
-  computed
+  computed,
+  provide,
+  InjectionKey,
+  Ref
 } from 'vue'
 
 import { useAudioStore } from '@/store/audio'
@@ -128,22 +125,23 @@ import { Region as RegionType } from '@/types/region'
 import { getAudioSrcs } from '@/utils/audio-srcs'
 import bindSelectionUrl from '@/utils/bind-selection-url'
 
-import Controls from '@/components/Controls.vue'
 import Timer from '@/components/Timer.vue'
 import Audio from '@/components/Audio.vue'
 import MainTrack from '@/components/tracks/MainTrack.vue'
 import AnalysisTracks from '@/components/tracks/AnalysisTracks.vue'
-import AnnotationTracks from '@/components/annotation/AnnotationTracks.vue'
 import CreateAnalysisTrack from '@/components/analysis-tracks/CreateAnalysisTrack.vue'
-import CreateAnnotationTrack from '@/components/annotation/CreateAnnotationTrack.vue'
+import CreateAnnotationTrackList from '@/components/annotation/CreateAnnotationTrackList.vue'
 
 import analysisTrackStore from '@/store/analysis-track'
 import annotationTrackStore from '@/store/annotation-track'
+import { createAnnotationStore, annotationStoreKey } from '@/store/annotation'
 
 enum Tab {
   Info,
   Analysis
 }
+
+export const selectedAnnotationTrackKey: InjectionKey<Ref<string>> = Symbol('selectedAnnotationTrack')
 
 export default defineComponent({
   name: 'Player',
@@ -152,10 +150,8 @@ export default defineComponent({
     Timer,
     MainTrack,
     AnalysisTracks,
-    Controls,
-    AnnotationTracks,
     CreateAnalysisTrack,
-    CreateAnnotationTrack
+    CreateAnnotationTrackList
   },
   props: {
     item: {
@@ -166,6 +162,8 @@ export default defineComponent({
   setup (props) {
     const audioStore = useAudioStore()
     const selection = ref<RegionType>()
+    provide(selectedAnnotationTrackKey, ref<string>())
+    provide(annotationStoreKey, createAnnotationStore())
 
     // Get playerRect and provide it for child components
     const el = ref<HTMLElement>()
@@ -191,6 +189,7 @@ export default defineComponent({
 
     const isAnnotationTrackFormOpen = ref(false)
     const annotationTracks = annotationTrackStore(computed(() => props.item.uuid))
+    const hover = ref(false)
 
     return {
       el,
@@ -207,69 +206,56 @@ export default defineComponent({
       analysisTracks,
 
       isAnnotationTrackFormOpen,
-      annotationTracks
+      annotationTracks,
+
+      hover
     }
   }
 })
 </script>
 
 <style lang="less" scoped>
-.item-info {
-  text-align: left;
 
-  .title-container {
-    .title {
-      font-size: 23px;
-    }
-    .uuid {
-      font-style: italic;
-      font-size: 14px;
-    }
+.top-line {
+  display: flex;
+  position: relative;
+  justify-content: space-between;
+
+  .title {
+    font-size: 18px;
+    text-align: left;
+    position: relative;
+    display: flex;
   }
-
-  .description {
-    color: grey;
-    font-size: 12px;
+  .information-bubble {
+    height: 20px;
+    width: 20px;
+    margin-left: 10px;
   }
 }
 
 .line {
-  display: flex;
   justify-content: space-between;
 }
 
 .timer {
   text-align: right;
+  font-size: 12px;
 }
 
 .menu {
-  background: #606062;
+  background: gainsboro;
 
   button {
-    font-size: 22px;
+    font-size: 16px;
     display: block;
-    background: #606062;
-    color: white;
+    background: gainsboro;
+    color: #2c3e50;
     border: none;
     cursor: pointer;
-    padding: 12px 30px;
+    padding: 7px 10px;
   }
 }
-
-.tabs {
-  display: flex;
-
-  border-top: 5px solid #606062;
-  border-left: 5px solid #606062;
-
-  .tab {
-    &.active {
-      background: white;
-      color: #606062;
-    }
-  }
-}
-
 .actions {
   display: flex;
 
@@ -278,55 +264,53 @@ export default defineComponent({
     align-items: center;
 
     &.active {
-      /*
-      font-size: 21px;
-      font-weight: bold;
-      */
-      background-color: #424242;
+      background-color: silver;
     }
 
     & .plus-picto {
-      font-size: 40px;
-      font-weight: bold;
+      font-size: 30px;
+      font-weight: 600;
+      height: 15px;
+      margin-top: -23px;
       margin-right: 5px;
-      display: block;
-      height: 30px;
-      margin-top: -20px;
     }
   }
 }
-
-.info-tab, .analysis-tab {
-  padding: 20px 0;
-}
-
 .info-tab {
   text-align: left;
   font-size: 18px;
 }
 
 .info-table {
+  position: absolute;
+  z-index: 6;
+  background-color: white;
+  opacity: 0.95;
+  font-size: 14px;
+  min-width: 400px;
+
   tr {
     margin-bottom: 5px;
   }
   th {
     padding-left: 5px;
-    padding-right: 20px;
+    padding-right: 10px;
     color: #444;
     background-color: #f9f9f9;
     border-right: .3em solid #ddd;
   }
   td {
     padding-top: 5px;
-    padding-left: 20px;
+    padding-left: 10px;
   }
 }
 
 .create-form-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 200px;
+  position: absolute;
+  margin-left: 2px;
+  z-index: 2;
+  background-color: white;
+  opacity: 0.95;
 }
 
 .error {
@@ -341,8 +325,9 @@ export default defineComponent({
 ::v-deep(*) {
   .form-title {
     font-weight: bold;
-    font-size: 20px;
-    margin-top: 0;
+    font-size: 18px;
+    margin-top: 5px;
+    margin-bottom: 10px
   }
 
   .generic-form {
@@ -352,22 +337,12 @@ export default defineComponent({
 
         background: none;
         border: 1px solid grey;
-        padding: 7px 10px;
+        padding: 5px 7px;
         width: 100%;
         font-size: 16px;
       }
 
       position: relative;
-      &:after {
-        content: '<>';
-        font: 17px "Consolas", monospace;
-        transform: rotate(90deg);
-
-        position: absolute;
-        right: 7px;
-        top: 7px;
-        pointer-events: noneet
-      }
     }
 
     input[type="text"], textarea {
@@ -394,24 +369,20 @@ export default defineComponent({
   }
 
   .btn {
-    padding: 7px 10px;
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 16px;
     border: none;
-    width: 100%;
     cursor: pointer;
     margin-bottom: 5px;
     border-radius: 5px;
-  }
-
-  .green-btn {
-    background: #32762F;
-    color: white;
+    background-color: gainsboro;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding: 5px
   }
 
   .grey-btn {
-    background-color: #E9EAEC;
-    color: black;
+    padding: 5px;
+    background-color: gainsboro;
     font-weight: normal;
   }
 
@@ -427,31 +398,32 @@ export default defineComponent({
     z-index: 5;
 
     background-color: #c4c4c494;
-    padding: 10px;
-    width: 160px;
+    padding: 5px;
     border-radius: 5px;
 
+    display: flex;
+    justify-content: space-between;
+
     & .info-type {
-      font-weight: bold;
       margin-top: 5px;
-      margin-bottom: 10px;
-      font-size: 18px;
+      margin-bottom: 5px;
+      font-size: 14px;
     }
 
     & .info-title {
-      margin-top: 5px;
-      margin-bottom: 10px;
-      font-size: 18px;
+      margin-top: 2px;
+      font-size: 14px;
+      text-align: left;
     }
 
     .delete {
-      background-color: #DB4D27;
-      color: white;
       border: none;
       font-size: 16px;
-      padding: 7px 15px;
-      border-radius: 5px;
+      font-weight: bold;
       cursor: pointer;
+      background: rgba(0,0,0,0);
+      color: #2c3e50;
+      margin-right: -5px;
     }
   }
 }

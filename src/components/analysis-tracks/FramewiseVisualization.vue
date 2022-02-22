@@ -1,15 +1,22 @@
 <template>
-  <FluidSVG
-    class="framewise-visualization"
-    @resized="svgSize = $event"
-  >
-    <g class="chart-data">
-      <path
-        class="line"
-        :d="path"
-      />
-    </g>
-  </FluidSVG>
+  <div class="framewise-container">
+    <YAxis
+      class="yaxis-visualization"
+      :min-data="minValue"
+      :max-data="maxValue"
+    />
+    <FluidSVG
+      class="framewise-visualization"
+      @resized="svgSize = $event"
+    >
+      <g class="chart-data">
+        <path
+          class="line"
+          :d="path"
+        />
+      </g>
+    </FluidSVG>
+  </div>
 </template>
 
 <script lang="ts">
@@ -25,10 +32,12 @@ import { scaleLinear } from 'd3-scale'
 import { line, curveNatural } from 'd3-shape'
 
 import FluidSVG from '@/components/utils/FluidSVG.vue'
+import YAxis from './YAxis.vue'
 
 export default defineComponent({
   components: {
-    FluidSVG
+    FluidSVG,
+    YAxis
   },
   props: {
     hdf5: {
@@ -63,9 +72,9 @@ export default defineComponent({
       // on the time axis with duration * stepsize / samplerate
       const getX = (idx: number) => idx * stepsize.value / samplerate.value * 1000 // convert to ms
 
-      const p = props.hdf5.data_object.value.numpyArray.map<[number, number]>((y, idx) => {
+      const p = props.hdf5.data_object.value.numpyArray.map((y: number, idx: number) => {
         return [ getX(idx), y ]
-      })
+      }) as Point[]
       // we need to add first and last point to draw the abscissa
       const firstPoint: Point = [ 0, 0 ]
       const lastPoint: Point = [ getX(p.length), 0 ]
@@ -109,18 +118,31 @@ export default defineComponent({
       return d3line(pointsD3) as string
     })
 
+    const minValue = Math.min(0, border.value.min)
+    const maxValue = Math.max(0, border.value.max)
+
     return {
       svgSize,
-      path
+      path,
+      minValue,
+      maxValue
     }
   }
 })
 </script>
 
 <style lang="less" scoped>
+.framewise-container {
+  width: 100%;
+  height: 100%;
+}
+.yaxis-visualization {
+  position: absolute;
+  height: 100%;
+}
 .framewise-visualization {
   width: 100%;
-  min-height: 50px;
   height: 100%;
+  // min-height: 50px
 }
 </style>
