@@ -48,8 +48,6 @@ function getBaseUrls (baseUrl?: string): readonly string[] {
   }
   // else, use hardcoded values
   const defaultBaseUrls = [
-    'https://sandbox.wasabi.telemeta.org',
-    'https://wasabi.telemeta.org',
     'https://timeside.ircam.fr',
     'http://localhost:9080'
   ]
