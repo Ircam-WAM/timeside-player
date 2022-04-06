@@ -23,7 +23,7 @@
         v-else
         class="items"
       >
-      <h2>Items</h2>
+        <h2>Items</h2>
         <ul>
           <router-link
             v-for="item of items"
