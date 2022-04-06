@@ -192,6 +192,7 @@ export default defineComponent({
 .analysis-track {
   width: 100%;
   height: 200px;
+  margin-top: 3px;
 
   display: flex;
   align-items: center;
