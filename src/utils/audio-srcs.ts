@@ -11,7 +11,7 @@ export function getAudioSrcs (item: Item): (AudioSrc[] | undefined) {
 
   // Use differents formats providen by item.audioUrl (if any)
   if ((audioUrl !== undefined) && Object.keys(audioUrl).length > 0) {
-    const formats: Array<keyof ItemAudioUrl> = [ 'flac', 'mp3', 'ogg' ]
+    const formats: Array<keyof ItemAudioUrl> = [ 'flac', 'mp3' ]
 
     const ret = []
     for (const format of formats) {
