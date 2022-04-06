@@ -23,13 +23,18 @@
         v-else
         class="items"
       >
-        <router-link
-          v-for="item of items"
-          :key="item.uuid"
-          :to="{ name: 'item', params: { id: item.uuid } }"
-        >
-          {{ item.title }} <span class="description">{{ item.description }}</span>
-        </router-link>
+      <h2>Items</h2>
+        <ul>
+          <router-link
+            v-for="item of items"
+            :key="item.uuid"
+            :to="{ name: 'item', params: { id: item.uuid } }"
+          >
+            <li>
+              {{ item.title }} <span class="description">{{ item.description }}</span>
+            </li>
+          </router-link>
+        </ul>
       </div>
     </template>
   </div>
@@ -87,6 +92,7 @@ export default defineComponent({
 .items {
   & > * {
     display: block;
+    text-align: left;
   }
 }
 

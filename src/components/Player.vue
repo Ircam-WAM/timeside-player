@@ -38,7 +38,9 @@
           </div>
         </div>
       </div>
-      <Audio v-if="audioSrcs" :audio-srcs="audioSrcs" />
+      <div class="top-right">
+        <Audio v-if="audioSrcs" :audio-srcs="audioSrcs" />
+      </div>
     </div>
     <div v-if="audioReady">
       <!--
@@ -217,20 +219,34 @@ export default defineComponent({
 <style lang="less" scoped>
 
 .top-line {
-  display: flex;
-  position: relative;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 5px;
+  grid-auto-rows: minmax(50px, auto);
+  vertical-align: middle;
+  margin: auto;
 
   .title {
     font-size: 18px;
+    font-weight: bold;
     text-align: left;
     position: relative;
     display: flex;
+    align-items: center;
   }
   .information-bubble {
     height: 20px;
     width: 20px;
     margin-left: 10px;
+  }
+  .top-center {
+    text-align: center;
+    display: flex;
+    align-items: center;
+  }
+  .top-right {
+    text-align: right;
+    align-items: center;
   }
 }
 
