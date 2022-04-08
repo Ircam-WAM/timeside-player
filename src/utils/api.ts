@@ -49,7 +49,7 @@ function getBaseUrls (baseUrl?: string): readonly string[] {
   // else, use hardcoded values
   const defaultBaseUrls = [
     'https://timeside.ircam.fr',
-    'https://sandbox.timeside.ircam.fr'
+    'http://localhost:9080'
   ]
   return defaultBaseUrls
 }
