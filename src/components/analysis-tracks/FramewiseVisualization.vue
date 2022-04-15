@@ -61,7 +61,7 @@ export default defineComponent({
     // fill with random color before we have a color foir each Analysis or even a color
     // selector for the AnalysisTrack to override the default one.
     // TODO: make it customizable
-    const fill = '#'+(Math.random()*0xFFFFFF<<0).toString(16)
+    const fill = '#' + (Math.random() * 0xFFFFFF << 0).toString(16)
 
     const duration = computed(() => props.hdf5.audio_metadata.duration)
     const samplerate = computed(() => props.hdf5.data_object.frame_metadata.samplerate)
