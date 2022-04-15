@@ -13,6 +13,7 @@
         <path
           class="line"
           :d="path"
+          :fill="fill"
         />
       </g>
     </FluidSVG>
@@ -57,6 +58,10 @@ export default defineComponent({
   },
   setup (props) {
     const svgSize = ref<ClientRect | undefined>()
+    // fill with random color before we have a color foir each Analysis or even a color
+    // selector for the AnalysisTrack to override the default one.
+    // TODO: make it customizable
+    const fill = '#'+(Math.random()*0xFFFFFF<<0).toString(16)
 
     const duration = computed(() => props.hdf5.audio_metadata.duration)
     const samplerate = computed(() => props.hdf5.data_object.frame_metadata.samplerate)
@@ -125,7 +130,8 @@ export default defineComponent({
       svgSize,
       path,
       minValue,
-      maxValue
+      maxValue,
+      fill
     }
   }
 })
