@@ -42,7 +42,7 @@
         <Audio v-if="audioSrcs" :audio-srcs="audioSrcs" />
       </div>
     </div>
-    <div v-if="audioReady">
+    <div class="player-content" v-if="audioReady">
       <!--
         These components need audio to be loaded because
         they need audio's duration to compute position
