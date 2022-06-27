@@ -66,7 +66,7 @@ export function createApi (baseUrl?: string): API {
     basePath: currentBaseUrl
   }
 
-  // rawApi is the the api without jwt middlewares (to refresh tokens)
+  // rawApi is the api without jwt middlewares (to refresh tokens)
   const rawApi = new TimesideApi(new Configuration(urlConfig))
 
   // Configuration to auto-refresh token when needed
