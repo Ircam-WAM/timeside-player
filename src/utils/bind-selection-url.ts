@@ -45,7 +45,7 @@ export default function bindSelectionUrl (selection: Ref<RegionType | undefined>
       }
       const start = parseInt(startRaw)
       const stop = parseInt(stopRaw)
-      if (isNaN(start) || isNaN(start)) {
+      if (isNaN(start) || isNaN(stop)) {
         return undefined
       }
       const max = Math.round(audioStore.state.duration)
