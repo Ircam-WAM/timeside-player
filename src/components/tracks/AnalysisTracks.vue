@@ -24,6 +24,9 @@
             @deleted="analysisTracks.remove($event)"
           />
         </transition-group>
+        <TrackPluginsContainer class="track-plugins-container">
+          <InteractivePlayCursor />
+        </TrackPluginsContainer>
       </div>
     </div>
     <Axis
@@ -46,6 +49,9 @@ import AnalysisTrack from '@/components/analysis-tracks/AnalysisTrack.vue'
 
 import { formatResponseError } from '@/utils/response-error'
 
+import TrackPluginsContainer from '@/components/track-elements/TrackPluginsContainer.vue'
+import InteractivePlayCursor from '@/components/track-elements/InteractivePlayCursor.vue'
+
 import { AnalysisTrackStore } from '@/store/analysis-track'
 import { Region as RegionType } from '@/types/region'
 
@@ -53,7 +59,9 @@ export default defineComponent({
   name: 'AnalysisTracks',
   components: {
     Axis,
-    AnalysisTrack
+    AnalysisTrack,
+    TrackPluginsContainer,
+    InteractivePlayCursor
   },
   props: {
     itemId: {
