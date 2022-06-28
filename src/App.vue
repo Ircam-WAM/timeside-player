@@ -38,7 +38,7 @@ export default defineComponent({
 
     function logout () {
       persistentToken.removeToken()
-      window.location.reload(false)
+      window.location.reload()
     }
 
     return {
