@@ -48,6 +48,7 @@ export default defineComponent({
   display: block;
   position: absolute;
   top: 0;
+  z-index: -1;
 
   cursor: text;
 }
