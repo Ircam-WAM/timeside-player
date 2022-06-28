@@ -54,5 +54,5 @@ export default defineComponent({
 
 .analysis-track .track-plugins-container {
   z-index: -1;
-} 
+}
 </style>
