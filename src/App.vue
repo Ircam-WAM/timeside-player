@@ -83,8 +83,6 @@ export default defineComponent({
   align-items: center;
 }
 
-.header-icon {
-  width: 25px;
 #header-icon {
   width: 30px;
   height: 30px;
@@ -106,4 +104,14 @@ export default defineComponent({
   }
 }
 
+#menu-container {
+  display: flex;
+  flex-direction: column;
+  justify-items: flex-start;
+  align-items: flex-start;
+}
+
+.logout:hover {
+  cursor: pointer;
+}
 </style>
