@@ -27,6 +27,7 @@
 import { defineComponent, ref } from 'vue'
 import { useApi } from '@/utils/api'
 import SelectAPI from '@/components/SelectAPI.vue'
+import SelectItems from '@/components/SelectItems.vue'
 
 import { Icon } from '@iconify/vue'
 
@@ -34,6 +35,7 @@ export default defineComponent({
   name: 'App',
   components: {
     SelectAPI,
+    SelectItems,
     Icon
   },
   setup () {
