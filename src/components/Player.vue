@@ -57,7 +57,11 @@
         <Timer class="timer" />
       </div>
       <div ref="advanced-player-container" class="advanced-player-title">
+        <h4>Advanced player</h4>
+        <Icon icon="fad:caret-down" class="icon-caret icon-caret-down" :class="{ 'show': !isAdvancedPlayerOpen }" @click="isAdvancedPlayerOpen = !isAdvancedPlayerOpen" />
+        <Icon icon="fad:caret-up" class="icon-caret icon-caret-up" :class="{ 'show': isAdvancedPlayerOpen }" @click="isAdvancedPlayerOpen = !isAdvancedPlayerOpen" />
       </div>
+      <div v-if="isAdvancedPlayerOpen" class="advanced-player-container">
         <div class="menu">
           <div class="line">
             <div class="actions">
@@ -150,6 +154,8 @@ enum Tab {
 
 export const selectedAnnotationTrackKey: InjectionKey<Ref<string>> = Symbol('selectedAnnotationTrack')
 
+export let advancedPlayerContainer: HTMLElement
+
 export default defineComponent({
   name: 'Player',
   components: {
@@ -192,6 +198,8 @@ export default defineComponent({
       currentTab.value = tab
     }
 
+    const isAdvancedPlayerOpen = ref(false)
+
     const isAnalysisTrackFormOpen = ref(false)
     const analysisTracks = analysisTrackStore(computed(() => props.item.uuid))
 
@@ -210,6 +218,7 @@ export default defineComponent({
       setTab,
       Tab,
 
+      isAdvancedPlayerOpen,
       isAnalysisTrackFormOpen,
       analysisTracks,
 
@@ -221,6 +230,17 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="less">
+/* visibility helpers */
+.show {
+  display: block !important;
+}
+
+.hide {
+  display: none !important;
+}
+</style>
 
 <style lang="less" scoped>
 
@@ -263,6 +283,24 @@ export default defineComponent({
 .timer {
   text-align: right;
   font-size: 12px;
+}
+
+.advanced-player-title {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: left;
+  position: relative;
+  display: flex;
+  align-items: center;
+  .icon-caret {
+    width: 30px;
+    height: 30px;
+    display: none;
+  }
+
+  .icon-caret:hover {
+    cursor: pointer;
+  }
 }
 
 .menu {
