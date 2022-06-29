@@ -8,29 +8,38 @@
       <div id="header-center">
         <h2>TimeSide Player</h2>
       </div>
-      <div id="header-right">
-        <SelectAPI />
-        <button class="logout" @click="logout">
-          Logout
-        </button>
-      </div>
+      <!-- <div id="header-right">
+        Player
+      </div> -->
+    </div>
+    <div v-if="isMenuOpen" id="menu-container">
+      <SelectAPI />
+      <SelectItems />
+      <button class="logout" @click="logout">
+        Logout
+      </button>
     </div>
     <router-view />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { useApi } from '@/utils/api'
 import SelectAPI from '@/components/SelectAPI.vue'
+
+import { Icon } from '@iconify/vue'
 
 export default defineComponent({
   name: 'App',
   components: {
-    SelectAPI
+    SelectAPI,
+    Icon
   },
   setup () {
     const { persistentToken } = useApi()
+
+    const isMenuOpen = ref(false)
 
     function logout () {
       persistentToken.removeToken()
@@ -38,6 +47,7 @@ export default defineComponent({
     }
 
     return {
+      isMenuOpen,
       logout
     }
   }
