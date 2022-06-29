@@ -265,6 +265,10 @@ export default defineComponent({
     width: 20px;
     margin-left: 10px;
   }
+
+  .information-bubble:hover {
+    cursor: pointer;
+  }
   .top-center {
     text-align: center;
     display: flex;
