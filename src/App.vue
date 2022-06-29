@@ -85,6 +85,16 @@ export default defineComponent({
 
 .header-icon {
   width: 25px;
+#header-icon {
+  width: 30px;
+  height: 30px;
+  display: none;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
 #menu-close-icon {
   width: 30px;
   height: 30px;
