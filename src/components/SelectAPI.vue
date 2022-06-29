@@ -53,5 +53,11 @@ export default defineComponent({
 <style lang="less" scoped>
 .select-api {
   margin: 20px;
+  margin-top: 0px;
+  margin-left: 0px;
+
+  &:hover {
+    cursor: pointer;
+  }
 }
 </style>
