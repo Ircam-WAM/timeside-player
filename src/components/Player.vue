@@ -141,6 +141,8 @@ import analysisTrackStore from '@/store/analysis-track'
 import annotationTrackStore from '@/store/annotation-track'
 import { createAnnotationStore, annotationStoreKey } from '@/store/annotation'
 
+import { Icon } from '@iconify/vue'
+
 enum Tab {
   Info,
   Analysis
@@ -156,7 +158,8 @@ export default defineComponent({
     MainTrack,
     AnalysisTracks,
     CreateAnalysisTrack,
-    CreateAnnotationTrackList
+    CreateAnnotationTrackList,
+    Icon
   },
   props: {
     item: {
