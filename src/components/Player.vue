@@ -56,49 +56,52 @@
       <div>
         <Timer class="timer" />
       </div>
-      <div class="menu">
-        <div class="line">
-          <div class="actions">
-            <button
-              :class="{ 'active': isAnalysisTrackFormOpen }"
-              @click="isAnalysisTrackFormOpen = !isAnalysisTrackFormOpen; isAnnotationTrackFormOpen = false"
-            >
-              <span class="plus-picto">+</span>
-              Analysis
-            </button>
-            <button
-              :class="{ 'active': isAnnotationTrackFormOpen }"
-              @click="isAnnotationTrackFormOpen = !isAnnotationTrackFormOpen; isAnalysisTrackFormOpen = false"
-            >
-              <span class="plus-picto">+</span>
-              Annotation
-            </button>
+      <div ref="advanced-player-container" class="advanced-player-title">
+      </div>
+        <div class="menu">
+          <div class="line">
+            <div class="actions">
+              <button
+                :class="{ 'active': isAnalysisTrackFormOpen }"
+                @click="isAnalysisTrackFormOpen = !isAnalysisTrackFormOpen; isAnnotationTrackFormOpen = false"
+              >
+                <span class="plus-picto">+</span>
+                Analysis
+              </button>
+              <button
+                :class="{ 'active': isAnnotationTrackFormOpen }"
+                @click="isAnnotationTrackFormOpen = !isAnnotationTrackFormOpen; isAnalysisTrackFormOpen = false"
+              >
+                <span class="plus-picto">+</span>
+                Annotation
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="analysis-tab">
-        <div v-if="isAnalysisTrackFormOpen" class="create-form-container">
-          <CreateAnalysisTrack
+        <div class="analysis-tab">
+          <div v-if="isAnalysisTrackFormOpen" class="create-form-container">
+            <CreateAnalysisTrack
+              :item-id="item.uuid"
+              :analysis-tracks="analysisTracks"
+              class="create-form"
+              @new-analysis-track="analysisTracks.add($event); isAnalysisTrackFormOpen = false"
+              @close="isAnalysisTrackFormOpen = false"
+            />
+          </div>
+          <div v-if="isAnnotationTrackFormOpen" class="create-form-container">
+            <CreateAnnotationTrackList
+              class="annotation-track-list"
+              :annotation-tracks="annotationTracks"
+              :item-uuid="item.uuid"
+            />
+          </div>
+          <AnalysisTracks
             :item-id="item.uuid"
+            :selection="selection"
             :analysis-tracks="analysisTracks"
-            class="create-form"
-            @new-analysis-track="analysisTracks.add($event); isAnalysisTrackFormOpen = false"
-            @close="isAnalysisTrackFormOpen = false"
+            :add-annotation="isAnnotationTrackFormOpen"
           />
         </div>
-        <div v-if="isAnnotationTrackFormOpen" class="create-form-container">
-          <CreateAnnotationTrackList
-            class="annotation-track-list"
-            :annotation-tracks="annotationTracks"
-            :item-uuid="item.uuid"
-          />
-        </div>
-        <AnalysisTracks
-          :item-id="item.uuid"
-          :selection="selection"
-          :analysis-tracks="analysisTracks"
-          :add-annotation="isAnnotationTrackFormOpen"
-        />
       </div>
     </div>
     <div v-else>
