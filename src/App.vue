@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div class="app">
     <div id="header">
       <div id="header-left">
         <router-link
@@ -18,7 +18,6 @@
         </button>
       </div>
     </div>
-
     <router-view />
   </div>
 </template>
@@ -49,7 +48,7 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-#app {
+.app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -60,7 +59,7 @@ export default defineComponent({
   margin-right: 1rem;
 }
 
-#app ::v-deep(*, *::before, *::after) {
+.app ::v-deep(*, *::before, *::after) {
   box-sizing: border-box;
 }
 
