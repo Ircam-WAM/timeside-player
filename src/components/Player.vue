@@ -5,7 +5,7 @@
   >
     <div class="top-line">
       <div class="title">
-        {{ item.title }}
+        <h3> {{ item.title }} </h3>
         <div>
           <div
             class="information-bubble"
