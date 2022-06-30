@@ -7,18 +7,6 @@
       Loading...
     </div>
     <template v-else>
-      <!-- <div v-if="isUnauthorized">
-        <Login class="login" @success="onLogin" />
-      </div>
-      <div
-        v-else-if="error"
-        class="error"
-      >
-        {{ formatResponseError(error) }}
-      </div>
-      <div v-else-if="!items">
-        This should not happen: no error, no loading but items is undefined
-      </div> -->
       <div
         v-if="!isUnauthorized"
         class="items"
@@ -28,6 +16,9 @@
           class="select-items"
           @change="updateUrl"
         >
+          <option value="" disabled selected hidden>
+            Choose an item
+          </option>
           <option
             v-for="item of items"
             :key="item.uuid"
@@ -49,8 +40,6 @@
 <script lang="ts">
 import { defineComponent, computed, onMounted, ref } from 'vue'
 
-// import Login from '@/components/Login.vue'
-
 import { useApi, ItemList } from '@/utils/api'
 import { formatResponseError } from '@/utils/response-error'
 
@@ -58,9 +47,6 @@ import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'SelectItems',
-  components: {
-    // Login
-  },
   setup () {
     const { api } = useApi()
     const isLoading = ref(false)
@@ -74,7 +60,6 @@ export default defineComponent({
       error.value = undefined
       try {
         items.value = await api.listItems({})
-        // console.log(items.value)
       } catch (e) {
         error.value = e
       } finally {
