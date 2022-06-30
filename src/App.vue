@@ -13,8 +13,8 @@
       </div> -->
     </div>
     <div v-if="isMenuOpen" id="menu-container">
-      <SelectAPI />
       <SelectItems />
+      <SelectAPI />
       <button class="logout" @click="logout">
         Logout
       </button>
