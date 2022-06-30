@@ -104,9 +104,6 @@ export default defineComponent({
       onLogin,
       updateUrl
     }
-  },
-  data () {
-    return { key: '' }
   }
 })
 </script>
