@@ -226,6 +226,10 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+.audio {
+  display: none;
+}
+
 .error {
   color: red;
 }

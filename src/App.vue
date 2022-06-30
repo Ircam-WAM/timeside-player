@@ -10,9 +10,9 @@
           <a href="/#">TimeSide Player</a>
         </h2>
       </div>
-      <!-- <div id="header-right">
-        Player
-      </div> -->
+      <div v-if="!isUnauthorized" id="header-right">
+        <PlayerControls />
+      </div>
     </div>
     <div v-if="isMenuOpen" id="menu-container">
       <SelectItems />
@@ -30,6 +30,7 @@ import { defineComponent, computed, onMounted, ref } from 'vue'
 import { useApi, ItemList } from '@/utils/api'
 import SelectAPI from '@/components/SelectAPI.vue'
 import SelectItems from '@/components/SelectItems.vue'
+import PlayerControls from '@/components/PlayerControls.vue'
 
 import { Icon } from '@iconify/vue'
 
@@ -38,7 +39,8 @@ export default defineComponent({
   components: {
     SelectAPI,
     SelectItems,
-    Icon
+    Icon,
+    PlayerControls
   },
   setup () {
     const { api } = useApi()
