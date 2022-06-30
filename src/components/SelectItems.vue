@@ -7,7 +7,7 @@
       Loading...
     </div>
     <template v-else>
-      <div v-if="isUnauthorized">
+      <!-- <div v-if="isUnauthorized">
         <Login class="login" @success="onLogin" />
       </div>
       <div
@@ -18,9 +18,9 @@
       </div>
       <div v-else-if="!items">
         This should not happen: no error, no loading but items is undefined
-      </div>
+      </div> -->
       <div
-        v-else
+        v-if="!isUnauthorized"
         class="items"
       >
         <select
@@ -49,7 +49,7 @@
 <script lang="ts">
 import { defineComponent, computed, onMounted, ref } from 'vue'
 
-import Login from '@/components/Login.vue'
+// import Login from '@/components/Login.vue'
 
 import { useApi, ItemList } from '@/utils/api'
 import { formatResponseError } from '@/utils/response-error'
@@ -59,7 +59,7 @@ import { useRouter } from 'vue-router'
 export default defineComponent({
   name: 'SelectItems',
   components: {
-    Login
+    // Login
   },
   setup () {
     const { api } = useApi()
@@ -92,8 +92,11 @@ export default defineComponent({
       setTimeout(() => { router.push({ name: 'item', params: { id: itemUrl } }) }, 1000)
     }
 
-    onMounted(() => { getItems() })
-    const onLogin = () => { getItems() }
+    onMounted(() => {
+      getItems()
+    })
+
+    // const onLogin = () => { getItems() }
 
     return {
       isLoading,
@@ -101,7 +104,7 @@ export default defineComponent({
       items,
       error,
       formatResponseError,
-      onLogin,
+      // onLogin,
       updateUrl
     }
   },

@@ -83,6 +83,8 @@ export default defineComponent({
         }
         persistentToken.token = JWTToken.fromBase64(resp.access, resp.refresh)
         emit('success')
+
+        window.location.reload()
       } catch (e) {
         if (e instanceof Response) {
           apiError.value = e
@@ -115,6 +117,7 @@ export default defineComponent({
 .login-form {
   max-width: 300px;
   margin: 0 auto;
+  margin-bottom: 20px;
 
   & input,
   & button {

@@ -6,7 +6,9 @@
         <svg id="menu-close-icon" :class="{ 'show': isMenuOpen }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" @click="isMenuOpen = !isMenuOpen"><!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z" /></svg>
       </div>
       <div id="header-center">
-        <h2>TimeSide Player</h2>
+        <h2 id="header-title">
+          <a href="/#">TimeSide Player</a>
+        </h2>
       </div>
       <!-- <div id="header-right">
         Player
@@ -15,7 +17,7 @@
     <div v-if="isMenuOpen" id="menu-container">
       <SelectItems />
       <SelectAPI />
-      <button class="logout" @click="logout">
+      <button v-if="!isUnauthorized" class="logout" @click="logout">
         Logout
       </button>
     </div>
@@ -24,8 +26,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import { useApi } from '@/utils/api'
+import { defineComponent, computed, onMounted, ref } from 'vue'
+import { useApi, ItemList } from '@/utils/api'
 import SelectAPI from '@/components/SelectAPI.vue'
 import SelectItems from '@/components/SelectItems.vue'
 
@@ -39,9 +41,27 @@ export default defineComponent({
     Icon
   },
   setup () {
+    const { api } = useApi()
     const { persistentToken } = useApi()
+    const error = ref<Response>()
+    const items = ref<ItemList[]>()
 
-    const isMenuOpen = ref(false)
+    const isUnauthorized = computed(() => error.value?.status === 401 || false)
+
+    const getItems = async () => {
+      error.value = undefined
+      try {
+        items.value = await api.listItems({})
+      } catch (e) {
+        error.value = e
+      }
+    }
+
+    onMounted(() => {
+      getItems()
+    })
+
+    const isMenuOpen = ref(true)
 
     function logout () {
       persistentToken.removeToken()
@@ -49,7 +69,10 @@ export default defineComponent({
     }
 
     return {
+      isUnauthorized,
       isMenuOpen,
+      items,
+      error,
       logout
     }
   }
@@ -95,6 +118,11 @@ export default defineComponent({
   align-items: center;
 }
 
+#header-title a {
+  color: #2c3e50;
+  text-decoration: none;
+}
+
 #header-icon {
   width: 30px;
   height: 30px;
@@ -106,8 +134,8 @@ export default defineComponent({
 }
 
 #menu-close-icon {
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   fill: #2c3e50;
   display: none;
 
