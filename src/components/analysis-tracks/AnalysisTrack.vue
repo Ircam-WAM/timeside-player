@@ -134,6 +134,9 @@ export default defineComponent({
       await api.destroyAnalysisTrack({ uuid })
       emit('deleted', uuid)
       loadingDelete.value = false
+
+      const analysisButtonElement = <HTMLElement>document.querySelector('.actions')?.firstChild
+      analysisButtonElement.click()
     }
 
     const loadingAnalysis = ref(false)
@@ -207,6 +210,7 @@ export default defineComponent({
   opacity: 0.7;
   height: 100%;
   width: 100%;
+  z-index: 1;
 }
 .annotations{
   pointer-events: none;

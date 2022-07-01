@@ -99,4 +99,7 @@ export default defineComponent({
   width: 15px;
   margin: 0px 5px;
 }
+.create-annotation-track-button {
+  margin-bottom: 5px;
+}
 </style>
