@@ -74,7 +74,11 @@ export default defineComponent({
 
       window.location.href = '#/'
 
-      setTimeout(() => { router.push({ name: 'item', params: { id: itemUrl } }) }, 1000)
+      setTimeout(() => {
+        router.push({ name: 'item', params: { id: itemUrl } }).then(() => {
+          window.location.reload()
+        })
+      }, 1000)
     }
 
     onMounted(() => {
