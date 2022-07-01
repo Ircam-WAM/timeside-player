@@ -259,6 +259,10 @@ export default defineComponent({
     position: relative;
     display: flex;
     align-items: center;
+
+    h3 {
+      text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+    }
   }
   .information-bubble {
     height: 20px;
@@ -296,6 +300,11 @@ export default defineComponent({
   position: relative;
   display: flex;
   align-items: center;
+
+  h4 {
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+  }
+
   .icon-caret {
     width: 30px;
     height: 30px;
@@ -308,7 +317,8 @@ export default defineComponent({
 }
 
 .menu {
-  background: gainsboro;
+  background-color: #dcdcdc;
+  box-shadow: 2px 2px 1px rgba(0,0,0,0.2);
 
   button {
     font-size: 16px;
@@ -372,8 +382,11 @@ export default defineComponent({
 .create-form-container {
   position: absolute;
   margin-left: 2px;
+  padding: 10px;
   z-index: 2;
   background-color: white;
+  border: 1px solid #dcdcdc;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
   opacity: 0.95;
 }
 

@@ -102,6 +102,7 @@ export default defineComponent({
 <style lang="less" scoped>
 .select-items {
   margin-bottom: 20px;
+  box-shadow: 1px 1px 1px rgba(0,0,0,0.2);
 }
 
 .items {

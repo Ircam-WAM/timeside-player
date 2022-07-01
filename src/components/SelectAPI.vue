@@ -55,6 +55,7 @@ export default defineComponent({
   margin: 20px;
   margin-top: 0px;
   margin-left: 0px;
+  box-shadow: 1px 1px 1px rgba(0,0,0,0.2);
 
   &:hover {
     cursor: pointer;
