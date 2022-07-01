@@ -63,7 +63,7 @@ export default defineComponent({
       getItems()
     })
 
-    const isMenuOpen = ref(true)
+    const isMenuOpen = ref(false)
 
     function logout () {
       persistentToken.removeToken()
