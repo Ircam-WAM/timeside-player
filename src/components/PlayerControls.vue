@@ -1,7 +1,6 @@
 <template>
   <div class="player-controls">
-    <Icon v-if="isVolumeOn" icon="el:volume-up" class="player-icon volume-icon" @click="toggleVolume" />
-    <Icon v-else icon="el:volume-off" class="player-icon volume-icon" @click="toggleVolume" />
+    <Icon icon="el:volume-up" class="player-icon volume-icon" @click="isVolumeSliderOpen = !isVolumeSliderOpen" />
     <Icon id="stop-icon" icon="fad:backward" class="player-icon" @click="handlePlayEnd" />
     <Icon v-if="!isPlaying" id="play-icon" icon="fad:play" class="player-icon" @click="handlePlayPause" />
     <Icon v-else id="pause-icon" icon="fad:pause" class="player-icon" @click="handlePlayPause" />
@@ -11,7 +10,7 @@
       </p>
     </div>
   </div>
-  <div id="player-volume-slider">
+  <div v-if="isVolumeSliderOpen" id="player-volume-slider">
     <input ref="slider" type="range" min="0" max="1" step="0.001" value="1.0" @change="setVolume">
   </div>
 </template>
@@ -43,6 +42,7 @@ export default defineComponent({
 
     const isPlaying = ref(false)
     const isVolumeOn = ref(true)
+    const isVolumeSliderOpen = ref(false)
 
     const currentTime = ref('00:00')
     const totalTime = ref('/ 00:00')
@@ -90,6 +90,16 @@ export default defineComponent({
       }
     }
 
+    function toggleVolumeSlider () {
+      isVolumeSliderOpen.value = !isVolumeSliderOpen.value
+
+      if (isVolumeOn.value) {
+        audioElement.volume = parseFloat(slider.value?.value!)
+      } else {
+        audioElement.volume = 0
+      }
+    }
+
     function setVolume () {
       audioElement.volume = parseFloat(slider.value?.value!)
     }
@@ -99,6 +109,7 @@ export default defineComponent({
 
       isPlaying,
       isVolumeOn,
+      isVolumeSliderOpen,
 
       currentTime,
       totalTime,
@@ -107,6 +118,7 @@ export default defineComponent({
       handlePlayEnd,
 
       toggleVolume,
+      toggleVolumeSlider,
       setVolume
     }
   },
