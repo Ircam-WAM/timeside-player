@@ -4,37 +4,6 @@
     class="player"
   >
     <div class="top-line">
-          <div
-            class="information-bubble"
-            @mouseover="hover = true"
-            @mouseleave="hover = false"
-          >
-            <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="info-circle" class="svg-inline--fa fa-info-circle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z" /></svg>
-          </div>
-          <div v-if="hover">
-            <table class="info-table">
-              <tbody>
-                <tr>
-                  <th>uuid</th>
-                  <td>{{ item.uuid }}</td>
-                </tr>
-                <tr v-if="item.description">
-                  <th>Description</th>
-                  <td>{{ item.description }}</td>
-                </tr>
-                <tr>
-                  <th>Sample rate</th>
-                  <td>{{ item.samplerate }} Hz</td>
-                </tr>
-                <tr>
-                  <th>Audio duration</th>
-                  <td>{{ item.audioDuration }} seconds</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
       <div class="top-right">
         <Audio v-if="audioSrcs" :audio-srcs="audioSrcs" />
       </div>
@@ -53,7 +22,7 @@
       <div>
         <Timer class="timer" />
       </div>
-      <div ref="advanced-player-container" class="advanced-player-title">
+      <div ref="advanced-player-container" class="advanced-player-title section-title">
         <h4>Advanced player</h4>
         <Icon icon="fad:caret-down" class="icon-caret icon-caret-down" :class="{ 'show': !isAdvancedPlayerOpen }" @click="isAdvancedPlayerOpen = !isAdvancedPlayerOpen" />
         <Icon icon="fad:caret-up" class="icon-caret icon-caret-up" :class="{ 'show': isAdvancedPlayerOpen }" @click="isAdvancedPlayerOpen = !isAdvancedPlayerOpen" />
@@ -104,6 +73,33 @@
           />
         </div>
       </div>
+      <div ref="technical-informations-container" class="technical-informations-title section-title">
+        <h4>Technical informations</h4>
+        <Icon icon="fad:caret-down" class="icon-caret icon-caret-down" :class="{ 'show': !isTechnicalInfosOpen }" @click="isTechnicalInfosOpen = !isTechnicalInfosOpen" />
+        <Icon icon="fad:caret-up" class="icon-caret icon-caret-up" :class="{ 'show': isTechnicalInfosOpen }" @click="isTechnicalInfosOpen = !isTechnicalInfosOpen" />
+      </div>
+      <div v-if="isTechnicalInfosOpen" class="technical-informations-container">
+        <table class="info-table">
+          <tbody>
+            <tr>
+              <th>uuid</th>
+              <td>{{ item.uuid }}</td>
+            </tr>
+            <tr v-if="item.description">
+              <th>Description</th>
+              <td>{{ item.description }}</td>
+            </tr>
+            <tr>
+              <th>Sample rate</th>
+              <td>{{ item.samplerate }} Hz</td>
+            </tr>
+            <tr>
+              <th>Audio duration</th>
+              <td>{{ item.audioDuration }} seconds</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <div v-else>
       Loading audio file...
@@ -151,7 +147,6 @@ enum Tab {
 
 export const selectedAnnotationTrackKey: InjectionKey<Ref<string>> = Symbol('selectedAnnotationTrack')
 
-export let advancedPlayerContainer: HTMLElement
 
 export default defineComponent({
   name: 'Player',
@@ -202,6 +197,9 @@ export default defineComponent({
 
     const isAnnotationTrackFormOpen = ref(false)
     const annotationTracks = annotationTrackStore(computed(() => props.item.uuid))
+
+    const isTechnicalInfosOpen = ref(false)
+
     setTitle(props.item)
 
     const hover = ref(false)
@@ -223,6 +221,8 @@ export default defineComponent({
 
       isAnnotationTrackFormOpen,
       annotationTracks,
+
+      isTechnicalInfosOpen,
 
       hover
     }
@@ -248,7 +248,7 @@ export function setTitle (item: Item) {
 <style lang="less" scoped>
 
 .top-line {
-  display: grid;
+  display: none;
   grid-template-columns: 1fr 1fr;
   grid-gap: 5px;
   grid-auto-rows: minmax(50px, auto);
@@ -291,12 +291,16 @@ export function setTitle (item: Item) {
   justify-content: space-between;
 }
 
+.player-content {
+  margin-top: 20px;
+}
+
 .timer {
   text-align: right;
   font-size: 12px;
 }
 
-.advanced-player-title {
+.section-title {
   font-size: 18px;
   font-weight: bold;
   text-align: left;
