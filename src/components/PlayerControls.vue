@@ -1,17 +1,17 @@
 <template>
   <div class="player-controls">
-    <Icon icon="el:volume-up" class="player-icon volume-icon" @click="isVolumeSliderOpen = !isVolumeSliderOpen" />
-    <Icon id="stop-icon" icon="fad:backward" class="player-icon" @click="handlePlayEnd" />
     <Icon v-if="!isPlaying" id="play-icon" icon="fad:play" class="player-icon" @click="handlePlayPause" />
     <Icon v-else id="pause-icon" icon="fad:pause" class="player-icon" @click="handlePlayPause" />
+    <Icon id="stop-icon" icon="fad:backward" class="player-icon" @click="handlePlayEnd" />
     <div id="player-timecode">
       <p id="player-time">
         {{ currentTime }} {{ totalTime }}
       </p>
     </div>
+    <Icon icon="el:volume-up" class="player-icon volume-icon" @click="isVolumeSliderOpen = !isVolumeSliderOpen" />
+    <Icon icon="fad:caret-down" class="icon-caret icon-caret-down" :class="{ 'show': !isPlayerMenuOpen }" @click="isPlayerMenuOpen = !isPlayerMenuOpen" />
+    <Icon icon="fad:caret-up" class="icon-caret icon-caret-up" :class="{ 'show': isPlayerMenuOpen }" @click="isPlayerMenuOpen = !isPlayerMenuOpen" />
   </div>
-  <div v-if="isVolumeSliderOpen" id="player-volume-slider">
-    <input ref="slider" type="range" min="0" max="1" step="0.001" value="1.0" @change="setVolume">
   <div id="player-menu">
     <div v-if="isVolumeSliderOpen" id="player-volume-slider">
       <input ref="slider" type="range" min="0" max="1" step="0.001" value="1.0" @change="setVolume">

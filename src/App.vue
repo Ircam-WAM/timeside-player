@@ -158,7 +158,8 @@ export default defineComponent({
   align-items: flex-start;
   background-color: #dcdcdc;
   box-shadow: 2px 2px 1px rgba(0,0,0,0.2);
-  width: fit-content;
+  width: 200px;
+  max-width: 100%;
   margin-top: 10px;
   padding: 10px;
 }

@@ -104,9 +104,33 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+.items {
+  width: 150px;
+
+  .select-items {
+    width: 150px;
+  }
+}
 .select-items {
+  width: 150px;
+  max-width: 150px;
   margin-bottom: 20px;
   box-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+
+  option {
+    width: 150px;
+    max-width: 150px;
+    overflow: hidden;
+
+    a {
+      width: 150px;
+      max-width: 150px;
+    }
+  }
+}
+
+select {
+  width: 10px;
 }
 
 .items {

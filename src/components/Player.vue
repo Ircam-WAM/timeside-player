@@ -147,7 +147,6 @@ enum Tab {
 
 export const selectedAnnotationTrackKey: InjectionKey<Ref<string>> = Symbol('selectedAnnotationTrack')
 
-
 export default defineComponent({
   name: 'Player',
   components: {
@@ -296,6 +295,7 @@ export function setTitle (item: Item) {
 }
 
 .timer {
+  display: none;
   text-align: right;
   font-size: 12px;
 }
@@ -363,7 +363,7 @@ export function setTitle (item: Item) {
 }
 
 .info-table {
-  position: absolute;
+  position: relative;
   z-index: 6;
   background-color: white;
   opacity: 0.95;
@@ -509,6 +509,10 @@ export function setTitle (item: Item) {
       color: #2c3e50;
       margin-right: -5px;
     }
+  }
+
+  .technical-informations-container {
+    margin-bottom: 20px;
   }
 }
 </style>
