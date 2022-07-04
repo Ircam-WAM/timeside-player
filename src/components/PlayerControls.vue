@@ -12,6 +12,27 @@
   </div>
   <div v-if="isVolumeSliderOpen" id="player-volume-slider">
     <input ref="slider" type="range" min="0" max="1" step="0.001" value="1.0" @change="setVolume">
+  <div id="player-menu">
+    <div v-if="isVolumeSliderOpen" id="player-volume-slider">
+      <input ref="slider" type="range" min="0" max="1" step="0.001" value="1.0" @change="setVolume">
+    </div>
+    <select v-if="isPlayerMenuOpen" id="player-playback-rate" ref="playback-rate" name="playback-rate" @change="setPlaybackRate">
+      <option value="">
+        playback rate
+      </option>
+      <option value="0.5">
+        0.5
+      </option>
+      <option value="1.0">
+        1.0
+      </option>
+      <option value="1.5">
+        1.5
+      </option>
+      <option value="2.0">
+        2.0
+      </option>
+    </select>
   </div>
 </template>
 
@@ -43,6 +64,7 @@ export default defineComponent({
     const isPlaying = ref(false)
     const isVolumeOn = ref(true)
     const isVolumeSliderOpen = ref(false)
+    const isPlayerMenuOpen = ref(false)
 
     const currentTime = ref('00:00')
     const totalTime = ref('/ 00:00')
@@ -104,12 +126,18 @@ export default defineComponent({
       audioElement.volume = parseFloat(slider.value?.value!)
     }
 
+    function setPlaybackRate (e: Event) {
+      const playbackRate = e.currentTarget?.value
+      audioElement.playbackRate = parseFloat(playbackRate)
+    }
+
     return {
       slider,
 
       isPlaying,
       isVolumeOn,
       isVolumeSliderOpen,
+      isPlayerMenuOpen,
 
       currentTime,
       totalTime,
@@ -119,7 +147,8 @@ export default defineComponent({
 
       toggleVolume,
       toggleVolumeSlider,
-      setVolume
+      setVolume,
+      setPlaybackRate
     }
   },
   data () {
@@ -137,6 +166,16 @@ export default defineComponent({
   justify-items: flex-start;
   align-items: flex-start;
   margin-top: 1rem;
+
+  .icon-caret {
+    width: 30px;
+    height: 30px;
+    display: none;
+  }
+
+  .icon-caret:hover {
+    cursor: pointer;
+  }
 }
 
 .player-icon {
@@ -180,6 +219,14 @@ export default defineComponent({
   }
 }
 
+#player-menu {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-end;
+  width: auto;
+}
+
 .volume-icon {
   padding: 5px;
 }
@@ -190,6 +237,7 @@ export default defineComponent({
   justify-items: flex-start;
   align-items: flex-start;
   margin-top: 1rem;
+  margin-right: 1rem;
   width: 50%;
 
   input {
@@ -228,5 +276,11 @@ export default defineComponent({
     background: #2c3e50;
     cursor: pointer;
   }
+}
+
+#player-playback-rate {
+  margin-top: 1rem;
+  margin-left: auto;
+  box-shadow: 1px 1px 1px rgba(0,0,0,0.2);
 }
 </style>
