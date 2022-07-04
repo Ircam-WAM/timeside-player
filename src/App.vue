@@ -14,7 +14,7 @@
       </div>
       <div id="header-center">
         <h2 id="header-title">
-          <a href="/#">TimeSide Player</a>
+          <a href="/#">Loading...</a>
         </h2>
       </div>
       <div v-if="!isUnauthorized" id="header-right">
@@ -98,12 +98,10 @@ export default defineComponent({
 }
 
 #header {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 5px;
-  grid-auto-rows: minmax(50px, auto);
-  vertical-align: middle;
-  margin: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 #header-left {

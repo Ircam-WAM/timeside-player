@@ -4,9 +4,6 @@
     class="player"
   >
     <div class="top-line">
-      <div class="title">
-        <h3> {{ item.title }} </h3>
-        <div>
           <div
             class="information-bubble"
             @mouseover="hover = true"
@@ -229,6 +226,10 @@ export default defineComponent({
     }
   }
 })
+export function setTitle (item: Item) {
+  const titleElement = document.querySelector('#header-title')?.getElementsByTagName('a')[0]!
+  titleElement.innerHTML = item.title!
+}
 </script>
 
 <style lang="less">
