@@ -121,6 +121,10 @@ export default defineComponent({
   color: grey;
 }
 
+.loading {
+  margin-bottom: 10px;
+}
+
 .error {
   color: red;
 }
