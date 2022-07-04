@@ -70,7 +70,7 @@ export default defineComponent({
     const router = useRouter()
 
     function updateUrl (e: Event) {
-      const itemUrl = e.currentTarget?.value
+      const itemUrl = (<HTMLSelectElement>e.currentTarget).value
 
       window.location.href = '#/'
 

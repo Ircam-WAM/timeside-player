@@ -127,7 +127,8 @@ export default defineComponent({
     }
 
     function setPlaybackRate (e: Event) {
-      const playbackRate = e.currentTarget?.value
+      const playbackRate = (<HTMLSelectElement>e.currentTarget).value
+
       audioElement.playbackRate = parseFloat(playbackRate)
     }
 
