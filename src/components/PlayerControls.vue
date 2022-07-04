@@ -64,13 +64,13 @@ export default defineComponent({
     setTimeout(() => {
       audioElement = document.querySelector('.audio')?.getElementsByTagName('audio')[0]!
 
-      audioElement.addEventListener('ended', () => { isPlaying.value = false })
-      audioElement.addEventListener('timeupdate', () => { currentTime.value = formatTime(audioElement.currentTime.toFixed()) })
+      if (audioElement) {
+        audioElement.addEventListener('ended', () => { isPlaying.value = false })
+        audioElement.addEventListener('timeupdate', () => { currentTime.value = formatTime(audioElement.currentTime.toFixed()) })
 
-      audioElement.onloadedmetadata = function () {
         totalTime.value = '/ ' + formatTime(audioElement.duration)
       }
-    }, 500)
+    }, 1000)
 
     function formatTime (seconds: any) {
       let minutes: any = Math.floor(seconds / 60)!
