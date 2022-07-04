@@ -202,6 +202,8 @@ export default defineComponent({
 
     const isAnnotationTrackFormOpen = ref(false)
     const annotationTracks = annotationTrackStore(computed(() => props.item.uuid))
+    setTitle(props.item)
+
     const hover = ref(false)
 
     return {
