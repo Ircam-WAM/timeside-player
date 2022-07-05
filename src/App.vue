@@ -26,11 +26,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, onMounted, ref } from 'vue'
+import { defineComponent, computed, onMounted, ref, provide } from 'vue'
 import { useApi, ItemList } from '@/utils/api'
 import SelectAPI from '@/components/SelectAPI.vue'
 import SelectItems from '@/components/SelectItems.vue'
 import PlayerControls from '@/components/PlayerControls.vue'
+import { createAudioStore, audioStoreKey } from '@/store/audio'
 
 import { Icon } from '@iconify/vue'
 
@@ -43,6 +44,8 @@ export default defineComponent({
     PlayerControls
   },
   setup () {
+    provide(audioStoreKey, createAudioStore())
+
     const { api } = useApi()
     const { persistentToken } = useApi()
     const error = ref<Response>()

@@ -32,11 +32,8 @@ import {
   defineComponent,
   computed,
   onMounted,
-  provide,
   ref
 } from 'vue'
-
-import { createAudioStore, audioStoreKey } from '@/store/audio'
 
 import { useApi, Item } from '@/utils/api'
 import { formatResponseError } from '@/utils/response-error'
@@ -60,7 +57,6 @@ export default defineComponent({
     if (!props.itemId) {
       throw new Error('item has no valid ID')
     }
-    provide(audioStoreKey, createAudioStore())
     const { api } = useApi()
 
     const item = ref<Item>()

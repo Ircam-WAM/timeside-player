@@ -43,7 +43,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue'
-
+import { useAudioStore } from '@/store/audio'
 import { Icon } from '@iconify/vue'
 
 let audioElement: HTMLAudioElement
@@ -63,6 +63,8 @@ export default defineComponent({
     onMounted(() => {
       togglePlayPauseKeyboard()
     })
+
+    const audioStore = useAudioStore()
 
     const slider = ref<HTMLInputElement>()
 
@@ -160,6 +162,8 @@ export default defineComponent({
       const playbackRate = (<HTMLSelectElement>e.currentTarget).value
 
       audioElement.playbackRate = parseFloat(playbackRate)
+
+      audioStore?.mutations.setPlayBackRate(parseFloat(playbackRate))
     }
 
     return {
