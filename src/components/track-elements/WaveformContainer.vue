@@ -89,10 +89,6 @@ export default defineComponent({
 
     watch([ isLoading ], () => {
       if (!isLoading.value) {
-        document.querySelector('#app-loading')?.classList.add('hide')
-        document.querySelector('#app')?.classList.remove('hide')
-        document.querySelector('#app')?.classList.add('fade-in')
-
         const audioElement = document.querySelector('.audio')?.getElementsByTagName('audio')[0]!
 
         if (audioElement) {
