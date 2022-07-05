@@ -117,10 +117,14 @@ export default defineComponent({
     }
 
     function togglePlayPauseKeyboard (e: KeyboardEvent) {
-      if ((e.keyCode === 32 || e.code === '32') && (e.currentTarget === document.body || e.currentTarget !== slider.value || e.currentTarget !== playbackRateSelect.value)) {
-        e.preventDefault()
+      const targetElement = <HTMLElement> e.target
 
-        handlePlayPause()
+      if (!targetElement.parentElement?.classList.contains('field')) {
+        if ((e.keyCode === 32 || e.code === '32') && (e.target === document.body || e.target !== slider.value || e.target !== playbackRateSelect.value)) {
+          e.preventDefault()
+
+          handlePlayPause()
+        }
       }
     }
 
