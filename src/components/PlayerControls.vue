@@ -61,7 +61,7 @@ export default defineComponent({
   },
   setup () {
     onMounted(() => {
-
+      togglePlayPauseKeyboard()
     })
 
     const slider = ref<HTMLInputElement>()
@@ -120,6 +120,16 @@ export default defineComponent({
       seconds = Math.floor(seconds % 60)
       seconds = (seconds >= 10) ? seconds : '0' + seconds
       return minutes + ':' + seconds
+    }
+
+    function togglePlayPauseKeyboard () {
+      window.addEventListener('keydown', function (e: KeyboardEvent) {
+        if ((e.keyCode === 32 || e.code === '32') && e.target === document.body) {
+          e.preventDefault()
+
+          handlePlayPause()
+        }
+      })
     }
 
     function toggleVolume () {
