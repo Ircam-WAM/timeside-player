@@ -25,7 +25,7 @@
           />
         </transition-group>
         <TrackPluginsContainer class="track-plugins-container">
-          <InteractivePlayCursor />
+          <InteractivePlayCursor :selection="innerSelection" />
         </TrackPluginsContainer>
       </div>
     </div>
@@ -40,7 +40,9 @@
 import {
   defineComponent,
   PropType,
-  computed
+  computed,
+  watch,
+  ref
 } from 'vue'
 import { useAudioStore } from '@/store/audio'
 
@@ -74,6 +76,7 @@ export default defineComponent({
     },
     selection: {
       type: Object as PropType<RegionType>,
+      required: false,
       default: undefined
     },
     addAnnotation: {
@@ -81,13 +84,29 @@ export default defineComponent({
       required: true
     }
   },
-  setup () {
+  emits: [
+    'selection'
+  ],
+  setup (props, { emit }) {
     const audioStore = useAudioStore()
+    const selection = ref<RegionType>()
+
+    // two-way data binding
+    watch([ () => props.selection ], () => {
+      selection.value = props.selection
+    }, { immediate: true })
+    watch([ selection ], () => {
+      emit('selection', selection.value)
+    }, { immediate: true })
+
     function newTrack (el: Element) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
 
     return {
+      // Use a different name to avoid namespace conflicts with `selection` props
+      innerSelection: selection,
+
       formatResponseError,
       lastTime: computed(() => audioStore.state.duration),
       newTrack

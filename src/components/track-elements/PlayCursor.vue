@@ -138,6 +138,8 @@ export default defineComponent({
   fill: red;
   /* Hides the element when the animation is in a delayed state */
   transform: translateX(-100%);
+  position: relative;
+  z-index: 1;
 
   // Fix offset. Default value is 1px
   // Without this, rect element with `height: 100%`
