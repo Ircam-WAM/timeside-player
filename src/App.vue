@@ -14,7 +14,7 @@
       </div>
       <div id="header-center">
         <h2 id="header-title">
-          <a href="/#">Loading...</a>
+          <a href="/#" />
         </h2>
       </div>
       <div v-if="!isUnauthorized" id="header-right">
