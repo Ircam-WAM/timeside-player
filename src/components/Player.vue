@@ -227,6 +227,17 @@ export default defineComponent({
     }
   }
 })
+
+export function toggleElement (el: Element, visible: boolean): void {
+  if (visible) {
+    el.classList.add('show')
+    el.classList.remove('hide')
+  } else {
+    el.classList.add('hide')
+    el.classList.remove('show')
+  }
+}
+
 export function setTitle (item: Item) {
   const titleElement = document.querySelector('#header-title')?.getElementsByTagName('a')[0]!
   titleElement.innerHTML = item.title!
