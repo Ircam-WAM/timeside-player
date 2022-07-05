@@ -21,7 +21,7 @@
     <div v-if="isVolumeSliderOpen" id="player-volume-slider">
       <input ref="slider" type="range" min="0" max="1" step="0.001" value="1.0" @change="setVolume">
     </div>
-    <select v-if="isPlayerMenuOpen" id="player-playback-rate" ref="playback-rate" name="playback-rate" @change="setPlaybackRate">
+    <select v-if="isPlayerMenuOpen" id="player-playback-rate" ref="playbackRateSelect" name="playback-rate" @change="setPlaybackRate">
       <option value="" disabled selected hidden>
         playback rate
       </option>
@@ -66,6 +66,7 @@ export default defineComponent({
 
     const audioStore = useAudioStore()
 
+    const playbackRateSelect = ref<HTMLSelectElement>()
     const slider = ref<HTMLInputElement>()
 
     const isPlaying = ref(false)
@@ -99,14 +100,12 @@ export default defineComponent({
       isPlaying.value = !isPlaying.value
     }
 
-    function togglePlayPauseKeyboard () {
-      window.addEventListener('keydown', function (e: KeyboardEvent) {
-        if ((e.keyCode === 32 || e.code === '32') && e.target === document.body) {
-          e.preventDefault()
+    function togglePlayPauseKeyboard (e: KeyboardEvent) {
+      if ((e.keyCode === 32 || e.code === '32') && (e.currentTarget === document.body || e.currentTarget !== slider.value || e.currentTarget !== playbackRateSelect.value)) {
+        e.preventDefault()
 
-          handlePlayPause()
-        }
-      })
+        handlePlayPause()
+      }
     }
 
     function handlePlayEnd () {
