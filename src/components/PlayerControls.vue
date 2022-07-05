@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue'
+import { defineComponent, onMounted, onUnmounted, ref } from 'vue'
 import { useAudioStore } from '@/store/audio'
 import { Icon } from '@iconify/vue'
 
@@ -61,7 +61,17 @@ export default defineComponent({
   },
   setup () {
     onMounted(() => {
-      togglePlayPauseKeyboard()
+      window.addEventListener('keydown', togglePlayPauseKeyboard)
+    })
+
+    onUnmounted(() => {
+      window.removeEventListener('keydown', togglePlayPauseKeyboard)
+
+      if (!audioElement) {
+        return
+      }
+      audioElement.removeEventListener('ended', () => { isPlaying.value = false })
+      audioElement.removeEventListener('timeupdate', () => { currentTime.value = formatTime(audioElement.currentTime.toFixed()) })
     })
 
     const audioStore = useAudioStore()
