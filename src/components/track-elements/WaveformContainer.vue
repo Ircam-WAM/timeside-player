@@ -87,6 +87,31 @@ export default defineComponent({
       nbPixels: props.nbPixels
     })))
 
+    watch([ isLoading ], () => {
+      if (!isLoading.value) {
+        document.querySelector('#app-loading')?.classList.add('hide')
+        document.querySelector('#app')?.classList.remove('hide')
+        document.querySelector('#app')?.classList.add('fade-in')
+
+        const audioElement = document.querySelector('.audio')?.getElementsByTagName('audio')[0]!
+
+        if (audioElement) {
+          if (!isNaN(audioElement.duration)) {
+            const totalTimeElement = document.querySelector('#player-total-time')!
+            totalTimeElement.innerHTML = '/ ' + formatTime(audioElement.duration)
+          }
+        }
+      }
+    }, { immediate: false })
+
+    function formatTime (seconds: any) {
+      let minutes: any = Math.floor(seconds / 60)!
+      minutes = (minutes >= 10) ? minutes : '0' + minutes
+      seconds = Math.floor(seconds % 60)
+      seconds = (seconds >= 10) ? seconds : '0' + seconds
+      return minutes + ':' + seconds
+    }
+
     watch([ error ], () => {
       if (error.value === undefined) {
         return

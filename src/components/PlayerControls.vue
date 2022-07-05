@@ -5,7 +5,12 @@
     <Icon id="stop-icon" icon="fad:backward" class="player-icon" @click="handlePlayEnd" />
     <div id="player-timecode">
       <p id="player-time">
-        {{ currentTime }} {{ totalTime }}
+        <span id="player-current-time">
+          {{ currentTime }}
+        </span>
+        <span id="player-total-time">
+          {{ totalTime }}
+        </span>
       </p>
     </div>
     <Icon icon="el:volume-up" class="player-icon volume-icon" @click="isVolumeSliderOpen = !isVolumeSliderOpen" />
@@ -65,11 +70,24 @@ export default defineComponent({
     const isVolumeOn = ref(true)
     const isVolumeSliderOpen = ref(false)
     const isPlayerMenuOpen = ref(false)
+    const isFirstPlay = ref(true)
 
     const currentTime = ref('00:00')
     const totalTime = ref('/ 00:00')
 
     function handlePlayPause () {
+      if (isFirstPlay.value) {
+        isFirstPlay.value = false
+
+        audioElement = document.querySelector('.audio')?.getElementsByTagName('audio')[0]!
+
+        if (audioElement) {
+          if (!isNaN(audioElement.duration) || totalTime.value === '/ 00:00') {
+            totalTime.value = '/ ' + formatTime(audioElement.duration)
+          }
+        }
+      }
+
       if (isPlaying.value === true) {
         audioElement?.pause()
       } else {
@@ -90,9 +108,11 @@ export default defineComponent({
         audioElement.addEventListener('ended', () => { isPlaying.value = false })
         audioElement.addEventListener('timeupdate', () => { currentTime.value = formatTime(audioElement.currentTime.toFixed()) })
 
-        totalTime.value = '/ ' + formatTime(audioElement.duration)
+        if (!isNaN(audioElement.duration)) {
+          totalTime.value = '/ ' + formatTime(audioElement.duration)
+        }
       }
-    }, 1000)
+    }, 2000)
 
     function formatTime (seconds: any) {
       let minutes: any = Math.floor(seconds / 60)!
@@ -139,6 +159,7 @@ export default defineComponent({
       isVolumeOn,
       isVolumeSliderOpen,
       isPlayerMenuOpen,
+      isFirstPlay,
 
       currentTime,
       totalTime,
