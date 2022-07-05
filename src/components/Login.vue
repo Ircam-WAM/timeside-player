@@ -6,7 +6,7 @@
     <p>
       Fill in your
       <a :href="loginUrl" target="_blank">
-        WASABI credentials
+        TimeSise API credentials
       </a>
     </p>
     <div class="fields">
