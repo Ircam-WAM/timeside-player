@@ -22,7 +22,7 @@
       <input ref="slider" type="range" min="0" max="1" step="0.001" value="1.0" @change="setVolume">
     </div>
     <select v-if="isPlayerMenuOpen" id="player-playback-rate" ref="playback-rate" name="playback-rate" @change="setPlaybackRate">
-      <option value="">
+      <option value="" disabled selected hidden>
         playback rate
       </option>
       <option value="0.5">
@@ -99,6 +99,16 @@ export default defineComponent({
       isPlaying.value = !isPlaying.value
     }
 
+    function togglePlayPauseKeyboard () {
+      window.addEventListener('keydown', function (e: KeyboardEvent) {
+        if ((e.keyCode === 32 || e.code === '32') && e.target === document.body) {
+          e.preventDefault()
+
+          handlePlayPause()
+        }
+      })
+    }
+
     function handlePlayEnd () {
       audioElement.currentTime = 0
     }
@@ -122,16 +132,6 @@ export default defineComponent({
       seconds = Math.floor(seconds % 60)
       seconds = (seconds >= 10) ? seconds : '0' + seconds
       return minutes + ':' + seconds
-    }
-
-    function togglePlayPauseKeyboard () {
-      window.addEventListener('keydown', function (e: KeyboardEvent) {
-        if ((e.keyCode === 32 || e.code === '32') && e.target === document.body) {
-          e.preventDefault()
-
-          handlePlayPause()
-        }
-      })
     }
 
     function toggleVolume () {

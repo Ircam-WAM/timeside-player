@@ -119,7 +119,8 @@ export default defineComponent({
       })
 
       // Update playbackRate of animation when audio is updated
-      watchEffect(() => {
+      const playbackRateState = computed(() => store.state.playbackRate)
+      watch([ playbackRateState ], () => {
         animation.playbackRate = store.state.playbackRate
       })
     })
