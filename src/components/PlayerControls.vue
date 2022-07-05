@@ -25,8 +25,14 @@
       <option value="" disabled selected hidden>
         playback rate
       </option>
+      <option value="0.25">
+        0.25
+      </option>
       <option value="0.5">
         0.5
+      </option>
+      <option value="0.75">
+        0.75
       </option>
       <option value="1.0">
         1.0
