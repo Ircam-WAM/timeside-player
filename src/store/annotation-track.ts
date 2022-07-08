@@ -3,7 +3,9 @@ import {
   onMounted,
   watch,
   ComputedRef,
-  reactive
+  reactive,
+  InjectionKey,
+  inject
 } from 'vue'
 import { useApi, AnnotationTrack } from '@/utils/api'
 
@@ -56,4 +58,14 @@ export default function (itemUuid: ComputedRef<string>): AnnotationTrackStore {
     add,
     remove
   })
+}
+
+export const annotationTrackStoreKey: InjectionKey<AnnotationTrackStore> = Symbol('annotation-track-store')
+
+export function useAnnotationTrackStore (): AnnotationTrackStore {
+  const resolved = inject(annotationTrackStoreKey)
+  if (resolved === undefined) {
+    throw new Error('store not found')
+  }
+  return resolved
 }
