@@ -13,6 +13,7 @@
         </span>
       </p>
     </div>
+    <Icon icon="fad:loop" class="player-icon player-loop-icon" :class="{ 'player-loop-on': isLooping }" @click="toggleLoop" />
     <Icon icon="el:volume-up" class="player-icon volume-icon" @click="isVolumeSliderOpen = !isVolumeSliderOpen" />
     <Icon icon="fad:caret-down" class="icon-caret icon-caret-down" :class="{ 'show': !isPlayerMenuOpen }" @click="isPlayerMenuOpen = !isPlayerMenuOpen" />
     <Icon icon="fad:caret-up" class="icon-caret icon-caret-up" :class="{ 'show': isPlayerMenuOpen }" @click="isPlayerMenuOpen = !isPlayerMenuOpen" />
@@ -90,6 +91,7 @@ export default defineComponent({
     const isVolumeSliderOpen = ref(false)
     const isPlayerMenuOpen = ref(false)
     const isFirstPlay = ref(true)
+    const isLooping = ref(false)
 
     const currentTime = ref('00:00')
     const totalTime = ref('/ 00:00')
@@ -153,6 +155,13 @@ export default defineComponent({
       return minutes + ':' + seconds
     }
 
+    function toggleLoop () {
+      if (audioElement) {
+        isLooping.value = !isLooping.value
+        audioElement.loop = !audioElement.loop
+      }
+    }
+
     function toggleVolume () {
       isVolumeOn.value = !isVolumeOn.value
 
@@ -193,6 +202,7 @@ export default defineComponent({
       isVolumeSliderOpen,
       isPlayerMenuOpen,
       isFirstPlay,
+      isLooping,
 
       currentTime,
       totalTime,
@@ -200,6 +210,7 @@ export default defineComponent({
       handlePlayPause,
       handlePlayEnd,
 
+      toggleLoop,
       toggleVolume,
       toggleVolumeSlider,
       setVolume,
@@ -249,6 +260,13 @@ export default defineComponent({
     cursor: pointer;
     opacity: 0.8;
   }
+}
+
+.player-loop-on {
+  background-color: #2c3e50;
+  color: #dcdcdc;
+  stroke: #dcdcdc;
+  stroke-width: 10px;
 }
 
 #player-timecode {
