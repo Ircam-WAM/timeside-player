@@ -7,6 +7,9 @@
         <div v-if="isMenuOpen" id="menu-container">
           <SelectItems />
           <SelectAPI />
+          <button v-if="!isUnauthorized" class="upload-button" @click="updateUrl">
+            Upload
+          </button>
           <button v-if="!isUnauthorized" class="logout" @click="logout">
             Logout
           </button>
@@ -14,10 +17,11 @@
       </div>
       <div id="header-center">
         <h2 id="header-title">
-          <a href="/#" />
+          <a v-if="!isUploadRoute" href="/#" />
+          <a v-else href="/#/upload">UPLOAD</a>
         </h2>
       </div>
-      <div v-if="!isUnauthorized" id="header-right">
+      <div v-if="!isUnauthorized && !isUploadRoute" id="header-right">
         <PlayerControls />
       </div>
     </div>
@@ -27,6 +31,7 @@
 
 <script lang="ts">
 import { defineComponent, computed, onMounted, ref, provide } from 'vue'
+import { useRouter } from 'vue-router'
 import { useApi, ItemList } from '@/utils/api'
 import SelectAPI from '@/components/SelectAPI.vue'
 import SelectItems from '@/components/SelectItems.vue'
@@ -53,6 +58,8 @@ export default defineComponent({
 
     const isUnauthorized = computed(() => error.value?.status === 401 || false)
 
+    const isUploadRoute = computed(() => window.location.href.includes('upload'))
+
     const getItems = async () => {
       error.value = undefined
       try {
@@ -68,6 +75,18 @@ export default defineComponent({
 
     const isMenuOpen = ref(false)
 
+    const router = useRouter()
+
+    function updateUrl () {
+      window.location.href = '#/'
+
+      setTimeout(() => {
+        router.push({ name: 'upload' }).then(() => {
+          window.location.reload()
+        })
+      }, 500)
+    }
+
     function logout () {
       persistentToken.removeToken()
       window.location.reload()
@@ -75,9 +94,11 @@ export default defineComponent({
 
     return {
       isUnauthorized,
+      isUploadRoute,
       isMenuOpen,
       items,
       error,
+      updateUrl,
       logout
     }
   }
@@ -115,6 +136,8 @@ export default defineComponent({
 }
 
 #header-center {
+  margin-left: auto;
+  margin-right: auto;
   align-items: center;
 }
 
@@ -165,6 +188,14 @@ export default defineComponent({
   max-width: 100%;
   margin-top: 10px;
   padding: 10px;
+}
+
+.upload-button {
+  margin-bottom: 1rem;
+}
+
+.upload-button:hover {
+  cursor: pointer;
 }
 
 .logout {
