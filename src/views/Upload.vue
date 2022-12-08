@@ -18,7 +18,7 @@
       <!-- <li v-for="file of files" :key="file.id">{{ file.file.name }}</li> -->
       <FilePreview v-for="file of files" :key="file.id" :file="file" tag="li" @remove="removeFile" />
     </ul>
-    <button @click.prevent="uploadFiles(files)"  class="upload-button">Upload</button>
+    <button :disabled="isDisabled" @click.prevent="upload(files)" :class="isDisabled ? 'upload-button-disabled' : ''" class="upload-button">Upload</button>
   </DropZone>
 </template>
 
@@ -43,8 +43,11 @@ function onInputChange(e: any ) {
 
 const { files, addFiles, removeFile } = useFileList()
 
-const { uploadFiles } = createUploader('http://httpbin.org/')
+const { uploadFiles } = createUploader('http://localhost:9080/timeside/api/items/')
 
+function upload (files: File[]) {
+	uploadFiles(files)
+}
 </script>
 
 <style lang="less" scoped>
