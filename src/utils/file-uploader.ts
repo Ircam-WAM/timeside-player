@@ -1,11 +1,23 @@
+import { getCookie } from './get-cookie'
+
 export async function uploadFile(file: { file: string | Blob; status: string | boolean }, url: RequestInfo | URL) {
   // set up the request data
   let formData = new FormData()
-  formData.append('file', file.file)
+  formData.append('source_file', file.file)
+  formData.append('title', file.file.name.split('.')[0])
+
+  const csrftoken = getCookie('csrftoken')!
 
   // track status and upload file
   file.status = 'loading'
-  let response = await fetch(url, { method: 'POST', body: formData })
+  let response = await fetch(url, {
+    credentials: 'include',
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': csrftoken
+    },
+    body: formData
+  })
 
   // change status to indicate the success of the upload request
   file.status = response.ok
