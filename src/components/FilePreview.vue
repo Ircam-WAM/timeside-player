@@ -5,7 +5,7 @@
     <Icon icon="material-symbols:audio-file-outline-rounded" class="audio-file-icon" />
     <p class="file-title">{{ file.file.name }}</p>
     <span class="status-indicator loading-indicator" v-show="file.status == 'loading'">...</span>
-    <span class="status-indicator success-indicator" v-show="file.status == true">Uploaded</span>
+    <span class="status-indicator success-indicator" v-show="file.status == true">OK</span>
     <span class="status-indicator failure-indicator" v-show="file.status == false">Error</span>
   </component>
 </template>
