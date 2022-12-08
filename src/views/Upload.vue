@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-// import { defineComponent } from 'vue'
+import { ref } from 'vue'
 import useFileList from '../utils/file-list'
 import createUploader from '../utils/file-uploader'
 import DropZone from '../components/DropZone.vue'
@@ -36,6 +36,8 @@ import FilePreview from '../components/FilePreview.vue'
 // })
 // components: { Image }
 
+const isDisabled = ref(false)
+
 function onInputChange(e: any ) {
   addFiles(e.target.files)
   e.target.value = null
@@ -47,6 +49,7 @@ const { uploadFiles } = createUploader('http://localhost:9080/timeside/api/items
 
 function upload (files: File[]) {
 	uploadFiles(files)
+	isDisabled.value = true
 }
 </script>
 
@@ -107,20 +110,32 @@ label {
 	display: flex;
 	list-style: none;
 	flex-wrap: wrap;
+	margin-bottom: 2rem;
 	padding: 0;
 }
 .upload-button {
 	display: block;
 	appearance: none;
 	border: 0;
-	border-radius: 25px;
 	padding: 0.75rem 3rem;
 	margin: 1rem auto;
 	font-size: 1rem;
 	font-weight: bold;
-	background: #369;
+	background: #747474;
 	color: #fff;
 	text-transform: uppercase;
+	opacity: 1.0;
+	transition: 0.25s;
+}
+.upload-button:hover {
+	opacity: 0.8;
+}
+.upload-button-disabled {
+	opacity: 0.5;
+}
+.upload-button-disabled:hover {
+	cursor: auto;
+	opacity: 0.5;
 }
 button {
 	cursor: pointer;
