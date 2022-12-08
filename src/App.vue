@@ -126,6 +126,7 @@ export default defineComponent({
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
+  margin-bottom: 1rem;
 }
 
 #header-left {

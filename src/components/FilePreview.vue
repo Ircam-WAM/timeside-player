@@ -66,8 +66,8 @@ defineEmits(['remove'])
 		cursor: pointer;
 	}
 	.status-indicator {
-		font-size: calc(0.75 * var(--size));
-		bottom: -1rem;
+		font-size: 0.8rem;
+		bottom: -1.5rem;
 		padding: 0 10px;
 	}
 	.loading-indicator {
