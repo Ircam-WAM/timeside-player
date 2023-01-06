@@ -19,7 +19,7 @@ async function getResult (input: AnalysisTrack, api: TimesideApi, abortControlle
 
   // polls analysisTrack every X seconds
   // In the future, we may implement a websocket (or related) to get a notification from the server
-  // See https://github.com/Parisson/TimeSide/issues/193
+  // See https://github.com/Ircam-WAM/TimeSide/issues/193
   let at = input
   while (at.resultUrl === 'Task running') {
     await timeout(5000)

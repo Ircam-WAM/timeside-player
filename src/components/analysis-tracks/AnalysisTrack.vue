@@ -116,7 +116,7 @@ export default defineComponent({
     }
   },
   emits: [ 'deleted', 'selection' ],
-  // See https://github.com/Parisson/TimeSide/issues/174
+  // See https://github.com/Ircam-WAM/TimeSide/issues/174
   setup (props, { emit }) {
     const { api } = useApi()
     // Reactive analysisTrack

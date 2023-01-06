@@ -165,7 +165,7 @@ export default defineComponent({
 
       if (!availableAnalysisTracks.includes(selectedAnalysis.title!)) {
         // Building URL
-        // https://github.com/Parisson/TimeSide/issues/188
+        // https://github.com/Ircam-WAM/TimeSide/issues/188
         const analysisTrack: AnalysisTrack = {
           item: getItemUrl(currentBaseUrl, props.itemId),
           analysis: getAnalysisUrl(currentBaseUrl, selectedAnalysis.uuid!)

@@ -97,7 +97,7 @@ export default defineComponent({
         loading.value = true
         try {
           // FIXME: API should implement it in schema in the future
-          // See: https://github.com/Parisson/TimeSide/issues/174#issuecomment-630867653
+          // See: https://github.com/Ircam-WAM/TimeSide/issues/174#issuecomment-630867653
           const resultUrl = `${currentBaseUrl}/timeside/results/${props.resultUuid}/json/`
           const resp = await fetch(resultUrl)
           if (!resp.ok) {

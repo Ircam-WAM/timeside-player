@@ -59,7 +59,7 @@ export default defineComponent({
 
       // Domain uses minVal and maxVal to scale the Waveform
       // because API sends values > 1.
-      // See https://github.com/Parisson/TimeSide/issues/177
+      // See https://github.com/Ircam-WAM/TimeSide/issues/177
       // You may want to switch to `.domain([ -1, 1 ])`
       const yScale = scaleLinear<number>()
         .domain([ props.waveform.meta.minVal, props.waveform.meta.maxVal ])
