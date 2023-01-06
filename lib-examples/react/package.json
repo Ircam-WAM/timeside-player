@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@ircam/timeside-player": "0.0.2",
+    "@ircam/timeside-player": "0.0.6",
     "parcel-bundler": "^1.9.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
