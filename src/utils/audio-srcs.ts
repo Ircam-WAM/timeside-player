@@ -43,7 +43,7 @@ export function getAudioSrcs (item: Item): (AudioSrc[] | undefined) {
   // Use source file an let the browser guess the type
   if (item.sourceFile !== null) {
     // Need to be casted as string because the SDK define it as Blob
-    // See https://github.com/Parisson/TimeSide/issues/151
+    // See https://github.com/Ircam-WAM/TimeSide/issues/151
     const src = item.sourceFile as unknown as string
     return [
       { type: undefined, src }
