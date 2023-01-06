@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@ircam/timeside-player": "^0.0.6",
-    "@ircam/timeside-sdk": "^2.6.0",
+    "@ircam/timeside-sdk": "^2.6.1",
     "@types/d3-axis": "^3.0.1",
     "@types/d3-scale": "^4.0.1",
     "@types/d3-selection": "^3.0.1",
